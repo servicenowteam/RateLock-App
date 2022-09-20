@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_angular_provider">
+    <sp_angular_provider action="DELETE">
+        <name>ratelockPresence</name>
+        <script><![CDATA[function($rootScope, amb, $timeout, $location, $window) {
+  var session_id = $rootScope.me || $window.NOW.session_id;
+  var sessions = {};
+
+
+
+  function init(table, sys_id) {
+    if (!session_id) return;
+    if (!table || !sys_id) return;
+
+    var channel = amb.getChannelRW(table, sys_id);
+    channel.subscribe(onMessage);
+    $rootScope.$on('ratelock.sessions.entered', function(e) {
+      channel.publish({
+        presences: [{
+          session_id: $window.NOW.session_id,
+          status: 'viewing',
+          user_name: $window.NOW.user_name,
+          user_id: $window.NOW.user_id,
+          user_display_name: $window.NOW.user_display_name,
+          user_initials: $window.NOW.user_initials,
+          user_avatar: $window.NOW.user_avatar,
+          ua: navigator.userAgent,
+          table: table,
+          sys_id: sys_id,
+          time: new Date().toString().substring(0, 24)
+
+        }]
+      })
+    });
+
+    $rootScope.$on('ratelock.sessions.exited', function(e) {
+      channel.publish({
+        presences: [{
+          session_id: $window.NOW.session_id,
+          status: 'exited',
+          user_name: $window.NOW.user_name,
+          user_id: $window.NOW.user_id,
+          user_display_name: $window.NOW.user_display_name,
+          user_initials: $window.NOW.user_initials,
+          user_avatar: $window.NOW.user_avatar,
+          ua: navigator.userAgent,
+          table: table,
+          sys_id: sys_id,
+          time: new Date().toString().substring(0, 24)
+
+        }]
+      })
+    });
+  }
+
+  function onMessage(message) {
+    message.data.presences.forEach(function(presence) {
+      if (!presence.session_id || presence.session_id === session_id) return;
+
+      var sesh = sessions[presence.session_id];
+
+      if (sesh) {
+        angular.extend(s, presence);
+      } else {
+        sesh = sessions[presence.session_id] = presence;
+      }
+
+      sesh.lastUpdated = new Date();
+
+      if (sesh.status == 'exited') {
+        delete sessions[presence.session_id];
+      }
+    });
+
+    emitRootSessionEvent();
+  }
+
+  function emitRootSessionEvent() {
+    var _sessions = getUniqueSessions();
+    $rootScope.$emit('ratelock.sessions', _sessions);
+  }
+
+  function getUniqueSessions() {
+    var uniqueSessions = {};
+
+    Object.keys(sessions).forEach(function(key) {
+      var session = sessions[key];
+      if (session.user_id == $window.NOW.user_id) return;
+
+      if (session.user_id in uniqueSessions) {
+        var second = uniqueSessions[session.user_id];
+        var priority = getStatusPriority(session.status);
+        var other = getStatusPriority(second.status);
+        uniqueSessions[session.user_id] = priority < other ? session : second;
+        return;
+      }
+      uniqueSessions[session.user_id] = session;
+    });
+
+    var unique = {};
+
+    angular.forEach(uniqueSessions, function(item) {
+      unique[item.session_id] = item;
+    });
+
+    return unique;
+  }
+
+  function getStatusPriority(status) {
+    switch (status) {
+      case 'exited':
+        return 8;
+      case 'typing':
+        return 0;
+      case 'viewing':
+        return 1;
+      default:
+        return 3;
+    }
+  }
+
+  return init
+}]]></script>
+        <sys_class_name>sp_angular_provider</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2019-12-21 12:01:52</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>210d99ee1b75cc1048a242e58d4bcb26</sys_id>
+        <sys_mod_count>17</sys_mod_count>
+        <sys_name>ratelockPresence</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sp_angular_provider_210d99ee1b75cc1048a242e58d4bcb26</sys_update_name>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2019-12-21 13:54:55</sys_updated_on>
+        <type>factory</type>
+    </sp_angular_provider>
+    <sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Ratelock">605affb71badc01048a242e58d4bcb76</application>
+        <file_path/>
+        <instance_id>94e8281edbb7470060a6f0e5bf9619f6</instance_id>
+        <instance_name>movementdev</instance_name>
+        <name>sp_angular_provider_210d99ee1b75cc1048a242e58d4bcb26</name>
+        <payload>&lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;record_update table="sp_angular_provider"&gt;&lt;sp_angular_provider action="INSERT_OR_UPDATE"&gt;&lt;name&gt;ratelockPresence&lt;/name&gt;&lt;script&gt;&lt;![CDATA[function($rootScope, amb, $timeout, $location, $window) {
+  var session_id = $rootScope.me || $window.NOW.session_id;
+  var sessions = {};
+
+
+
+  function init(table, sys_id) {
+    if (!session_id) return;
+    if (!table || !sys_id) return;
+
+    var channel = amb.getChannelRW(table, sys_id);
+    channel.subscribe(onMessage);
+    $rootScope.$on('ratelock.sessions.entered', function(e) {
+      channel.publish({
+        presences: [{
+          session_id: $window.NOW.session_id,
+          status: 'viewing',
+          user_name: $window.NOW.user_name,
+          user_id: $window.NOW.user_id,
+          user_display_name: $window.NOW.user_display_name,
+          user_initials: $window.NOW.user_initials,
+          user_avatar: $window.NOW.user_avatar,
+          ua: navigator.userAgent,
+          table: table,
+          sys_id: sys_id,
+          time: new Date().toString().substring(0, 24)
+
+        }]
+      })
+    });
+
+    $rootScope.$on('ratelock.sessions.exited', function(e) {
+      channel.publish({
+        presences: [{
+          session_id: $window.NOW.session_id,
+          status: 'exited',
+          user_name: $window.NOW.user_name,
+          user_id: $window.NOW.user_id,
+          user_display_name: $window.NOW.user_display_name,
+          user_initials: $window.NOW.user_initials,
+          user_avatar: $window.NOW.user_avatar,
+          ua: navigator.userAgent,
+          table: table,
+          sys_id: sys_id,
+          time: new Date().toString().substring(0, 24)
+
+        }]
+      })
+    });
+  }
+
+  function onMessage(message) {
+    message.data.presences.forEach(function(presence) {
+      if (!presence.session_id || presence.session_id === session_id) return;
+
+      var sesh = sessions[presence.session_id];
+
+      if (sesh) {
+        angular.extend(s, presence);
+      } else {
+        sesh = sessions[presence.session_id] = presence;
+      }
+
+      sesh.lastUpdated = new Date();
+
+      if (sesh.status == 'exited') {
+        delete sessions[presence.session_id];
+      }
+    });
+
+    emitRootSessionEvent();
+  }
+
+  function emitRootSessionEvent() {
+    var _sessions = getUniqueSessions();
+    $rootScope.$emit('ratelock.sessions', _sessions);
+  }
+
+  function getUniqueSessions() {
+    var uniqueSessions = {};
+
+    Object.keys(sessions).forEach(function(key) {
+      var session = sessions[key];
+      if (session.user_id == $window.NOW.user_id) return;
+
+      if (session.user_id in uniqueSessions) {
+        var second = uniqueSessions[session.user_id];
+        var priority = getStatusPriority(session.status);
+        var other = getStatusPriority(second.status);
+        uniqueSessions[session.user_id] = priority &lt; other ? session : second;
+        return;
+      }
+      uniqueSessions[session.user_id] = session;
+    });
+
+    var unique = {};
+
+    angular.forEach(uniqueSessions, function(item) {
+      unique[item.session_id] = item;
+    });
+
+    return unique;
+  }
+
+  function getStatusPriority(status) {
+    switch (status) {
+      case 'exited':
+        return 8;
+      case 'typing':
+        return 0;
+      case 'viewing':
+        return 1;
+      default:
+        return 3;
+    }
+  }
+
+  return init
+}]]&gt;&lt;/script&gt;&lt;sys_class_name&gt;sp_angular_provider&lt;/sys_class_name&gt;&lt;sys_created_by&gt;douglas.schamberg&lt;/sys_created_by&gt;&lt;sys_created_on&gt;2019-12-21 12:01:52&lt;/sys_created_on&gt;&lt;sys_customer_update&gt;false&lt;/sys_customer_update&gt;&lt;sys_id&gt;210d99ee1b75cc1048a242e58d4bcb26&lt;/sys_id&gt;&lt;sys_mod_count&gt;17&lt;/sys_mod_count&gt;&lt;sys_name&gt;ratelockPresence&lt;/sys_name&gt;&lt;sys_package display_value="Ratelock" source="x_momo_ratelock"&gt;605affb71badc01048a242e58d4bcb76&lt;/sys_package&gt;&lt;sys_policy/&gt;&lt;sys_replace_on_upgrade&gt;false&lt;/sys_replace_on_upgrade&gt;&lt;sys_scope display_value="Ratelock"&gt;605affb71badc01048a242e58d4bcb76&lt;/sys_scope&gt;&lt;sys_update_name&gt;sp_angular_provider_210d99ee1b75cc1048a242e58d4bcb26&lt;/sys_update_name&gt;&lt;sys_updated_by&gt;douglas.schamberg&lt;/sys_updated_by&gt;&lt;sys_updated_on&gt;2019-12-21 13:54:55&lt;/sys_updated_on&gt;&lt;type&gt;factory&lt;/type&gt;&lt;/sp_angular_provider&gt;&lt;/record_update&gt;</payload>
+        <payload_hash>-850951194</payload_hash>
+        <record_name>ratelockPresence</record_name>
+        <reverted_from/>
+        <source>a45affb71badc01048a242e58d4bcb78</source>
+        <source_table>sys_update_set</source_table>
+        <state>previous</state>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2019-12-21 13:54:55</sys_created_on>
+        <sys_id>97673dea1bf5cc1048a242e58d4bcbde</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>16f28bd59b50000001</sys_recorded_at>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2019-12-21 13:54:55</sys_updated_on>
+        <type>Widget Angular Provider</type>
+        <update_guid>5f673dea74f5cc10ab4bc9a5df5b3add</update_guid>
+        <update_guid_history>5f673dea74f5cc10ab4bc9a5df5b3add:-850951194,feb4f126d1f5cc10bf5c035cb779a0ea:1478187580,acff2526c9f5cc10b5dfb3df3807ee4f:-1034668570,c5efeda2fff5cc10fd661062e894d2e0:57412042,6acee126bff5cc107f031b93c8cf61bc:-285537435,467e61e2fdf5cc10d1650cb22821dc86:-50979993,98bda9620cf5cc1024940e342322e7e5:1240596119,398de562d7f5cc10d0a9d00b3df43dc6:-1243046729,999ce5ee23b5cc106648c98185082e71:635898182,b37a29aed3b5cc108970c6e5a086f7d1:-214538572,2b5aedae5cb5cc10d40875c6d56c9ab9:-475042033,a03a2dae03b5cc10b0a0532a407b55ed:-1020818711,ae882d2eaab5cc10b696a4eda231e795:-214538572,70582d2e1bb5cc109aeb0c8b19859b44:814090329,aac7e12e35b5cc10ea28acf0d3533948:-1034668570,237769eae4b5cc1079253627dd537b01:1138267416,e5c62d6a96b5cc10404046a8b7a86819:-2016273635,478d116e8475cc10049a8cb2f5267e8c:-1034668570</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete display_value="">f3ddfd261b39cc1048a242e58d4bcb70</sys_audit_delete>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2019-12-21 14:23:05</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_db_object display_value="" name="sp_angular_provider">sp_angular_provider</sys_db_object>
+        <sys_id>55101b8e4e284cc79de1e5e6dbe3f4e1</sys_id>
+        <sys_metadata>210d99ee1b75cc1048a242e58d4bcb26</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>ratelockPresence</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_parent/>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_scope_delete display_value="">57712118eaee4a49ae47b2048a14ac31</sys_scope_delete>
+        <sys_update_name>sp_angular_provider_210d99ee1b75cc1048a242e58d4bcb26</sys_update_name>
+        <sys_update_version display_value="sp_angular_provider_210d99ee1b75cc1048a242e58d4bcb26">97673dea1bf5cc1048a242e58d4bcbde</sys_update_version>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2019-12-21 14:23:05</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>

@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_widget">
+    <sp_widget action="INSERT_OR_UPDATE">
+        <category>custom</category>
+        <client_script><![CDATA[function ratelockSidebar($scope, $timeout, $element) {
+  /* widget controller */
+  var c = this;
+
+  c.$onInit = function () {
+    c.isTabLoading = false;
+    c.activeTab = c.data.activeTab;
+    c.tabs = c.data.tabs;
+  };
+
+  c.$onDestroy = function () {
+    $timeout.cancel();
+  };
+
+  c.selectTab = function (tab, tabIndex) {
+
+    if (!tab.hasLoaded) {
+      c.isTabLoading = true;
+      c.tabs = c.tabs.map(function (t) {
+        if (t.heading === tab.heading) {
+          tab.hasLoaded = true;
+        }
+        return t;
+      });
+      $timeout(function () {
+        c.activeTab = tabIndex;
+        c.isTabLoading = false;
+      }, 1000);
+    }
+  };
+
+  c.calculateLoaderHeight = function () {
+    var elem = $element.find('div.tab-body-content')[0];
+    return elem.offsetHeight + 'px';
+  };
+
+  c.calculateLoaderTop = function () {
+    var elem = $element.find('.nav-tabs.nav-justified')[0];
+    if (elem) {
+      return elem.offsetHeight + 'px';
+    }
+    return '61px';
+  };
+}]]></client_script>
+        <controller_as>c</controller_as>
+        <css>.panel-body {
+  padding: 0px;
+}
+
+.panel {
+  border: none;
+}
+
+.tab-body-content {
+  padding: 0px;
+  min-height: 100px;
+}
+
+.loader {
+  width: 100%;
+  height: 100px;
+  background: transparent;
+  position: absolute;
+  padding: 0 5px;
+  left: 0;
+  top: 65px;
+  z-index: 5000;
+
+  &amp; .inner-loader {
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.5);
+    transition: all 0.4s ease;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    vertical-align: middle;
+    display: flex;
+
+    &amp; .loading-icon {
+      font-size: 2rem;
+      color: $brand-primary;
+    }
+
+  }
+
+}
+
+.nav-tabs {
+  &amp;.nav-justified {
+    &amp; .uib-tab {
+      &amp; a {
+        background: #fff;
+        color: rgba(0, 0, 0, 0.6);
+        transition: all 0.3s ease-out;
+      }
+
+      &amp;.active {
+        &amp; a {
+          background: $brand-primary;
+          color: #fff;
+          border-color: $brand-primary;
+          transition: all 0.3s ease-in;
+        }
+      }
+
+      &amp;:first-child {
+        &amp; a {
+          border-radius: 4px 0 0 0;
+        }
+      }
+
+      &amp;:last-child {
+        &amp; a {
+          border-radius: 0 4px 0 0;
+        }
+      }
+    }
+  }
+}</css>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description/>
+        <docs/>
+        <field_list/>
+        <has_preview>false</has_preview>
+        <id>ratelock_documents_sidebar</id>
+        <internal>false</internal>
+        <link><![CDATA[function link(scope, element, attrs, controller) {  }]]></link>
+        <name>Ratelock Documents Sidebar</name>
+        <option_schema/>
+        <public>false</public>
+        <roles/>
+        <script><![CDATA[(function () {
+  var sessionActiveTab;
+  data.activeTab = (input ? input.activeTab : undefined) || sessionActiveTab || options.activeTab;
+  data.documentsEnabled = gs.getProperty('x_momo_ratelock.enable_documents') || false;
+  var tabs = options.tabs || [];
+  data.tabs = tabs.map(function (tab) {
+    tab.widget = $sp.getWidget(tab.widget);
+    return tab;
+  });
+	if (!data.documentsEnabled) {
+		data.tabs = [];
+		data.ratesheetsWidget = $sp.getWidget('ratesheets-list');
+	}
+	
+})();]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-06-19 11:28:19</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>9cad5534dba55410f25513296896191c</sys_id>
+        <sys_mod_count>31</sys_mod_count>
+        <sys_name>Ratelock Documents Sidebar</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sp_widget_9cad5534dba55410f25513296896191c</sys_update_name>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-06-25 12:50:56</sys_updated_on>
+        <template><![CDATA[<div class="panel m-b-none" ng-class="{'panel-default': c.data.documentsEnabled, 'panel-primary': !c.data.documentsEnabled}">
+  <div class="panel-heading" ng-if="!c.data.documentsEnabled">
+    <span class="panel-title">${Today's Ratesheets}</span>
+  </div>
+  <div class="panel-body">
+    <uib-tabset ng-if="c.data.documentsEnabled" justified="true" active="c.activeTab">
+      <uib-tab ng-repeat="tab in c.tabs" index="$index" heading="{{ tab.heading }}" select="c.selectTab(tab, $index)">
+        <div class="tab-body-content">
+          <div class="loader" ng-show="c.isTabLoading">
+            <div class="inner-loader">
+              <i class="fa fa-spinner fa-spin loading-icon" aria-hidden="true"></i>
+            </div>
+          </div>
+          <span ng-show="!c.isTabLoading">
+            <sp-widget widget="tab.widget"></sp-widget>
+          </span>
+        </div>
+      </uib-tab>
+    </uib-tabset>
+    <div class="tab-body-content" ng-if="!c.data.documentsEnabled">
+    	<sp-widget widget="c.data.ratesheetsWidget"></sp-widget>
+    </div>
+  </div>
+</div>]]></template>
+    </sp_widget>
+</record_update>

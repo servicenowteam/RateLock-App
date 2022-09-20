@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_instance">
+    <sp_instance action="INSERT_OR_UPDATE">
+        <active>true</active>
+        <class_name/>
+        <color>default</color>
+        <css/>
+        <glyph/>
+        <id/>
+        <order>1</order>
+        <roles/>
+        <short_description/>
+        <size>md</size>
+        <sp_column display_value="1">2fa2aed0dbb9c410f2551329689619aa</sp_column>
+        <sp_widget display_value="Ratelock Quick Filter">c01f3f7f1badc01048a242e58d4bcba9</sp_widget>
+        <sys_class_name>sp_instance</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2019-12-13 12:02:45</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>0a01188c1bfdc01048a242e58d4bcb50</sys_id>
+        <sys_mod_count>33</sys_mod_count>
+        <sys_name>Quick Filter</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sp_instance_0a01188c1bfdc01048a242e58d4bcb50</sys_update_name>
+        <sys_updated_by>Adrian.Wilson</sys_updated_by>
+        <sys_updated_on>2021-11-02 17:25:45</sys_updated_on>
+        <title>Quick Filter</title>
+        <url/>
+        <widget_parameters><![CDATA[{
+  "table": {
+    "value": "x_momo_ratelock_ticket"
+  },
+    "buttons": {
+      "value": [{
+        "name": "All",
+        "query": "active-tickets",
+        "aggregates": [{
+          "column": "active",
+          "operator": "=",
+          "value": true
+        }]
+      }, {
+        "name": "VIP's",
+        "query": "vip-tickets",
+        "isClicked": false,
+        "aggregates": [{
+          "column": "active",
+          "operator": "=",
+          "value": true
+        }, {
+          "column": "caller_id.vip",
+          "operator": "=",
+          "value": true
+        }]
+      }, {
+        "name": "Assigned to Me",
+        "query": "tickets-assigned-to-me",
+        "isClicked": false,
+        "aggregates": [{
+          "column": "active",
+          "operator": "=",
+          "value": true
+        }, {
+          "column": "assigned_to",
+          "operator": "=",
+          "value": "javascript:gs.getUserID()"
+        }, {
+          "column": "resolved",
+          "operator": "ISEMPTY",
+          "value": ""
+        }]
+      }, {
+        "name": "Assigned",
+        "query": "assigned-tickets",
+        "isClicked": false,
+        "aggregates": [{
+          "column": "active",
+          "operator": "=",
+          "value": true
+        }, {
+          "column": "assigned_to",
+          "operator": "ISNOTEMPTY",
+          "value": ""
+        }, {
+          "column": "resolved",
+          "operator": "ISEMPTY",
+          "value": ""
+        }]
+      }, {
+        "name": "TPO",
+        "query": "tpo-tickets",
+        "isClicked": false,
+        "aggregates": [{
+          "column": "active",
+          "operator": "=",
+          "value": true
+        }, {
+          "column": "request_type",
+          "operator": "=",
+          "value": 2
+        }, {
+          "column": "resolved",
+          "operator": "ISEMPTY",
+          "value": ""
+        }]
+      }, {
+        "name": "Bond Team/HomeStyle",
+        "query": "bond-tickets",
+        "isClicked": false,
+        "aggregates": [{
+          "column": "active",
+          "operator": "=",
+          "value": true
+        }, {
+          "column": "request_type",
+          "operator": "=",
+          "value": 4
+        }, {
+          "column": "resolved",
+          "operator": "ISEMPTY",
+          "value": ""
+        }]
+      }, {
+        "name": "Jumbo/BE Loans",
+        "query": "jumbo-tickets",
+        "isClicked": false,
+        "aggregates": [{
+          "column": "active",
+          "operator": "=",
+          "value": true
+        }, {
+          "column": "request_type",
+          "operator": "=",
+          "value": 5
+        }, {
+          "column": "resolved",
+          "operator": "ISEMPTY",
+          "value": ""
+        }]
+      }, {
+        "name": "Correspondent",
+        "query": "correspondent-tickets",
+        "isClicked": false,
+        "aggregates": [{
+          "column": "active",
+          "operator": "=",
+          "value": true
+        }, {
+          "column": "request_type",
+          "operator": "=",
+          "value": 6
+        }, {
+          "column": "resolved",
+          "operator": "ISEMPTY",
+          "value": ""
+        }]
+      }, {
+        "name": "Miscellaneous",
+        "query": "other-tickets",
+        "isClicked": false,
+        "aggregates": [{
+          "column": "active",
+          "operator": "=",
+          "value": true
+        }, {
+          "column": "request_type",
+          "operator": "=",
+          "value": 3
+        }, {
+          "column": "resolved",
+          "operator": "ISEMPTY",
+          "value": ""
+        }]
+      },{
+        "name": "Program Change ",
+        "query": "other-tickets",
+        "isClicked": false,
+        "aggregates": [{
+          "column": "active",
+          "operator": "=",
+          "value": true
+        }, {
+          "column": "email_recipients",
+          "operator": "LIKE",
+          "value": "PCRLnotification@movement.com"
+        }]
+      }]
+
+    }
+
+
+}]]></widget_parameters>
+    </sp_instance>
+    <sys_translated_text action="delete_multiple" query="documentkey=0a01188c1bfdc01048a242e58d4bcb50"/>
+</record_update>

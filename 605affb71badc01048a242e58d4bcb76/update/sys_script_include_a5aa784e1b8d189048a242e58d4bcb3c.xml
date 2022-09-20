@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_script_include">
+    <sys_script_include action="INSERT_OR_UPDATE">
+        <access>package_private</access>
+        <active>true</active>
+        <api_name>x_momo_ratelock.RatelockDateUtils</api_name>
+        <caller_access>2</caller_access>
+        <client_callable>false</client_callable>
+        <description>Common static library of date utils for Ratelock</description>
+        <name>RatelockDateUtils</name>
+        <script><![CDATA[var RatelockDateUtils = Class.create();
+RatelockDateUtils.prototype = {
+  initialize: function () {},
+  type: 'RatelockDateUtils'
+};
+
+/**
+ * Format a GlideElement of DateTime to a human readable format.
+ * @param {GlideElement} grDateTime The GlideElement you want to transform.
+ * @param {Boolean} excludeTime Whether you want to exclude the time from the transformation.
+ * @param {Boolean} addTimezoneName Whether or not you want to add the current user's timezone name.
+ * @returns {string} The formatted datetime.
+ * 
+ * @example
+ * gs.include('RatelockDateUtils');
+ * var gr = new GlideRecord('x_momo_ratelock_ticket');
+ * gr.get('120121932103191');
+ * if (gr.isValidRecord()) {
+ *  gs.debug(RatelockDateUtils.formatDateTime(gr.sys_created_on));
+ *  // outputs: May 12th, 2020 2:40pm
+ * } 
+ *
+*/
+RatelockDateUtils.formatDateTime = function (grDateTime, excludeTime, addTimezoneName) {
+  if (!grDateTime) return;
+  if (grDateTime.nil()) return;
+  var gdt = new GlideDateTime(grDateTime.getDisplayValue());
+  var gDate = gdt.getDate();
+  var gt = gdt.getTime();
+  var lDate = gDate.getByFormat('MMMM dd, YYYY');
+  if (excludeTime) {
+    return lDate;
+  }
+  if (!addTimezoneName) {
+    return lDate + ' at ' + gt.getByFormat('hh:mm a');
+  }
+  var session = gs.getSession();
+  var tzName = session.getTimeZoneName();
+  return lDate + ' at ' + gt.getByFormat('hh:mm a') + ' ' + tzName;
+};
+
+/**
+ * Get the numeric value for a GlideElement's datetime. Useful when trying
+ * to determine which date is greater on the frontend without using
+ * a client call.
+ * 
+ * @param {GlideElement} grDateTime The GlideElement you wish to get the numeric value for.
+ * @returns {Number} Will return -1 if no GlideElement is present.
+ * 
+ * @example
+ * gs.include('RatelockDateUtils');
+ * var gr = new GlideRecord('x_momo_ratelock_ticket');
+ * gr.get('120121932103191');
+ * 
+ * if (gr.isValidRecord()) {
+ *  gs.debug(RatelockDateUtils.getNumericValue(gr.sys_created_on));
+ *  // outputs: 121213132113
+ * }
+*/
+RatelockDateUtils.getNumericValue = function (grDateTime) {
+  if (!grDateTime) return -1;
+  var gdt = new GlideDateTime(grDateTime.getDisplayValue());
+  return gdt.getNumericValue();
+};]]></script>
+        <sys_class_name>sys_script_include</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-05-29 09:42:30</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>a5aa784e1b8d189048a242e58d4bcb3c</sys_id>
+        <sys_mod_count>2</sys_mod_count>
+        <sys_name>RatelockDateUtils</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy>read</sys_policy>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sys_script_include_a5aa784e1b8d189048a242e58d4bcb3c</sys_update_name>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-05-29 10:05:01</sys_updated_on>
+    </sys_script_include>
+</record_update>

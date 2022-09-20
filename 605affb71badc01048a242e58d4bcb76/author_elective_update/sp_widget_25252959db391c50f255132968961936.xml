@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_widget">
+    <sys_widgets action="DELETE" reclassify_current="sp_widget" reclassify_id="25252959db391c50f255132968961936" reclassify_previous="sys_widgets"/>
+    <sp_widget action="DELETE">
+        <category>custom</category>
+        <client_script><![CDATA[function() {  /* widget controller */  var c = this;}]]></client_script>
+        <controller_as>c</controller_as>
+        <css/>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description/>
+        <docs/>
+        <field_list/>
+        <has_preview>false</has_preview>
+        <id/>
+        <internal>false</internal>
+        <link><![CDATA[function link(scope, element, attrs, controller) {  }]]></link>
+        <name/>
+        <option_schema/>
+        <public>false</public>
+        <roles/>
+        <script><![CDATA[(function() {  /* populate the 'data' object */  /* e.g., data.table = $sp.getValue('table'); */})();]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-07-03 11:33:49</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>25252959db391c50f255132968961936</sys_id>
+        <sys_mod_count>41</sys_mod_count>
+        <sys_name/>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sp_widget_25252959db391c50f255132968961936</sys_update_name>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-07-03 14:06:00</sys_updated_on>
+        <template><![CDATA[<div><!-- your widget template --></div>]]></template>
+    </sp_widget>
+    <sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Ratelock">605affb71badc01048a242e58d4bcb76</application>
+        <file_path/>
+        <instance_id>94e8281edbb7470060a6f0e5bf9619f6</instance_id>
+        <instance_name>movementdev</instance_name>
+        <name>sp_widget_25252959db391c50f255132968961936</name>
+        <payload>&lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;record_update table="sp_widget"&gt;&lt;sys_widgets action="delete_reclassify" reclassify_current="sp_widget" reclassify_id="25252959db391c50f255132968961936" reclassify_previous="sys_widgets"/&gt;&lt;sp_widget action="INSERT_OR_UPDATE"&gt;&lt;category&gt;custom&lt;/category&gt;&lt;client_script&gt;&lt;![CDATA[function() {  /* widget controller */  var c = this;}]]&gt;&lt;/client_script&gt;&lt;controller_as&gt;c&lt;/controller_as&gt;&lt;css/&gt;&lt;data_table&gt;sp_instance&lt;/data_table&gt;&lt;demo_data/&gt;&lt;description/&gt;&lt;docs/&gt;&lt;field_list/&gt;&lt;has_preview&gt;false&lt;/has_preview&gt;&lt;id/&gt;&lt;internal&gt;false&lt;/internal&gt;&lt;link&gt;&lt;![CDATA[function link(scope, element, attrs, controller) {  }]]&gt;&lt;/link&gt;&lt;name/&gt;&lt;option_schema/&gt;&lt;public&gt;false&lt;/public&gt;&lt;roles/&gt;&lt;script&gt;&lt;![CDATA[(function() {  /* populate the 'data' object */  /* e.g., data.table = $sp.getValue('table'); */})();]]&gt;&lt;/script&gt;&lt;servicenow&gt;false&lt;/servicenow&gt;&lt;sys_class_name&gt;sp_widget&lt;/sys_class_name&gt;&lt;sys_created_by&gt;douglas.schamberg&lt;/sys_created_by&gt;&lt;sys_created_on&gt;2020-07-03 11:33:49&lt;/sys_created_on&gt;&lt;sys_customer_update&gt;false&lt;/sys_customer_update&gt;&lt;sys_id&gt;25252959db391c50f255132968961936&lt;/sys_id&gt;&lt;sys_mod_count&gt;41&lt;/sys_mod_count&gt;&lt;sys_name/&gt;&lt;sys_package display_value="Ratelock" source="x_momo_ratelock"&gt;605affb71badc01048a242e58d4bcb76&lt;/sys_package&gt;&lt;sys_policy/&gt;&lt;sys_replace_on_upgrade&gt;false&lt;/sys_replace_on_upgrade&gt;&lt;sys_scope display_value="Ratelock"&gt;605affb71badc01048a242e58d4bcb76&lt;/sys_scope&gt;&lt;sys_update_name&gt;sp_widget_25252959db391c50f255132968961936&lt;/sys_update_name&gt;&lt;sys_updated_by&gt;douglas.schamberg&lt;/sys_updated_by&gt;&lt;sys_updated_on&gt;2020-07-03 14:06:00&lt;/sys_updated_on&gt;&lt;template&gt;&lt;![CDATA[&lt;div&gt;&lt;!-- your widget template --&gt;&lt;/div&gt;]]&gt;&lt;/template&gt;&lt;/sp_widget&gt;&lt;/record_update&gt;</payload>
+        <payload_hash>-1885350813</payload_hash>
+        <record_name/>
+        <reverted_from/>
+        <source>741a4e651b4cdc1048a242e58d4bcb9f</source>
+        <source_table>sys_update_set</source_table>
+        <state>previous</state>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-07-03 14:06:00</sys_created_on>
+        <sys_id>eaf70e59dbf91c50f25513296896196e</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>17314ff92350000001</sys_recorded_at>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-07-03 14:06:00</sys_updated_on>
+        <type>Widget</type>
+        <update_guid>a2f70e594ff91c504ed1ddb4f7999a6e</update_guid>
+        <update_guid_history>a2f70e594ff91c504ed1ddb4f7999a6e:-1885350813,d2b7c29987f91c507f95b47cad2c5882:-1418312370,2d33ced12af91c50f50eb5f291b5d37a:-1014121684,54b2ce5148f91c5032ab59d9e3711187:541622781,cf72ca919ef91c50cb20abdeb1c48efb:578226830,4d520a911ff91c5047a87a4d7debd46f:-494853951,b5f10edda7b91c507b0b6e39e83fa61c:-618519385,42910a11e4f91c501b13bb81e7c2aefd:971437355,4ae0c211bcf91c5085702603373fc54e:-2001130135,67304add53b91c504f1e1f740ce544f2:-1825015527,2400ce9daeb91c50aec39f94e7c280a0:1378726029,87bff55d48b91c50fa3c2f305ea0417a:-144739931,df3ff15d5ab91c500c6bebc8ac3f45f9:1786296374,c38eb15d02b91c5025d0919bf62f39af:652798835,4a7ef51dd2b91c50b57b6335842bafc6:1462168017,3f4ef51d09b91c5022f2fbf6ddc59fb8:-1159013742,730e7d5950b91c506e21429b6517f81e:-235207020,ff7bbd1910b91c508fd41b442417a019:-346221884,cf4b75d523b91c503273ae11bcd15e47:20159026,4d2b75196ab91c50ffc85d8f8c17df28:1249738623,02fa7d95d6b91c50756d708824527f2e:1629170040,077abd95dbb91c50c13736f1b7cbb734:792435760,d84af19527b91c503f7e08a45052252a:-968078466,d4797515cbb91c508b1539f7f7376765:-1512525072,3349fd5534b91c509a9b602f1ba0507e:53611740,41193155b8b91c50025c933a8171dcb4:623225660,31e83d1559b91c5095ab9caadf92f046:-1783156659,bb78f9157ab91c50c7ea97be7d4c7ff5:-1320103437,8bf6b19176b91c50c60d8b11b6108d18:-1997690697,da71795937791c505fc51b8e74d0d7f5:2032194242,2871b5599d791c505771184495535ca9:-362247173,8721f15967791c509059627be3242f4c:1527377602,753075d583791c5079cb7b20a148527c:-1868650461,ab2071952e791c50d27bd385bd8f2bc5:-1796558612,25bf25d50f791c504d5339727af83b64:-1134609955,f40e291579791c5021008ccbb7b4dfda:696419277,611c299110791c502a0e9df6af6f7ffe:-1445906701,052aa5995e391c5041ddfdbf8230e3e0:-661034114,e70a6ddd49391c509b4f422836533e5d:-275833768,6cc9655951391c500d12f473ef2eec5d:1285641655,e925295943391c50c42b5789a245a037:617963215</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete display_value="">6c084e99dbf91c50f2551329689619c0</sys_audit_delete>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-07-03 14:06:08</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_db_object display_value="" name="sp_widget">sp_widget</sys_db_object>
+        <sys_id>0246c543662b4670b58e8dae32364100</sys_id>
+        <sys_metadata>25252959db391c50f255132968961936</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name/>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_parent/>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_scope_delete display_value="">57712118eaee4a49ae47b2048a14ac31</sys_scope_delete>
+        <sys_update_name>sp_widget_25252959db391c50f255132968961936</sys_update_name>
+        <sys_update_version display_value="sp_widget_25252959db391c50f255132968961936">eaf70e59dbf91c50f25513296896196e</sys_update_version>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-07-03 14:06:08</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>

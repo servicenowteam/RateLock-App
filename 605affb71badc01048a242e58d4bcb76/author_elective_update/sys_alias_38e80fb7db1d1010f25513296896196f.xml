@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_alias">
+    <sys_alias action="DELETE">
+        <connection_type>http_connection</connection_type>
+        <id>x_momo_ratelock.OptimalBlueConnector</id>
+        <multiple_connections>true</multiple_connections>
+        <name>OptimalBlueConnector</name>
+        <retry_policy display_value="Default HTTP Retry Policy">ef751ff07301330025d71afe2ff6a7f9</retry_policy>
+        <sys_class_name>sys_alias</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-06-16 16:44:11</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>38e80fb7db1d1010f25513296896196f</sys_id>
+        <sys_mod_count>1</sys_mod_count>
+        <sys_name>x_momo_ratelock.OptimalBlueConnector</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sys_alias_38e80fb7db1d1010f25513296896196f</sys_update_name>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-06-16 16:45:51</sys_updated_on>
+        <type>connection</type>
+    </sys_alias>
+    <sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Ratelock">605affb71badc01048a242e58d4bcb76</application>
+        <file_path/>
+        <instance_id>94e8281edbb7470060a6f0e5bf9619f6</instance_id>
+        <instance_name>movementdev</instance_name>
+        <name>sys_alias_38e80fb7db1d1010f25513296896196f</name>
+        <payload><![CDATA[<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_alias"><sys_alias action="INSERT_OR_UPDATE"><connection_type>http_connection</connection_type><id>x_momo_ratelock.OptimalBlueConnector</id><multiple_connections>true</multiple_connections><name>OptimalBlueConnector</name><retry_policy display_value="Default HTTP Retry Policy">ef751ff07301330025d71afe2ff6a7f9</retry_policy><sys_class_name>sys_alias</sys_class_name><sys_created_by>douglas.schamberg</sys_created_by><sys_created_on>2020-06-16 16:44:11</sys_created_on><sys_customer_update>false</sys_customer_update><sys_id>38e80fb7db1d1010f25513296896196f</sys_id><sys_mod_count>1</sys_mod_count><sys_name>x_momo_ratelock.OptimalBlueConnector</sys_name><sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package><sys_policy/><sys_replace_on_upgrade>false</sys_replace_on_upgrade><sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope><sys_update_name>sys_alias_38e80fb7db1d1010f25513296896196f</sys_update_name><sys_updated_by>douglas.schamberg</sys_updated_by><sys_updated_on>2020-06-16 16:45:51</sys_updated_on><type>connection</type></sys_alias></record_update>]]></payload>
+        <payload_hash>948329983</payload_hash>
+        <record_name>x_momo_ratelock.OptimalBlueConnector</record_name>
+        <reverted_from/>
+        <source>741a4e651b4cdc1048a242e58d4bcb9f</source>
+        <source_table>sys_update_set</source_table>
+        <state>previous</state>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-06-16 16:45:51</sys_created_on>
+        <sys_id>ea8987f7db1d1010f255132968961930</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>172be05d1e20000001</sys_recorded_at>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-06-16 16:45:51</sys_updated_on>
+        <type>Connection &amp; Credential Aliases</type>
+        <update_guid>a28987f75f1d101055b9258aa229ba30</update_guid>
+        <update_guid_history>a28987f75f1d101055b9258aa229ba30:948329983,4e298737a91d101051fc7ae4a914c0af:1290464960</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete/>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-06-16 16:46:05</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_db_object display_value="" name="sys_alias">sys_alias</sys_db_object>
+        <sys_id>284fcc4240474d5487055c324786c7b9</sys_id>
+        <sys_metadata>38e80fb7db1d1010f25513296896196f</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>x_momo_ratelock.OptimalBlueConnector</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_parent/>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_scope_delete display_value="">57712118eaee4a49ae47b2048a14ac31</sys_scope_delete>
+        <sys_update_name>sys_alias_38e80fb7db1d1010f25513296896196f</sys_update_name>
+        <sys_update_version display_value="sys_alias_38e80fb7db1d1010f25513296896196f">ea8987f7db1d1010f255132968961930</sys_update_version>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-06-16 16:46:05</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>

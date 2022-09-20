@@ -1,0 +1,317 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_widget">
+    <sp_widget action="INSERT_OR_UPDATE">
+        <category>custom</category>
+        <client_script><![CDATA[function quickFilter($scope, $rootScope, $window) {
+  /* widget controller */
+  var c = this;
+  $scope.buttons = $scope.data.buttons;
+
+  $rootScope.$on('ratelock.ticket-actions', function () {
+    $scope.server.refresh().then(function (results) {
+      $scope.buttons = results.data.buttons;
+    });
+  });
+
+  $rootScope.$on('ratelock.ticket.live.created', function () {
+    c.refresh();
+  });
+
+  $rootScope.$on('ratelock.ticket.live.resolved', function () {
+    c.refresh();
+  });
+
+  $scope.filterList = function (button) {
+    var q = (button ? button.query : null);
+    if (button) {
+      $rootScope.$broadcast('ratelock.quick-filter', button);
+    } else {
+      $rootScope.$broadcast('ratelock.quick-filter', {
+        name: 'Tickets',
+        query: 'state=1^active=true'
+      })
+    }
+
+
+    $scope.buttons = $scope.buttons.map(function (btn) {
+
+      if (q == btn.query && !btn.isClicked) {
+        btn.isClicked = true;
+      } else {
+        btn.isClicked = false;
+      }
+      return btn;
+    });
+  };
+
+
+  c.refresh = function () {
+    $scope.server.refresh().then(function (results) {
+      var isClickedArr = $scope.buttons.filter(function (b) {
+        return b.isClicked;
+      });
+      $scope.buttons = results.data.buttons.map(function (item) {
+
+        if (isClickedArr.length > 0) {
+          if (isClickedArr[0].name == item.name) {
+            item.isClicked = true;
+          }
+        }
+        return item;
+      });
+    });
+  }
+}]]></client_script>
+        <controller_as>c</controller_as>
+        <css>.panel {
+	border: none;
+}
+
+@media screen and (max-width: 1000px) {
+  .side-panel-container {
+  	display: none;
+    visibility: hidden;
+  }
+}
+
+
+.panel-body.side-panel {
+	padding: 0px 0px 30px 0px;
+}
+
+.col-xs-12.btn-container {
+	padding-left: 5px;
+  padding-right: 5px;
+  margin-bottom: 5px;
+}
+
+
+.btn.btn-outline:hover {
+  border-color: $brand-primary;
+  color: #fff;
+	background: $brand-primary;
+  
+  border-style: solid;
+  border-radius: 5px;
+  border-width: 1px;
+  
+  -webkit-transition: all .3s ease-out;
+  -moz-transition: all .3s ease-out;
+  -ms-transition: all .3s ease-out;
+  transition: all .3s ease-out;
+  
+  &amp; span .active-count:not(.active) {
+  	background: #fff;
+    color: $success;
+    -webkit-transition: all .3s ease-out;
+    -moz-transition: all .3s ease-out;
+    -ms-transition: all .3s ease-out;
+    transition: all .3s ease-out;
+  }
+}
+
+.btn.btn-outline:focus {
+	border: 1px solid $brand-primary;
+  box-shadow: none;
+  outline: none;
+}
+
+.btn.btn-outline{
+  background: #fff;
+  &amp;:not(.no-active-tickets) {
+  	padding: 6px 6px 6px 12px;
+  }
+  border-style: solid;
+  border-radius: 5px;
+  border-width: 1px;
+  
+  -webkit-transition: all .3s ease-out;
+  -moz-transition: all .3s ease-out;
+  -ms-transition: all .3s ease-out;
+  transition: all .3s ease-out;
+  border-color: $brand-primary;
+  color: $brand-primary;
+  
+  
+}
+
+&amp;.active-count {
+  margin-left: 5px;
+  background: $success;
+  color: #fff;
+  text-align: center;
+}
+
+
+.btn-selected {
+	background: $brand-primary !important;
+ 	color: #fff !important;
+  &amp; span .active-count:not(.active) {
+  	background: #fff;
+    color: $success;
+  }
+  
+  &amp; span .active {
+  	color: $success;
+    background: #fff;
+  }
+}</css>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description/>
+        <docs/>
+        <field_list/>
+        <has_preview>false</has_preview>
+        <id>ratelock_quick_filter</id>
+        <internal>false</internal>
+        <link><![CDATA[function link(scope, element, attrs, controller) {  }]]></link>
+        <name>Ratelock Quick Filter</name>
+        <option_schema/>
+        <public>false</public>
+        <roles>x_momo_ratelock.ratelock_tech</roles>
+        <script><![CDATA[(function () {
+  data.table = options.table || $sp.getParameter('table');
+
+  if (input) {
+    var _button = input.button;
+    if (!_button) return data.buttons;
+    data.buttons = data.buttons.map(function (button) {
+      if (button.name === input.button.name) {
+        var aggr = getAggregateArr(_button.name);
+        var btn = createButton(data.table, _button.name, _button.query, _button.isClicked, aggr);
+        return btn;
+      }
+      return button
+    });
+  } else {
+    data.buttons = options.buttons.map(function (button) {
+      return createButton(data.table, button.name, button.query, button.isClicked, button.aggregates);
+    });
+  }
+	
+	
+
+  function createEncodedQuery(query_schema) {
+    var queries = query_schema || [];
+    var url = [];
+    for (var i in queries) {
+      var q = queries[i];
+      url.push(q.column + q.operator + q.value);
+    }
+    return url.join('^');
+  }
+
+  function getAggregateArr(name) {
+    var button = options.buttons.find(function (button) {
+      return button.name === name;
+    });
+
+    return button ? button.aggregates : [];
+  }
+
+  function getActiveCount(table, enc) {
+    var ga = new GlideAggregate(table);
+    ga.addAggregate('COUNT');
+    ga.addEncodedQuery(enc + '^state=1');
+    ga.query();
+    return ga.next() ? (ga.getAggregate('COUNT') > 0 ? ga.getAggregate('COUNT') : null) : null;
+  }
+
+  function createButton(table, name, query, isClicked, aggregates) {
+		var sessionData = getSessionData();
+    var ga = new GlideAggregate(table);
+    var encoded_query = createEncodedQuery(aggregates);
+    ga.addAggregate('COUNT');
+    ga.addEncodedQuery(encoded_query);
+    ga.query();
+    var count = ga.next() ? ga.getAggregate('COUNT') : "0";
+		
+    var activeCount = null;
+		var total = count;
+    if (count.trim() != "0") {
+      activeCount = getActiveCount(table, encoded_query);
+			var activeCountNum = parseInt(activeCount);
+			var countNum = parseInt(count);
+			if (!isNaN(activeCountNum) && !isNaN(countNum)) {
+				count = countNum - activeCountNum;
+			
+				if (count < 0) {
+					count = "0"
+				} else {
+					count = String(count);
+				}
+			}
+    }
+		var payload = {
+			count: count.trim(),
+      activeCount: activeCount ? activeCount.trim() : null,
+      name: name,
+			total: total,
+      query: encoded_query,
+      isClicked: isClicked
+		};
+		
+		if (sessionData) {
+			if (encoded_query == sessionData.filter) {
+				payload.isClicked = true;
+			}
+		}
+		
+    return payload;
+  }
+	
+	function getSessionData() {
+		var session = gs.getSession();
+		var _data = session.getClientData('ratelock:filter');
+		
+		try {
+			_data = JSON.parse(_data);
+			return _data;
+		} catch (e) { return null; }
+	}
+
+
+})();]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2019-12-13 10:44:14</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>c01f3f7f1badc01048a242e58d4bcba9</sys_id>
+        <sys_mod_count>196</sys_mod_count>
+        <sys_name>Ratelock Quick Filter</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sp_widget_c01f3f7f1badc01048a242e58d4bcba9</sys_update_name>
+        <sys_updated_by>douglas.schamberg@movement.com</sys_updated_by>
+        <sys_updated_on>2020-09-06 13:11:53</sys_updated_on>
+        <template><![CDATA[<div class="panel panel-primary side-panel-container">
+  <div class="panel-heading">
+    <div class="sp-attachments-header panel-title pull-left">
+      ${Quick Filter}
+    </div>
+    <div class="clearfix"></div>
+  </div>
+  <div class="panel-body side-panel padder-t padder-b-none">
+    <div ng-repeat="btn in buttons" class="col-xs-12 btn-container">
+      <button 
+        type="button" 
+        ng-class="{'btn-selected': btn.isClicked, 'no-active-tickets': !btn.activeCount}" 
+        class="btn btn-block btn-outline" 
+        ng-click="filterList(btn.isClicked ? null : btn)">
+        <span ng-class="{'pull-left': btn.query !== 'default'}">{{btn.name}}</span>
+        <span class="pull-right">
+          {{btn.count}} 
+          <small ng-if="btn.activeCount"
+                 aria-title="Active Tickets"
+                 class="active-count badge hidden-xs">
+            {{btn.activeCount}}
+          </small>
+        </span>
+      </button>
+    </div>
+  </div>
+</div>]]></template>
+    </sp_widget>
+</record_update>

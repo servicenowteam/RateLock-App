@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update sys_domain="global" table="sys_script">
+    <sys_script action="DELETE">
+        <abort_action>false</abort_action>
+        <access>package_private</access>
+        <action_delete>false</action_delete>
+        <action_insert>false</action_insert>
+        <action_query>false</action_query>
+        <action_update>true</action_update>
+        <active>true</active>
+        <add_message>false</add_message>
+        <advanced>true</advanced>
+        <change_fields>false</change_fields>
+        <client_callable>false</client_callable>
+        <collection>x_momo_ratelock_ticket</collection>
+        <condition/>
+        <description/>
+        <execute_function>false</execute_function>
+        <filter_condition table="x_momo_ratelock_ticket">stateCHANGESTO5^EQ<item display_value="Resolved" endquery="false" field="state" goto="false" newquery="false" operator="CHANGESTO" or="false" value="5"/>
+            <item endquery="true" field="" goto="false" newquery="false" operator="=" or="false" value=""/>
+        </filter_condition>
+        <is_rest>false</is_rest>
+        <message/>
+        <name>Resolve Ticket</name>
+        <order>101</order>
+        <priority>100</priority>
+        <rest_method/>
+        <rest_method_text/>
+        <rest_service/>
+        <rest_service_text/>
+        <rest_variables/>
+        <role_conditions>x_momo_ratelock.ratelock_tech</role_conditions>
+        <script><![CDATA[(function executeRule(current, previous /*null when async*/) {
+	var gdt = new GlideDateTime();
+	current.resolved = gdt.getDisplayValue();
+	current.active = false;
+	current.update();
+
+})(current, previous);]]></script>
+        <sys_class_name>sys_script</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2019-12-22 11:26:17</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_domain>global</sys_domain>
+        <sys_domain_path>/</sys_domain_path>
+        <sys_id>190e1efedbf9c050f2551329689619e6</sys_id>
+        <sys_mod_count>7</sys_mod_count>
+        <sys_name>Resolve Ticket</sys_name>
+        <sys_overrides/>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sys_script_190e1efedbf9c050f2551329689619e6</sys_update_name>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-04-08 07:05:00</sys_updated_on>
+        <template/>
+        <when>after</when>
+    </sys_script>
+    <sys_translated_text action="DELETE" query="documentkey=190e1efedbf9c050f2551329689619e6"/>
+    <sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Ratelock">605affb71badc01048a242e58d4bcb76</application>
+        <file_path/>
+        <instance_id>94e8281edbb7470060a6f0e5bf9619f6</instance_id>
+        <instance_name>movementdev</instance_name>
+        <name>sys_script_190e1efedbf9c050f2551329689619e6</name>
+        <payload>&lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;record_update sys_domain="global" table="sys_script"&gt;&lt;sys_script action="INSERT_OR_UPDATE"&gt;&lt;abort_action&gt;false&lt;/abort_action&gt;&lt;access&gt;package_private&lt;/access&gt;&lt;action_delete&gt;false&lt;/action_delete&gt;&lt;action_insert&gt;false&lt;/action_insert&gt;&lt;action_query&gt;false&lt;/action_query&gt;&lt;action_update&gt;true&lt;/action_update&gt;&lt;active&gt;true&lt;/active&gt;&lt;add_message&gt;false&lt;/add_message&gt;&lt;advanced&gt;true&lt;/advanced&gt;&lt;change_fields&gt;false&lt;/change_fields&gt;&lt;client_callable&gt;false&lt;/client_callable&gt;&lt;collection&gt;x_momo_ratelock_ticket&lt;/collection&gt;&lt;condition/&gt;&lt;description/&gt;&lt;execute_function&gt;false&lt;/execute_function&gt;&lt;filter_condition table="x_momo_ratelock_ticket"&gt;stateCHANGESTO5^EQ&lt;item display_value="Resolved" endquery="false" field="state" goto="false" newquery="false" operator="CHANGESTO" or="false" value="5"/&gt;&lt;item endquery="true" field="" goto="false" newquery="false" operator="=" or="false" value=""/&gt;&lt;/filter_condition&gt;&lt;is_rest&gt;false&lt;/is_rest&gt;&lt;message/&gt;&lt;name&gt;Resolve Ticket&lt;/name&gt;&lt;order&gt;101&lt;/order&gt;&lt;priority&gt;100&lt;/priority&gt;&lt;rest_method/&gt;&lt;rest_method_text/&gt;&lt;rest_service/&gt;&lt;rest_service_text/&gt;&lt;rest_variables/&gt;&lt;role_conditions&gt;x_momo_ratelock.ratelock_tech&lt;/role_conditions&gt;&lt;script&gt;&lt;![CDATA[(function executeRule(current, previous /*null when async*/) {
+	var gdt = new GlideDateTime();
+	current.resolved = gdt.getDisplayValue();
+	current.active = false;
+	current.update();
+
+})(current, previous);]]&gt;&lt;/script&gt;&lt;sys_class_name&gt;sys_script&lt;/sys_class_name&gt;&lt;sys_created_by&gt;douglas.schamberg&lt;/sys_created_by&gt;&lt;sys_created_on&gt;2019-12-22 11:26:17&lt;/sys_created_on&gt;&lt;sys_customer_update&gt;false&lt;/sys_customer_update&gt;&lt;sys_domain&gt;global&lt;/sys_domain&gt;&lt;sys_domain_path&gt;/&lt;/sys_domain_path&gt;&lt;sys_id&gt;190e1efedbf9c050f2551329689619e6&lt;/sys_id&gt;&lt;sys_mod_count&gt;7&lt;/sys_mod_count&gt;&lt;sys_name&gt;Resolve Ticket&lt;/sys_name&gt;&lt;sys_overrides/&gt;&lt;sys_package display_value="Ratelock" source="x_momo_ratelock"&gt;605affb71badc01048a242e58d4bcb76&lt;/sys_package&gt;&lt;sys_policy/&gt;&lt;sys_replace_on_upgrade&gt;false&lt;/sys_replace_on_upgrade&gt;&lt;sys_scope display_value="Ratelock"&gt;605affb71badc01048a242e58d4bcb76&lt;/sys_scope&gt;&lt;sys_update_name&gt;sys_script_190e1efedbf9c050f2551329689619e6&lt;/sys_update_name&gt;&lt;sys_updated_by&gt;douglas.schamberg&lt;/sys_updated_by&gt;&lt;sys_updated_on&gt;2020-04-08 07:05:00&lt;/sys_updated_on&gt;&lt;template/&gt;&lt;when&gt;after&lt;/when&gt;&lt;/sys_script&gt;&lt;sys_translated_text action="delete_multiple" query="documentkey=190e1efedbf9c050f2551329689619e6"/&gt;&lt;/record_update&gt;</payload>
+        <payload_hash>668798908</payload_hash>
+        <record_name>Resolve Ticket</record_name>
+        <reverted_from/>
+        <source>74fc5f651b5a401048a242e58d4bcbbc</source>
+        <source_table>sys_update_set</source_table>
+        <state>previous</state>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-04-08 07:05:00</sys_created_on>
+        <sys_id>d5eead211bc8dc1048a242e58d4bcba1</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>171589b3ba70000001</sys_recorded_at>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-04-08 07:05:00</sys_updated_on>
+        <type>Business Rule</type>
+        <update_guid>9deead2167c8dc10cf72cf3ee4c65ca0</update_guid>
+        <update_guid_history>9deead2167c8dc10cf72cf3ee4c65ca0:668798908,a62c1fe1c85a401077641d85a93d947a:0,ee481b6d3f1a401088f7f97e22cd362d:965731414,f3075f69491a4010dc517058b3c6746a:0,f6361fe55f1a40106923cbb7ed058b6c:-438166466,43f4d3e17b1a4010970192ae1d1b9dd1:0,bc741f611c1a4010a3ecbb6ba27a0048:-1665964921,0923576dfed64010af96ceb1f6e3787b:0,fe3217e937d640102ed6efb20630b27e:-1091060129,a5f01b65cfd64010dd37ac1d9911592c:0,a7d09f256dd64010ec4a827729ca7c82:-421556409,4d109f615dd6401065acd1c2d362b056:0,6dff83618bd64010b2a26de164fd8021:-421556409,177dc7a90d9640105c90c53923696afa:0,1b2d43292096401019ff0f39d5603561:-421556409,f1f50f9a640a04903d51274d796a7229:-90347281,92e507da9e0a0490d0dbcbe18b93617e:1960261802,db50c49eee4ac090ae24e422b26c82c9:-90347281,079d8fcaa282cc502ba7c5c82083366a:-957628522,43012eb26d3dc0503f999d25ee2ac72d:-90347281,9ad0e6f2b23dc050a0934394ce1aa053:-539821611,fbfe5232043dc0500cc8a52c8014d414:1975488721</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete/>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-05-02 16:39:23</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_db_object display_value="" name="sys_script">sys_script</sys_db_object>
+        <sys_id>0294d0876e2543aa800928b790513af1</sys_id>
+        <sys_metadata>190e1efedbf9c050f2551329689619e6</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>Resolve Ticket</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_parent display_value="">a94cdf251b5a401048a242e58d4bcbe4</sys_parent>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_scope_delete display_value="">57712118eaee4a49ae47b2048a14ac31</sys_scope_delete>
+        <sys_update_name>sys_script_190e1efedbf9c050f2551329689619e6</sys_update_name>
+        <sys_update_version display_value="sys_script_190e1efedbf9c050f2551329689619e6">d5eead211bc8dc1048a242e58d4bcba1</sys_update_version>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-05-02 16:39:23</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>

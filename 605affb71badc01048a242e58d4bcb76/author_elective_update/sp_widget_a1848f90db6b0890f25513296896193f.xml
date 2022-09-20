@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_widget">
+    <sp_widget action="DELETE">
+        <category>custom</category>
+        <client_script><![CDATA[function ($scope, $rootScope, $window, $interval, $timeout, ratelockSession) {
+  /* widget controller */
+  var c = this;
+
+  c.$onInit = function () {
+    ratelockSession.subscribe($scope.data.table, $scope.data.sys_id);
+  }
+
+  $window.addEventListener('unload', function () {
+    $timeout.cancel();
+  })
+
+  $scope.getColor = function (status) {
+    var cls = "transparent";
+    switch (status) {
+      case 'exiting':
+        color = 'yellow';
+        break;
+      case 'viewing':
+        color = 'green';
+        break;
+      case 'typing':
+        color = 'red';
+        break;
+      default:
+        color = 'transparent';
+        break;
+    }
+    return color;
+  }
+
+
+
+  $rootScope.$on("ratelock.sessions", function (e, sessions) {
+    var keys = Object.keys(sessions);
+    keys.forEach(function (key) {
+      var session = sessions[key];
+      if (key !== $window.NOW.session_id && session.sys_id === $scope.data.sys_id) {
+        $scope.session = session;
+        if ($scope.session.status === 'exiting') {
+          $timeout(function () {
+            $scope.session.status = null;
+          }, 3000);
+        }
+      }
+    });
+
+  });
+}]]></client_script>
+        <controller_as>c</controller_as>
+        <css>.ticker {&#13;
+	position: absolute;&#13;
+  top: 0;&#13;
+  left: 0;&#13;
+  width: 0;&#13;
+  height: 0;&#13;
+  line-height: 0;&#13;
+  font-size: 0;&#13;
+  z-index: 1000;&#13;
+}&#13;
+&#13;
+.ticker &gt; span {&#13;
+  border-bottom: 20px solid transparent;&#13;
+  border-right: 20px solid transparent;&#13;
+  transition: border-left 0.2s ease-in;&#13;
+	&amp;.green {&#13;
+    border-left: 20px solid green;&#13;
+  }&#13;
+  &amp;.red {&#13;
+    border-left: 20px solid red;&#13;
+  }&#13;
+  &amp;.yellow {&#13;
+    border-left: 20px solid #fcd80c;&#13;
+  }&#13;
+  &amp;.transparent {&#13;
+  	border-left: 20px solid transparent;&#13;
+  }&#13;
+}</css>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description/>
+        <docs/>
+        <field_list/>
+        <has_preview>false</has_preview>
+        <id/>
+        <internal>false</internal>
+        <link><![CDATA[function link(scope, element, attrs, controller) {  }]]></link>
+        <name>Ratelock List Sessions</name>
+        <option_schema/>
+        <public>false</public>
+        <roles/>
+        <script><![CDATA[(function() {
+  /* populate the 'data' object */
+  /* e.g., data.table = $sp.getValue('table'); */
+	data.table = options.table || $sp.getParameter("table");
+	data.sys_id = options.sys_id || $sp.getParameter("sys_id");
+})();]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-03-10 19:35:19</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>a1848f90db6b0890f25513296896193f</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>Ratelock List Sessions</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sp_widget_a1848f90db6b0890f25513296896193f</sys_update_name>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-03-10 19:35:19</sys_updated_on>
+        <template><![CDATA[<div class="ticker" ng-show="session">
+  <span uib-tooltip="{{session.user_display_name}} is {{session.status}}"
+    ng-class="getColor(session.status)" 
+    tooltip-placement="top"
+    ng-show="session.status && session.sys_id === data.sys_id"
+    tooltip-append-to-body="true"></span>
+</div>]]></template>
+    </sp_widget>
+    <sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Ratelock">605affb71badc01048a242e58d4bcb76</application>
+        <file_path/>
+        <instance_id>94e8281edbb7470060a6f0e5bf9619f6</instance_id>
+        <instance_name>movementdev</instance_name>
+        <name>sp_widget_a1848f90db6b0890f25513296896193f</name>
+        <payload>&lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;record_update table="sp_widget"&gt;&lt;sp_widget action="INSERT_OR_UPDATE"&gt;&lt;category&gt;custom&lt;/category&gt;&lt;client_script&gt;&lt;![CDATA[function ($scope, $rootScope, $window, $interval, $timeout, ratelockSession) {
+  /* widget controller */
+  var c = this;
+
+  c.$onInit = function () {
+    ratelockSession.subscribe($scope.data.table, $scope.data.sys_id);
+  }
+
+  $window.addEventListener('unload', function () {
+    $timeout.cancel();
+  })
+
+  $scope.getColor = function (status) {
+    var cls = "transparent";
+    switch (status) {
+      case 'exiting':
+        color = 'yellow';
+        break;
+      case 'viewing':
+        color = 'green';
+        break;
+      case 'typing':
+        color = 'red';
+        break;
+      default:
+        color = 'transparent';
+        break;
+    }
+    return color;
+  }
+
+
+
+  $rootScope.$on("ratelock.sessions", function (e, sessions) {
+    var keys = Object.keys(sessions);
+    keys.forEach(function (key) {
+      var session = sessions[key];
+      if (key !== $window.NOW.session_id &amp;&amp; session.sys_id === $scope.data.sys_id) {
+        $scope.session = session;
+        if ($scope.session.status === 'exiting') {
+          $timeout(function () {
+            $scope.session.status = null;
+          }, 3000);
+        }
+      }
+    });
+
+  });
+}]]&gt;&lt;/client_script&gt;&lt;controller_as&gt;c&lt;/controller_as&gt;&lt;css&gt;.ticker {&amp;#13;
+	position: absolute;&amp;#13;
+  top: 0;&amp;#13;
+  left: 0;&amp;#13;
+  width: 0;&amp;#13;
+  height: 0;&amp;#13;
+  line-height: 0;&amp;#13;
+  font-size: 0;&amp;#13;
+  z-index: 1000;&amp;#13;
+}&amp;#13;
+&amp;#13;
+.ticker &amp;gt; span {&amp;#13;
+  border-bottom: 20px solid transparent;&amp;#13;
+  border-right: 20px solid transparent;&amp;#13;
+  transition: border-left 0.2s ease-in;&amp;#13;
+	&amp;amp;.green {&amp;#13;
+    border-left: 20px solid green;&amp;#13;
+  }&amp;#13;
+  &amp;amp;.red {&amp;#13;
+    border-left: 20px solid red;&amp;#13;
+  }&amp;#13;
+  &amp;amp;.yellow {&amp;#13;
+    border-left: 20px solid #fcd80c;&amp;#13;
+  }&amp;#13;
+  &amp;amp;.transparent {&amp;#13;
+  	border-left: 20px solid transparent;&amp;#13;
+  }&amp;#13;
+}&lt;/css&gt;&lt;data_table&gt;sp_instance&lt;/data_table&gt;&lt;demo_data/&gt;&lt;description/&gt;&lt;docs/&gt;&lt;field_list/&gt;&lt;has_preview&gt;false&lt;/has_preview&gt;&lt;id/&gt;&lt;internal&gt;false&lt;/internal&gt;&lt;link&gt;&lt;![CDATA[function link(scope, element, attrs, controller) {  }]]&gt;&lt;/link&gt;&lt;name&gt;Ratelock List Sessions&lt;/name&gt;&lt;option_schema/&gt;&lt;public&gt;false&lt;/public&gt;&lt;roles/&gt;&lt;script&gt;&lt;![CDATA[(function() {
+  /* populate the 'data' object */
+  /* e.g., data.table = $sp.getValue('table'); */
+	data.table = options.table || $sp.getParameter("table");
+	data.sys_id = options.sys_id || $sp.getParameter("sys_id");
+})();]]&gt;&lt;/script&gt;&lt;servicenow&gt;false&lt;/servicenow&gt;&lt;sys_class_name&gt;sp_widget&lt;/sys_class_name&gt;&lt;sys_created_by&gt;douglas.schamberg&lt;/sys_created_by&gt;&lt;sys_created_on&gt;2020-03-10 19:35:19&lt;/sys_created_on&gt;&lt;sys_customer_update&gt;false&lt;/sys_customer_update&gt;&lt;sys_id&gt;a1848f90db6b0890f25513296896193f&lt;/sys_id&gt;&lt;sys_mod_count&gt;0&lt;/sys_mod_count&gt;&lt;sys_name&gt;Ratelock List Sessions&lt;/sys_name&gt;&lt;sys_package display_value="Ratelock" source="x_momo_ratelock"&gt;605affb71badc01048a242e58d4bcb76&lt;/sys_package&gt;&lt;sys_policy/&gt;&lt;sys_replace_on_upgrade&gt;false&lt;/sys_replace_on_upgrade&gt;&lt;sys_scope display_value="Ratelock"&gt;605affb71badc01048a242e58d4bcb76&lt;/sys_scope&gt;&lt;sys_update_name&gt;sp_widget_a1848f90db6b0890f25513296896193f&lt;/sys_update_name&gt;&lt;sys_updated_by&gt;douglas.schamberg&lt;/sys_updated_by&gt;&lt;sys_updated_on&gt;2020-03-10 19:35:19&lt;/sys_updated_on&gt;&lt;template&gt;&lt;![CDATA[&lt;div class="ticker" ng-show="session"&gt;
+  &lt;span uib-tooltip="{{session.user_display_name}} is {{session.status}}"
+    ng-class="getColor(session.status)" 
+    tooltip-placement="top"
+    ng-show="session.status &amp;&amp; session.sys_id === data.sys_id"
+    tooltip-append-to-body="true"&gt;&lt;/span&gt;
+&lt;/div&gt;]]&gt;&lt;/template&gt;&lt;/sp_widget&gt;&lt;/record_update&gt;</payload>
+        <payload_hash>1363806830</payload_hash>
+        <record_name>Ratelock List Sessions</record_name>
+        <reverted_from/>
+        <source>74fc5f651b5a401048a242e58d4bcbbc</source>
+        <source_table>sys_update_set</source_table>
+        <state>previous</state>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-03-10 19:35:19</sys_created_on>
+        <sys_id>ad848f90db6b0890f255132968961940</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>170c5f1bd510000001</sys_recorded_at>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-03-10 19:35:19</sys_updated_on>
+        <type>Widget</type>
+        <update_guid>a5848f90ad6b0890738903ec5af89a40</update_guid>
+        <update_guid_history>a5848f90ad6b0890738903ec5af89a40:1363806830</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete display_value="">d9e48fd0db6b0890f255132968961926</sys_audit_delete>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-03-10 19:36:56</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_db_object display_value="" name="sp_widget">sp_widget</sys_db_object>
+        <sys_id>833f625a749e481d939d2a36076b4ec9</sys_id>
+        <sys_metadata>a1848f90db6b0890f25513296896193f</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>Ratelock List Sessions</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_parent/>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_scope_delete display_value="">57712118eaee4a49ae47b2048a14ac31</sys_scope_delete>
+        <sys_update_name>sp_widget_a1848f90db6b0890f25513296896193f</sys_update_name>
+        <sys_update_version display_value="sp_widget_a1848f90db6b0890f25513296896193f">ad848f90db6b0890f255132968961940</sys_update_version>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-03-10 19:36:56</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>

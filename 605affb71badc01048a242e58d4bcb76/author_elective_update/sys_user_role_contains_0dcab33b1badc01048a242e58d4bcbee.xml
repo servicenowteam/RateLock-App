@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_user_role_contains">
+    <sys_user_role_contains action="DELETE">
+        <contains display_value="ratelock" name="ratelock">89cab33b1badc01048a242e58d4bcbe0</contains>
+        <role display_value="x_momo_ratelock.ratelock_tech" name="x_momo_ratelock.ratelock_tech">c16a73771badc01048a242e58d4bcb42</role>
+        <sys_class_name>sys_user_role_contains</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2019-12-13 10:25:28</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>0dcab33b1badc01048a242e58d4bcbee</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>ratelock.x_momo_ratelock.ratelock_tech</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sys_user_role_contains_0dcab33b1badc01048a242e58d4bcbee</sys_update_name>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2019-12-13 10:25:28</sys_updated_on>
+    </sys_user_role_contains>
+<sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Ratelock">605affb71badc01048a242e58d4bcb76</application>
+        <file_path/>
+        <instance_id>94e8281edbb7470060a6f0e5bf9619f6</instance_id>
+        <instance_name>movementdev</instance_name>
+        <name>sys_user_role_contains_0dcab33b1badc01048a242e58d4bcbee</name>
+        <payload><![CDATA[<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_user_role_contains">
+    <sys_user_role_contains action="INSERT_OR_UPDATE">
+        <contains display_value="ratelock" name="ratelock">89cab33b1badc01048a242e58d4bcbe0</contains>
+        <role display_value="x_momo_ratelock.ratelock_tech" name="x_momo_ratelock.ratelock_tech">c16a73771badc01048a242e58d4bcb42</role>
+        <sys_class_name>sys_user_role_contains</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2019-12-13 10:25:28</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>0dcab33b1badc01048a242e58d4bcbee</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>ratelock.x_momo_ratelock.ratelock_tech</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sys_user_role_contains_0dcab33b1badc01048a242e58d4bcbee</sys_update_name>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2019-12-13 10:25:28</sys_updated_on>
+    </sys_user_role_contains>
+</record_update>]]></payload>
+        <payload_hash>-1868264917</payload_hash>
+        <record_name>ratelock.x_momo_ratelock.ratelock_tech</record_name>
+        <reverted_from/>
+        <source>bf1c1be11b5a401048a242e58d4bcb30</source>
+        <source_table>sys_upgrade_history</source_table>
+        <state>previous</state>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-01-12 15:12:33</sys_created_on>
+        <sys_id>b62c5fe11b5a401048a242e58d4bcb43</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>16f9a5055d60000001</sys_recorded_at>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-01-12 15:12:33</sys_updated_on>
+        <type>Contained Role</type>
+        <update_guid>f22c5fe1d75a401065e2c00e05550e43</update_guid>
+        <update_guid_history>f22c5fe1d75a401065e2c00e05550e43:0,90f8dfad551a4010d7048da8c28f740c:2062108280,d8179f69b21a4010477c620dbe99f33b:0,3636dbe5311a4010771df31083872bf6:35545957,d7f417e13d1a40103aef4ed2287f1289:0,b474db61571a4010cc8f0810626bb9b4:1927904318,a123976d7ad6401009d3b2fdb0217b4b:0,be3217e95dd640103ed4c45d1615b947:-829732414,b9f05b6549d6401067a56c677f6cca06:0,6bd09f259ed6401054fe5bf809e7a95b:-1699170383,e510df6184d640103b9f488d1fa9443d:0,1dff8361a1d6401075e4438fa9cd3f05:-1699170383,bf7d0ba9e6964010264825a9c10fb3bc:0,4f5dc769af964010cdb4dc5deec1a93d:-1699170383,05caf33b43adc0109dbcd54a156b9723:880258981</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete/>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-04-23 17:46:01</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_db_object display_value="" name="sys_user_role_contains">sys_user_role_contains</sys_db_object>
+        <sys_id>930e507bb784412e8b58354c064a1ee4</sys_id>
+        <sys_metadata>0dcab33b1badc01048a242e58d4bcbee</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>ratelock.x_momo_ratelock.ratelock_tech</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_parent/>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_scope_delete display_value="">57712118eaee4a49ae47b2048a14ac31</sys_scope_delete>
+        <sys_update_name>sys_user_role_contains_0dcab33b1badc01048a242e58d4bcbee</sys_update_name>
+        <sys_update_version display_value="sys_user_role_contains_0dcab33b1badc01048a242e58d4bcbee">b62c5fe11b5a401048a242e58d4bcb43</sys_update_version>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-04-23 17:46:01</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>

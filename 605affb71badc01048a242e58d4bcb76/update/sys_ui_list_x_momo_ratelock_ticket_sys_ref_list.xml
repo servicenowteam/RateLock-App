@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update>
+    <sys_ui_list parent="" relationship="" sys_domain="global" table="x_momo_ratelock_ticket" version="2" view="sys_ref_list">
+        <sys_ui_list_element action="INSERT_OR_UPDATE">
+            <average_value>false</average_value>
+            <element>number</element>
+            <list_id display_value="x_momo_ratelock_ticket" element="NULL" name="x_momo_ratelock_ticket" parent="NULL" relationship="NULL" sys_domain="global" view="fe753670db20320093373c8f9d96192d">b8327eb6db7dc050f255132968961905</list_id>
+            <max_value>false</max_value>
+            <min_value>false</min_value>
+            <position>0</position>
+            <sum>false</sum>
+            <sys_created_by>douglas.schamberg</sys_created_by>
+            <sys_created_on>2019-12-22 12:50:12</sys_created_on>
+            <sys_id>70327eb6db7dc050f255132968961907</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_updated_by>douglas.schamberg</sys_updated_by>
+            <sys_updated_on>2019-12-22 12:50:12</sys_updated_on>
+        </sys_ui_list_element>
+        <sys_ui_list action="INSERT_OR_UPDATE">
+            <average_value>false</average_value>
+            <element/>
+            <max_value>false</max_value>
+            <min_value>false</min_value>
+            <name>x_momo_ratelock_ticket</name>
+            <parent/>
+            <position/>
+            <relationship/>
+            <sum>false</sum>
+            <sys_class_name>sys_ui_list</sys_class_name>
+            <sys_created_by>douglas.schamberg</sys_created_by>
+            <sys_created_on>2019-12-22 12:50:12</sys_created_on>
+            <sys_customer_update>false</sys_customer_update>
+            <sys_domain>global</sys_domain>
+            <sys_domain_path>/</sys_domain_path>
+            <sys_id>b8327eb6db7dc050f255132968961905</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_name>x_momo_ratelock_ticket</sys_name>
+            <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+            <sys_policy/>
+            <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+            <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+            <sys_update_name>sys_ui_list_x_momo_ratelock_ticket_sys_ref_list</sys_update_name>
+            <sys_updated_by>douglas.schamberg</sys_updated_by>
+            <sys_updated_on>2019-12-22 12:50:12</sys_updated_on>
+            <sys_user/>
+            <view display_value="Reference List" name="sys_ref_list">fe753670db20320093373c8f9d96192d</view>
+            <view_name/>
+        </sys_ui_list>
+    </sys_ui_list>
+</record_update>

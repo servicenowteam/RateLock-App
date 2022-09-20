@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_instance">
+    <sp_instance action="DELETE">
+        <active>true</active>
+        <class_name/>
+        <color>primary</color>
+        <css/>
+        <glyph/>
+        <id/>
+        <order>2</order>
+        <roles/>
+        <short_description/>
+        <size>md</size>
+        <sp_column display_value="2">354f72e41bfd841048a242e58d4bcbc1</sp_column>
+        <sp_widget display_value="Ticket Location">2795e5e2ff123100ba13ffffffffff84</sp_widget>
+        <sys_class_name>sp_instance</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2019-12-15 14:01:00</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>bd4f72e41bfd841048a242e58d4bcbd3</sys_id>
+        <sys_mod_count>1</sys_mod_count>
+        <sys_name>Location</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sp_instance_bd4f72e41bfd841048a242e58d4bcbd3</sys_update_name>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2019-12-15 14:40:32</sys_updated_on>
+        <title>Location</title>
+        <url/>
+        <widget_parameters/>
+    </sp_instance>
+    <sys_translated_text action="DELETE" query="documentkey=bd4f72e41bfd841048a242e58d4bcbd3"/>
+    <sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Ratelock">605affb71badc01048a242e58d4bcb76</application>
+        <file_path/>
+        <instance_id>94e8281edbb7470060a6f0e5bf9619f6</instance_id>
+        <instance_name>movementdev</instance_name>
+        <name>sp_instance_bd4f72e41bfd841048a242e58d4bcbd3</name>
+        <payload><![CDATA[<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_instance"><sp_instance action="INSERT_OR_UPDATE"><active>true</active><class_name/><color>primary</color><css/><glyph/><id/><order>2</order><roles/><short_description/><size>md</size><sp_column display_value="2">354f72e41bfd841048a242e58d4bcbc1</sp_column><sp_widget display_value="Ticket Location">2795e5e2ff123100ba13ffffffffff84</sp_widget><sys_class_name>sp_instance</sys_class_name><sys_created_by>douglas.schamberg</sys_created_by><sys_created_on>2019-12-15 14:01:00</sys_created_on><sys_customer_update>false</sys_customer_update><sys_id>bd4f72e41bfd841048a242e58d4bcbd3</sys_id><sys_mod_count>1</sys_mod_count><sys_name>Location</sys_name><sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package><sys_policy/><sys_replace_on_upgrade>false</sys_replace_on_upgrade><sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope><sys_update_name>sp_instance_bd4f72e41bfd841048a242e58d4bcbd3</sys_update_name><sys_updated_by>douglas.schamberg</sys_updated_by><sys_updated_on>2019-12-15 14:40:32</sys_updated_on><title>Location</title><url/><widget_parameters/></sp_instance><sys_translated_text action="delete_multiple" query="documentkey=bd4f72e41bfd841048a242e58d4bcbd3"/></record_update>]]></payload>
+        <payload_hash>-492912293</payload_hash>
+        <record_name>Location</record_name>
+        <reverted_from/>
+        <source>a45affb71badc01048a242e58d4bcb78</source>
+        <source_table>sys_update_set</source_table>
+        <state>previous</state>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2019-12-15 14:40:32</sys_created_on>
+        <sys_id>f0588b601b31c41048a242e58d4bcb64</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>16f0a00f4370000001</sys_recorded_at>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2019-12-15 14:40:32</sys_updated_on>
+        <type>Instance</type>
+        <update_guid>b8588b60c831c4108bdd4b782e983863</update_guid>
+        <update_guid_history>b8588b60c831c4108bdd4b782e983863:-492912293,b14f72e40dfd8410287b27a515b3f0d5:-1881371236</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete display_value="">2958c7601b31c41048a242e58d4bcb3e</sys_audit_delete>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2019-12-15 14:40:34</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_db_object display_value="" name="sp_instance">sp_instance</sys_db_object>
+        <sys_id>6d67a2ed6bd14dc281c4b49ce186a544</sys_id>
+        <sys_metadata>bd4f72e41bfd841048a242e58d4bcbd3</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>Location</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_parent/>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_scope_delete display_value="">57712118eaee4a49ae47b2048a14ac31</sys_scope_delete>
+        <sys_update_name>sp_instance_bd4f72e41bfd841048a242e58d4bcbd3</sys_update_name>
+        <sys_update_version display_value="sp_instance_bd4f72e41bfd841048a242e58d4bcbd3">f0588b601b31c41048a242e58d4bcb64</sys_update_version>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2019-12-15 14:40:34</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>

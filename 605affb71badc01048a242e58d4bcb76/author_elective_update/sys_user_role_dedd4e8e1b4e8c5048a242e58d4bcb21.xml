@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_user_role">
+    <sys_user_role action="DELETE">
+        <assignable_by/>
+        <description/>
+        <elevated_privilege>false</elevated_privilege>
+        <encryption_context/>
+        <grantable>true</grantable>
+        <includes_roles/>
+        <name>x_momo_ratelock.ratesheet_user</name>
+        <requires_subscription>-1</requires_subscription>
+        <scoped_admin>false</scoped_admin>
+        <snbe>false</snbe>
+        <suffix>ratesheet_user</suffix>
+        <sys_class_name>sys_user_role</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-01-01 12:31:37</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>dedd4e8e1b4e8c5048a242e58d4bcb21</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>x_momo_ratelock.ratesheet_user</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sys_user_role_dedd4e8e1b4e8c5048a242e58d4bcb21</sys_update_name>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-01-01 12:31:37</sys_updated_on>
+    </sys_user_role>
+    <sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Ratelock">605affb71badc01048a242e58d4bcb76</application>
+        <file_path/>
+        <instance_id>94e8281edbb7470060a6f0e5bf9619f6</instance_id>
+        <instance_name>movementdev</instance_name>
+        <name>sys_user_role_dedd4e8e1b4e8c5048a242e58d4bcb21</name>
+        <payload><![CDATA[<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_user_role"><sys_user_role action="INSERT_OR_UPDATE"><assignable_by/><description/><elevated_privilege>false</elevated_privilege><encryption_context/><grantable>true</grantable><includes_roles/><name>x_momo_ratelock.ratesheet_user</name><requires_subscription>-1</requires_subscription><scoped_admin>false</scoped_admin><snbe>false</snbe><suffix>ratesheet_user</suffix><sys_class_name>sys_user_role</sys_class_name><sys_created_by>douglas.schamberg</sys_created_by><sys_created_on>2020-01-01 12:31:37</sys_created_on><sys_customer_update>false</sys_customer_update><sys_id>dedd4e8e1b4e8c5048a242e58d4bcb21</sys_id><sys_mod_count>0</sys_mod_count><sys_name>x_momo_ratelock.ratesheet_user</sys_name><sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package><sys_policy/><sys_replace_on_upgrade>false</sys_replace_on_upgrade><sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope><sys_update_name>sys_user_role_dedd4e8e1b4e8c5048a242e58d4bcb21</sys_update_name><sys_updated_by>douglas.schamberg</sys_updated_by><sys_updated_on>2020-01-01 12:31:37</sys_updated_on></sys_user_role></record_update>]]></payload>
+        <payload_hash>1997439644</payload_hash>
+        <record_name>x_momo_ratelock.ratesheet_user</record_name>
+        <reverted_from/>
+        <source>a45affb71badc01048a242e58d4bcb78</source>
+        <source_table>sys_update_set</source_table>
+        <state>previous</state>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-01-01 12:31:37</sys_created_on>
+        <sys_id>1edd4e8e1b4e8c5048a242e58d4bcb26</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>16f61170bd40000001</sys_recorded_at>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-01-01 12:31:37</sys_updated_on>
+        <type>Role</type>
+        <update_guid>16dd4e8e1f4e8c500ad010d86b70bb26</update_guid>
+        <update_guid_history>16dd4e8e1f4e8c500ad010d86b70bb26:1997439644</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete display_value="">b550b2dedb860490f25513296896194f</sys_audit_delete>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-01-02 09:40:48</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_db_object display_value="" name="sys_user_role">sys_user_role</sys_db_object>
+        <sys_id>29217efc232a4023a4646c1875c6c911</sys_id>
+        <sys_metadata>dedd4e8e1b4e8c5048a242e58d4bcb21</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>x_momo_ratelock.ratesheet_user</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_parent/>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_scope_delete display_value="">57712118eaee4a49ae47b2048a14ac31</sys_scope_delete>
+        <sys_update_name>sys_user_role_dedd4e8e1b4e8c5048a242e58d4bcb21</sys_update_name>
+        <sys_update_version display_value="sys_user_role_dedd4e8e1b4e8c5048a242e58d4bcb21">1edd4e8e1b4e8c5048a242e58d4bcb26</sys_update_version>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-01-02 09:40:48</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>

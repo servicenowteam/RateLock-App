@@ -1,0 +1,839 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_widget">
+    <sp_widget action="INSERT_OR_UPDATE">
+        <category>custom</category>
+        <client_script><![CDATA[function ratelockTicketConversationsV2($rootScope, $scope, mmSessions) {
+  /* widget controller */
+  var c = this;
+  c.isShowingTemplates = true;
+  c.isRelatedOpen = false;
+  $scope.isTyping = false;
+  $scope.typing = [];
+
+  c.$onInit = function () {
+    mmSessions.setChannel($scope.data.table, $scope.data.sysId);
+    c.widgetIsChanging = false;
+    c.related = c.data.widgets.related;
+    c.widgets = c.data.widgets;
+    c.feed = "comments";
+    c.isShowingTemplates = c.data.isActive;
+    $rootScope.$broadcast('ratelock.templates_bar.visible', c.isShowingTemplates);
+  };
+
+  $rootScope.$on('sessions.' + $scope.data.sysId + '.connected', function (evt) {
+    $scope.isAmbConnected = true;
+  });
+
+  $rootScope.$on('editor.typing', function (evt, payload) {
+    if (payload.id === c.data.sysId) {
+      $scope.editorContent = payload.html;
+      if (!$scope.editorContent.length) {
+        $scope.isTyping = false;
+        mmSessions.viewing($scope.data.sysId);
+      } else if (!$scope.isTyping) {
+        mmSessions.typing($scope.data.sysId);
+        $scope.isTyping = true;
+      }
+    }
+  });
+
+  $rootScope.$on('editor.blurred', function (evt, value) {
+    if (!value) {
+      mmSessions.viewing($scope.data.sysId);
+      $scope.isTyping = false;
+    }
+  });
+
+
+  c.toggleTemplateBar = function () {
+    c.isShowingTemplates = !c.isShowingTemplates;
+    $rootScope.$broadcast('ratelock.templates_bar.visible', c.isShowingTemplates);
+  };
+
+  c.toggleRelatedOpen = function () {
+    c.isRelatedOpen = !c.isRelatedOpen;
+  };
+
+  c.onActivityChange = function () {
+    if (c.isShowingTemplates && c.feed !== 'comments') {
+      c.toggleTemplateBar();
+
+    } else if (c.feed === 'comments' && !c.isShowingTemplates) {
+      c.toggleTemplateBar();
+    }
+
+    $rootScope.$broadcast('ratelock.ticket.activity.updated', c.feed);
+    $rootScope.$broadcast('ratelock.editor.is-posting');
+    if ($scope.isTyping) {
+      $scope.isTyping = false;
+      mmSessions.viewing($scope.data.sysId);
+    }
+  };
+
+  c.getEditorButtonPlaceholder = function () {
+    if (c.feed === 'work_notes') {
+      return 'Add Note';
+    } else {
+      return 'Reply';
+    }
+  };
+
+  c.submit = function ($event) {
+    if (!$scope.editorContent) return;
+    if ($scope.data.isPosting) return;
+
+    $scope.data.isPosting = true;
+    $scope.data.journalEntry = $scope.editorContent.trim();
+    $scope.data.element = c.feed;
+    $scope.server.update().then(function (data) {
+      $scope.editorContent = undefined;
+      $scope.isTyping = false;
+      mmSessions.viewing($scope.data.sysId);
+      $rootScope.$broadcast('ratelock.editor.is-posting');
+    });
+  };
+}]]></client_script>
+        <controller_as>c</controller_as>
+        <css>.list-header {&#13;
+  margin-bottom: 10px;&#13;
+  display: block;&#13;
+  margin-top: 0px;&#13;
+}&#13;
+&#13;
+a[tabindex]:focus {&#13;
+  border: 1px solid transparent;&#13;
+  -webkit-box-shadow: none !important;&#13;
+  box-shadow: none !important;&#13;
+}&#13;
+&#13;
+.timeline .avatar-container {&#13;
+  border: none;&#13;
+}&#13;
+&#13;
+.no-email-records {&#13;
+  padding: 60px;&#13;
+  align-items: center;&#13;
+  vertical-align: middle;&#13;
+  justify-content: center;&#13;
+  text-align: center;&#13;
+&#13;
+  &amp;:hover {&#13;
+    &amp; span {&#13;
+      text-decoration: underline;&#13;
+    }&#13;
+  }&#13;
+}&#13;
+&#13;
+.accordion-link {&#13;
+&#13;
+  &amp;:active,&#13;
+  &amp;:focus {&#13;
+    outline: none;&#13;
+    border: none;&#13;
+    box-shadow: none;&#13;
+  }&#13;
+}&#13;
+&#13;
+.panel-footer {&#13;
+  &amp;.panel-sticky {&#13;
+    position: sticky;&#13;
+    bottom: 0;&#13;
+    left: 0;&#13;
+    z-index: 1001;&#13;
+  }&#13;
+}&#13;
+&#13;
+.form-group {&#13;
+  &amp; div {&#13;
+    &amp; .select2-container-multi {&#13;
+      &amp; .select2-choices {&#13;
+        border: none;&#13;
+        border-bottom: 1px solid #bdc0c4;&#13;
+        border-radius: 0px;&#13;
+&#13;
+        &amp;:focus,&#13;
+        &amp;:active {&#13;
+          outline: none;&#13;
+          box-shadow: none;&#13;
+        }&#13;
+      }&#13;
+    }&#13;
+&#13;
+    &amp; .select2-container-active,&#13;
+    .select2-container-active .select2-choice,&#13;
+    .select2-container-active .select2-choices {&#13;
+      border: none;&#13;
+    }&#13;
+  }&#13;
+}&#13;
+&#13;
+.recipients-label {&#13;
+  padding-left: 5px;&#13;
+}&#13;
+&#13;
+.panel-title {&#13;
+  display: inline;&#13;
+}&#13;
+&#13;
+.panel-body {&#13;
+  background-color: #fff;&#13;
+}&#13;
+&#13;
+.btn.btn-link.active {&#13;
+  color: $brand-primary;&#13;
+}&#13;
+&#13;
+.btn-gold {&#13;
+  background: gold;&#13;
+  border-color: gold;&#13;
+  color: #fff;&#13;
+&#13;
+  &amp;:hover,&#13;
+  &amp;:focus,&#13;
+  &amp;:active {&#13;
+    background: gold;&#13;
+    border-color: gold;&#13;
+    box-shadow: none;&#13;
+  }&#13;
+}&#13;
+&#13;
+.panel {&#13;
+  background-color: transparent !important;&#13;
+}&#13;
+&#13;
+.btn-primary:focus {&#13;
+  border: 1px solid $brand-primary;&#13;
+  box-shadow: 0px 0px 5px $brand-primary;&#13;
+}&#13;
+&#13;
+.form-control:focus {&#13;
+  border-color: $brand-primary;&#13;
+  outline: 4px solid transparent;&#13;
+  outline: 5px auto transparent;&#13;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(224, 58, 58, 0.6);&#13;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(224, 58, 58, 0.6);&#13;
+}&#13;
+&#13;
+.secondary-journal-field {&#13;
+  border: 1px solid gold;&#13;
+}&#13;
+&#13;
+.primary-journal-field {&#13;
+  border: 1px solid #ccc;&#13;
+}&#13;
+&#13;
+.panel-title-container {&#13;
+  display: flex;&#13;
+  justify-content: space-between;&#13;
+  align-items: center;&#13;
+}&#13;
+&#13;
+.panel-title-icons {&#13;
+&#13;
+  ul {&#13;
+    display: flex;&#13;
+    align-items: center;&#13;
+    padding: 0;&#13;
+    margin: 0;&#13;
+  }&#13;
+&#13;
+  li {&#13;
+    padding: 0;&#13;
+    margin: 0;&#13;
+&#13;
+    .panel-button {&#13;
+      display: flex;&#13;
+      align-items: center;&#13;
+      margin: 0 0 0 15px;&#13;
+      line-height: initial;&#13;
+&#13;
+      &amp;:hover,&#13;
+      &amp;:focus {&#13;
+        border-color: transparent;&#13;
+        outline: none;&#13;
+        -webkit-box-shadow: inset 0 0px 0px rgba(0, 0, 0, .075), 0 0 0px rgba(224, 58, 58, 0.6);&#13;
+        box-shadow: inset 0 0px 0px rgba(0, 0, 0, .075), 0 0 0px rgba(224, 58, 58, 0.6);&#13;
+        text-decoration: none;&#13;
+      }&#13;
+&#13;
+      &amp;:not(.active):focus {&#13;
+        color: #000;&#13;
+      }&#13;
+&#13;
+      &amp;:not(.btn-templates):hover {&#13;
+        color: $brand-primary;&#13;
+      }&#13;
+    }&#13;
+  }&#13;
+}&#13;
+&#13;
+&#13;
+.timeline-heading test {&#13;
+  float: right;&#13;
+}&#13;
+&#13;
+.timeline-body&gt;p {&#13;
+  white-space: pre-wrap;&#13;
+  overflow-x: hidden;&#13;
+}&#13;
+&#13;
+.timeline-body ul&gt;li {&#13;
+  float: none;&#13;
+}&#13;
+&#13;
+.input-group {&#13;
+  .select2-choices {&#13;
+    border-top-left-radius: 4px;&#13;
+    border-top-right-radius: 0px;&#13;
+    border-bottom-left-radius: 4px;&#13;
+    border-bottom-right-radius: 0px;&#13;
+  }&#13;
+}&#13;
+&#13;
+.no-resize {&#13;
+  resize: none;&#13;
+}&#13;
+&#13;
+.journal-field-indicator {&#13;
+  width: 5px;&#13;
+  position: absolute;&#13;
+  left: 5px;&#13;
+  top: 5px;&#13;
+  bottom: 5px;&#13;
+  z-index: 3;&#13;
+}&#13;
+&#13;
+.panel-heading {&#13;
+  word-wrap: break-word;&#13;
+}&#13;
+&#13;
+.avatar-container {&#13;
+  cursor: default;&#13;
+}&#13;
+&#13;
+ul {&#13;
+  list-style: none;&#13;
+}&#13;
+&#13;
+.overflow-hidden {&#13;
+  overflow: hidden;&#13;
+}&#13;
+&#13;
+&#13;
+.timeline-badge-wrap {&#13;
+  margin: auto;&#13;
+  max-width: 115px;&#13;
+}&#13;
+&#13;
+.timeline-badge.success {&#13;
+  background-color: $success;&#13;
+}&#13;
+&#13;
+.timeline-badge {&#13;
+  position: relative;&#13;
+  left: 25%;&#13;
+  width: 50%;&#13;
+  padding-bottom: 50%;&#13;
+  border-radius: 50%;&#13;
+}&#13;
+&#13;
+.timeline-badge span {&#13;
+  position: absolute;&#13;
+  top: 50%;&#13;
+  left: 50%;&#13;
+  transform: translate(-50%, -50%);&#13;
+  font-size: 13px;&#13;
+  color: #fff;&#13;
+}&#13;
+&#13;
+.journal-type {&#13;
+  display: inline-flex;&#13;
+  display: -ms-inline-flexbox;&#13;
+  flex-wrap: wrap;&#13;
+  justify-content: flex-end;&#13;
+  -webkit-justify-content: flex-end;&#13;
+}&#13;
+&#13;
+.fa-circle {&#13;
+  font-size: 4px;&#13;
+  padding: 7px;&#13;
+}&#13;
+&#13;
+@media (max-width: 768px) {&#13;
+  .timeline-badge-wrap {&#13;
+    margin: 0;&#13;
+  }&#13;
+&#13;
+  .timeline-badge {&#13;
+    left: 10%;&#13;
+  }&#13;
+}&#13;
+&#13;
+.list-group-clear {&#13;
+  border: 1px solid transparent;&#13;
+  border-radius: 0px;&#13;
+}&#13;
+&#13;
+.email-frame {&#13;
+  overflow-y: hidden;&#13;
+&#13;
+  &amp; .panel-body {&#13;
+    overflow-y: hidden;&#13;
+&#13;
+    &amp; .email-details-inner {&#13;
+      overflow-y: hidden;&#13;
+    }&#13;
+  }&#13;
+}&#13;
+&#13;
+.email-panel-body {&#13;
+  padding-bottom: 5px;&#13;
+}&#13;
+&#13;
+.email-title,&#13;
+.email-details {&#13;
+  color: rgb(69, 84, 100);&#13;
+  font-size: 12px;&#13;
+}&#13;
+&#13;
+.email-title {&#13;
+  padding: 0px 0px 15px 0px;&#13;
+}&#13;
+&#13;
+.email-display-name {&#13;
+  margin-left: 5px;&#13;
+}&#13;
+&#13;
+.message-created {&#13;
+  display: inline-flex;&#13;
+}&#13;
+&#13;
+.email-dot {&#13;
+  background: rgba(69, 84, 100, 0.85);&#13;
+  display: inline-block;&#13;
+  height: 5px;&#13;
+  width: 5px;&#13;
+  border-radius: 50%;&#13;
+  vertical-align: middle;&#13;
+  margin: 6px 4px;&#13;
+}&#13;
+&#13;
+.text-align-right {&#13;
+  text-align: right;&#13;
+}&#13;
+&#13;
+.email-details {&#13;
+  display: -webkit-box;&#13;
+  display: -moz-box;&#13;
+  display: -ms-flexbox;&#13;
+  display: -webkit-flex;&#13;
+  align-items: center;&#13;
+  vertical-align: middle;&#13;
+  justify-content: center;&#13;
+  padding-bottom: 5px;&#13;
+&#13;
+  &amp; .email-details-container {&#13;
+    display: flex;&#13;
+    width: 100%;&#13;
+    align-items: center;&#13;
+    justify-content: center;&#13;
+    vertical-align: middle;&#13;
+    overflow-y: hidden;&#13;
+  }&#13;
+}&#13;
+&#13;
+.email-panel {&#13;
+  border-radius: 0px;&#13;
+}&#13;
+&#13;
+iframe.card {&#13;
+  border: none !important;&#13;
+  overflow-y: hidden !important;&#13;
+&#13;
+  &amp; html {&#13;
+    padding: 15px;&#13;
+    overflow-y: hidden;&#13;
+  }&#13;
+}&#13;
+&#13;
+.emails-details-list-group {&#13;
+  margin-bottom: 0px;&#13;
+  max-width: 500px;&#13;
+  width: 100%;&#13;
+&#13;
+  &amp; .emails-details-list-group-item {&#13;
+    padding: 5px;&#13;
+&#13;
+    &amp; .email-details-link {&#13;
+      color: $brand-primary;&#13;
+&#13;
+      &amp;:hover {&#13;
+        text-decoration: underline;&#13;
+      }&#13;
+    }&#13;
+&#13;
+    &amp; .email-details-col:nth-child(1) {&#13;
+      font-weight: 700;&#13;
+    }&#13;
+&#13;
+    &amp; .email-details-col:nth-child(2) {&#13;
+      word-break: break-all;&#13;
+    }&#13;
+&#13;
+    &amp; .email-details-col.importance {&#13;
+      color: $danger;&#13;
+    }&#13;
+  }&#13;
+}&#13;
+&#13;
+.panel-clear {&#13;
+  &amp; .email-details-inner {&#13;
+    justify-content: center;&#13;
+    display: flex;&#13;
+&#13;
+    &amp;:first-child {&#13;
+      border: 1px solid #ccc;&#13;
+    }&#13;
+  }&#13;
+}&#13;
+&#13;
+.select2-container-active .select2-choice,&#13;
+.select2-container-active .select2-choices {&#13;
+  border: 1px solid $brand-primary;&#13;
+}&#13;
+&#13;
+.select2-choice {&#13;
+  &amp;:focus {&#13;
+    border: 1px solid $brand-primary;&#13;
+    box-shadow: 0px 0px 5px $brand-primary;&#13;
+  }&#13;
+}&#13;
+&#13;
+.loading {&#13;
+  min-height: 400px;&#13;
+  display: flex;&#13;
+  width: 100%;&#13;
+  vertical-align: middle;&#13;
+  align-items: center;&#13;
+  justify-content: center;&#13;
+&#13;
+  &amp;.absolute-loader {&#13;
+    height: 100%;&#13;
+    position: absolute;&#13;
+    top: 0;&#13;
+    left: 0;&#13;
+    background: #fff;&#13;
+    z-index: 1049;&#13;
+  }&#13;
+&#13;
+  &amp; span.loading-inline {&#13;
+    font-size: 3rem;&#13;
+    font-weight: 700;&#13;
+    color: $brand-primary;&#13;
+  }&#13;
+}&#13;
+&#13;
+.btn-absolute-group {&#13;
+  position: absolute;&#13;
+  top: 50px;&#13;
+  left: 15px;&#13;
+}&#13;
+&#13;
+.recipients-input-group.ng-enter,&#13;
+.widget-container.ng-enter,&#13;
+.panel-sticky.ng-enter {&#13;
+  animation: 0.3s fade-in;&#13;
+}&#13;
+&#13;
+.recipients-input-group.ng-leave,&#13;
+.widget-container.ng-leave,&#13;
+.panel-sticky.ng-leave {&#13;
+  animation: 0.3s fade-out;&#13;
+}&#13;
+&#13;
+.widget-container {&#13;
+  min-height: 400px;&#13;
+}&#13;
+&#13;
+@keyframes fade-in {&#13;
+  from {&#13;
+    opacity: 0;&#13;
+  }&#13;
+&#13;
+  to {&#13;
+    opacity: 1;&#13;
+  }&#13;
+}&#13;
+&#13;
+@keyframes fade-out {&#13;
+  from {&#13;
+    opacity: 1;&#13;
+  }&#13;
+&#13;
+  to {&#13;
+    opacity: 0;&#13;
+  }&#13;
+}</css>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description/>
+        <docs/>
+        <field_list/>
+        <has_preview>false</has_preview>
+        <id>ratelock_ticket_conversations_v2</id>
+        <internal>false</internal>
+        <link><![CDATA[function link(scope, element, attrs, controller) {}]]></link>
+        <name>Ratelock Ticket Conversations V2</name>
+        <option_schema/>
+        <public>false</public>
+        <roles>x_momo_ratelock.ratelock_tech</roles>
+        <script><![CDATA[(function () {
+  /* populate the 'data' object */
+  /* e.g., data.table = $sp.getValue('table'); */
+
+
+  data.table = options.table || $sp.getParameter('table');
+  data.sysId = options.sys_id || $sp.getParameter('sys_id');
+
+  data.hideAttachmentBtn = false;
+
+  var record = getRecordAndPermissions(data.table, data.sysId);
+  var permissions = record.permissions;
+
+  data.canAttach = permissions.ATTACH;
+  data.canRead = permissions.READ;
+  data.canWrite = permissions.WRITE;
+  data.isActive = permissions.ACTIVE;
+  data.hasLoanNumber = record.loanNumber !== false;
+  data.isPosting = false;
+
+
+  if ((input ? input.journalEntry : false)) {
+    var updated = updateJournalEntry(data.table, data.sysId, {
+      entry: input.journalEntry,
+      element: input.element
+    });
+
+    data.isPosting = !updated;
+  }
+
+  if (!input) {
+    data.widgets = {};
+    if (data.hasLoanNumber) {
+      data.widgets.related = $sp.getWidget('ratelock_related_list', {
+        table: data.table,
+        sys_id: data.sysId,
+        loan_number: record.loanNumber
+      });
+    }
+    data.widgets.editor = getWidgetFromFeed({
+      name: 'ratelock_quill_editor',
+      data: {
+        placeholder: data.placeholder,
+        disabled: (!data.canWrite || !data.isActive),
+        sys_id: data.sys_id
+      }
+    });
+
+    data.widgets.recipients = getWidgetFromFeed({
+      name: "ratelock-recipients-input",
+      data: {
+        sys_id: data.sys_id
+      }
+    });
+    data.widgets.timeline = getWidgetFromFeed({
+      name: "ratelock_ticket_timeline",
+      data: {
+        table: data.table,
+        sys_id: data.sysId,
+        canRead: data.canRead,
+        canWrite: data.canWrite,
+        canAttach: data.canAttach,
+        isActive: data.isActive,
+        element: "comments"
+      }
+    });
+
+    data.widgets.emails = getWidgetFromFeed({
+      name: "ratelock_ticket_emails",
+      data: {
+        table: data.table,
+        sys_id: data.sysId,
+        isActive: data.isActive
+      }
+    });
+
+    data.widgets.history = getWidgetFromFeed({
+      name: "ratelock_ticket_history_list",
+      data: {
+        table: data.table,
+        sys_id: data.sysId
+      }
+    });
+  }
+
+  if (!data.title) {
+    data.title = record.title;
+  }
+
+  function updateJournalEntry(table, sysId, payload) {
+    if (typeof payload !== 'object') return false;
+
+    if (!payload.element && (payload.element !== 'comments' || payload.element !== 'work_notes')) return false;
+
+    var gr = new GlideRecord(table);
+    gr.get(sysId);
+
+    if (gr.isValidRecord()) {
+      gr[payload.element] = payload.entry;
+      gr.update();
+      return true;
+    }
+    return false;
+  }
+
+
+  function getWidgetFromFeed(widget) {
+    return $sp.getWidget(widget.name, widget.data);
+  }
+
+  function getRecordAndPermissions(table, id) {
+    var loanNumber = false;
+
+    var permissions = {
+      READ: false,
+      WRITE: false,
+      ACTIVE: false,
+      ATTACH: gs.hasRole(gs.getProperty("glide.attachment.role")),
+    };
+
+    var gr = new GlideRecord(table);
+
+    gr.get(id);
+
+    if (gr.isValidRecord()) {
+      permissions.READ = gr.canRead();
+      permissions.WRITE = gr.canWrite();
+      permissions.ACTIVE = gr.getValue('state') != "6";
+      loanNumber = gr.loan_number.nil() ? false : gr.getValue('loan_number');
+    }
+
+    return {
+      title: !gr.short_description.nil() ? gr.getValue('short_description') : gr.getValue('number'),
+      loanNumber: loanNumber,
+      permissions: permissions
+    };
+  }
+
+})();]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>douglas.schamberg@movement.com</sys_created_by>
+        <sys_created_on>2020-08-20 10:47:32</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>afd62474db765c10f255132968961904</sys_id>
+        <sys_mod_count>124</sys_mod_count>
+        <sys_name>Ratelock Ticket Conversations V2</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sp_widget_afd62474db765c10f255132968961904</sys_update_name>
+        <sys_updated_by>douglas.schamberg@movement.com</sys_updated_by>
+        <sys_updated_on>2020-11-10 20:32:48</sys_updated_on>
+        <template><![CDATA[<div>
+  <div ng-if="!data.canRead">
+    ${Requested record not found}
+  </div>
+  <div ng-if="data.canRead && !data.isNewRecord" class="panel panel-default b ticket_conversation">
+    <div class="panel-heading">
+      <div class="h2 panel-title panel-title-container">
+        <h2 class="h4 panel-title" aria-label="{{ ::data.title }} ${ticket history}">{{ ::data.title }}</h2>
+        <div class="pull-right panel-title-icons">
+          <ul>
+            <li>
+              <button class="panel-button btn btn-link hidden-xs btn-templates"
+                ng-class="{'active': c.isShowingTemplates}" ng-click="c.toggleTemplateBar()"
+                ng-disabled="!(data.canWrite && data.canRead && data.isActive && c.feed === 'comments')"
+                title="{{ ::data.templateButtonMsg }}">
+                <span class="glyphicon"
+                  ng-class="{'glyphicon-folder-close': !c.isShowingTemplates, 'glyphicon-folder-open': c.isShowingTemplates}"></span>
+              </button>
+            </li>
+            <li ng-if="::(!data.hideAttachmentBtn && data.isActive)">
+              <sp-attachment-button ng-if="::data.canWrite && data.canAttach"></sp-attachment-button>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="panel-body">
+      <div class="row m-b-sm">
+        <div ng-class="{'col-md-6': !c.isRelatedOpen, 'col-md-12': c.isRelatedOpen}" ng-if="data.hasLoanNumber">
+          <a href tabindex="0" ng-click="c.toggleRelatedOpen()" uib-accordian-transclude="heading"
+            class="accordian-link">
+            <span class="accordian-clicker">Related Ticket's</span>
+            <i uib-accordian-header class="fa accordian-clicker fa-chevron-right"
+              ng-class="{'fa-rotate-90': c.isRelatedOpen}" aria-hidden="true"></i>
+          </a>
+          <div class="panel-collapse collapse m-t" uib-collapse="!c.isRelatedOpen">
+            <sp-widget widget="c.related"></sp-widget>
+          </div>
+        </div>
+        <div class="col-md-6" ng-if="!data.hasLoanNumber"></div>
+        <div class="col-md-6" ng-if="!c.isRelatedOpen">
+          <select class="sc-basic-select" ng-model="c.feed" ng-change="c.onActivityChange($event)">
+            <option value="comments" selected>Conversations</option>
+            <option value="work_notes">Internal Notes</option>
+            <option value="emails">Email History</option>
+            <option value="history" class="hidden-xs">Ticket Logs</option>
+          </select>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <form ng-if="c.feed === 'comments' || c.feed === 'work_notes'">
+            <div class="form-group recipients-input-group" ng-if="c.feed === 'comments'" ng-view>
+              <label for="recipients-input" class="recipients-label">Email Recipients</label>
+              <sp-widget widget="c.widgets.recipients" id="recipients-input"></sp-widget>
+            </div>
+            <div class="input-group">
+              <sp-widget widget="c.widgets.editor"></sp-widget>
+              <span class="input-group-btn" style="vertical-align: top">
+                <button class="btn btn-primary" ng-click="c.submit($event)"
+                  ng-disabled="data.isPosting || !data.isActive" ng-bind="c.getEditorButtonPlaceholder()"></button>
+              </span>
+            </div>
+          </form>
+          <ul class="list-group m-b-none" ng-if="typing.length > 0"
+            ng-if="c.feed === 'work_notes' || c.feed === 'comments'">
+            <li class="list-group-item user-typing m-t" ng-repeat="u in typing">${{{::u.user_display_name}} is typing}
+            </li>
+          </ul>
+          <ul class="list-group m-b-none m-t" ng-if="msg">
+            <li class="list-group-item user-typing">{{msg}}</li>
+          </ul>
+          <div ng-view class="widget-container d-flex" ng-if="c.feed === 'comments' || c.feed === 'work_notes'">
+            <sp-widget widget="c.widgets.timeline"></sp-widget>
+          </div>
+          <div ng-view class="widget-container d-flex" ng-if="c.feed === 'emails'">
+            <sp-widget widget="c.widgets.emails"></sp-widget>
+          </div>
+          <div ng-view class="widget-container d-flex" ng-if="c.feed === 'history'">
+            <sp-widget widget="c.widgets.history"></sp-widget>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="panel-footer panel-sticky" ng-if="c.isShowingTemplates" ng-view>
+      <div class="row">
+        <div class="col-md-12">
+          <widget id="ratelock_templates_list"
+            options="{'table': 'x_momo_ratelock_templates', 'canWrite': (data.isActive && data.canWrite)}">
+          </widget>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>]]></template>
+    </sp_widget>
+</record_update>

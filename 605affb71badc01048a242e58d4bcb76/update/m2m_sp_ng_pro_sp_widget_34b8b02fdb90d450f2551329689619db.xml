@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="m2m_sp_ng_pro_sp_widget">
+    <m2m_sp_ng_pro_sp_widget action="INSERT_OR_UPDATE">
+        <sp_angular_provider display_value="spRecordPicker">a1ea61621b9c105048a242e58d4bcb93</sp_angular_provider>
+        <sp_widget display_value="Ratelock Recipients Input">5cddd57adb54d050f255132968961997</sp_widget>
+        <sys_class_name>m2m_sp_ng_pro_sp_widget</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-04-26 18:31:46</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>34b8b02fdb90d450f2551329689619db</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>spRecordPicker.Ratelock Recipients Input</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>m2m_sp_ng_pro_sp_widget_34b8b02fdb90d450f2551329689619db</sys_update_name>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-04-26 18:31:46</sys_updated_on>
+    </m2m_sp_ng_pro_sp_widget>
+</record_update>

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sysauto_script">
+    <sysauto_script action="INSERT_OR_UPDATE">
+        <active>true</active>
+        <business_calendar/>
+        <condition><![CDATA[function isDuringWorkHours() {
+	var dateTime = new GlideDateTime();
+	var time = dateTime.getLocalTime();
+	var hour = time.getHourOfDayUTC();
+	var day = dateTime.getDayOfWeekUTC();
+	return hour > 7 && hour < 17 && day < 6;
+}
+var ga = new GlideAggregate('x_momo_ratelock_ticket');
+ga.addAggregate('COUNT');
+ga.addEncodedQuery('state=3^sys_updated_onRELATIVELE@hour@ago@6^follow_up_attempts<8');
+ga.query();
+ga.next();
+ga.getAggregate('COUNT') !== 0 && isDuringWorkHours();]]></condition>
+        <conditional>true</conditional>
+        <entered_time/>
+        <name>Automated Follow Up Ratelock</name>
+        <offset/>
+        <offset_type>0</offset_type>
+        <run_as/>
+        <run_as_tz/>
+        <run_dayofmonth>1</run_dayofmonth>
+        <run_dayofweek>1</run_dayofweek>
+        <run_period>1970-01-01 04:00:00</run_period>
+        <run_start>2020-01-02 11:04:06</run_start>
+        <run_time>1970-01-01 05:00:00</run_time>
+        <run_type>periodically</run_type>
+        <script><![CDATA[var gr = new GlideRecord('x_momo_ratelock_ticket');
+gr.addEncodedQuery('state=3^sys_updated_onRELATIVELE@hour@ago@6^follow_up_attempts<8');
+gr.query();
+while (gr.next()) {
+  var isTechnician = getLastCommentingUser(gr.getTableName(), gr.getUniqueValue());
+  if (isTechnician) {
+    if (gr.follow_up_attempts < 7) {
+      gr.follow_up_attempts = gr.follow_up_attempts + 1;
+    } else {
+      gr.follow_up_attempts = gr.follow_up_attempts + 1;
+      gr.state = 5;
+    }
+    gr.update();
+  }
+}
+
+function getLastCommentingUser(table, sysId) {
+  var comment = new GlideRecord('sys_journal_field');
+  comment.addQuery('element', 'comments');
+  comment.addQuery('element_id', sysId);
+  comment.addQuery('name', table);
+  comment.setLimit(1);
+  comment.orderByDesc('sys_created_on');
+  comment.query();
+
+  while (comment.next()) {
+    return getUserFromUpdated(gr.getValue('sys_created_by'));
+  }
+}
+
+function getUserFromUpdated(username) {
+  var user = new GlideRecord('sys_user');
+  user.addQuery('active', true);
+  user.addQuery('user_name', username);
+  user.query();
+  while (user.next()) {
+    return getUserRoleFromID(user.getUniqueValue());
+  }
+}
+
+function getUserRoleFromID(sysId) {
+  var role = new GlideAggregate('sys_user_has_role');
+  role.addAggregate('COUNT');
+  role.addEncodedQuery('role.name=x_momo_ratelock.ratelock_tech^user=' + sysId);
+  role.query();
+  role.next();
+  return role.getAggregate('COUNT') !== 0;
+}]]></script>
+        <sys_class_name>sysauto_script</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-01-02 11:08:10</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>c663031adb0a0490f2551329689619f8</sys_id>
+        <sys_mod_count>44</sys_mod_count>
+        <sys_name>Automated Follow Up Ratelock</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sysauto_script_c663031adb0a0490f2551329689619f8</sys_update_name>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-06-06 14:49:59</sys_updated_on>
+        <time_zone/>
+        <upgrade_safe>false</upgrade_safe>
+    </sysauto_script>
+</record_update>

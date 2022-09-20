@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="m2m_sp_ng_pro_sp_widget">
+    <m2m_sp_ng_pro_sp_widget action="DELETE">
+        <sp_angular_provider display_value="mmSessions">62a14d341b0d909048a242e58d4bcb30</sp_angular_provider>
+        <sp_widget display_value="Ratelock Ticket Conversations V2">afd62474db765c10f255132968961904</sp_widget>
+        <sys_class_name>m2m_sp_ng_pro_sp_widget</sys_class_name>
+        <sys_created_by>douglas.schamberg@movement.com</sys_created_by>
+        <sys_created_on>2020-08-20 10:48:40</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>0c2724b4db765c10f2551329689619a1</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>mmSessions.Ratelock Ticket Conversations V2</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>m2m_sp_ng_pro_sp_widget_0c2724b4db765c10f2551329689619a1</sys_update_name>
+        <sys_updated_by>douglas.schamberg@movement.com</sys_updated_by>
+        <sys_updated_on>2020-08-20 10:48:40</sys_updated_on>
+    </m2m_sp_ng_pro_sp_widget>
+    <sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Ratelock">605affb71badc01048a242e58d4bcb76</application>
+        <file_path/>
+        <instance_id>94e8281edbb7470060a6f0e5bf9619f6</instance_id>
+        <instance_name>movementdev</instance_name>
+        <name>m2m_sp_ng_pro_sp_widget_0c2724b4db765c10f2551329689619a1</name>
+        <payload><![CDATA[<?xml version="1.0" encoding="UTF-8"?><record_update table="m2m_sp_ng_pro_sp_widget"><m2m_sp_ng_pro_sp_widget action="INSERT_OR_UPDATE"><sp_angular_provider display_value="mmSessions">62a14d341b0d909048a242e58d4bcb30</sp_angular_provider><sp_widget display_value="Ratelock Ticket Conversations V2">afd62474db765c10f255132968961904</sp_widget><sys_class_name>m2m_sp_ng_pro_sp_widget</sys_class_name><sys_created_by>douglas.schamberg@movement.com</sys_created_by><sys_created_on>2020-08-20 10:48:40</sys_created_on><sys_customer_update>false</sys_customer_update><sys_id>0c2724b4db765c10f2551329689619a1</sys_id><sys_mod_count>0</sys_mod_count><sys_name>mmSessions.Ratelock Ticket Conversations V2</sys_name><sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package><sys_policy/><sys_replace_on_upgrade>false</sys_replace_on_upgrade><sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope><sys_update_name>m2m_sp_ng_pro_sp_widget_0c2724b4db765c10f2551329689619a1</sys_update_name><sys_updated_by>douglas.schamberg@movement.com</sys_updated_by><sys_updated_on>2020-08-20 10:48:40</sys_updated_on></m2m_sp_ng_pro_sp_widget></record_update>]]></payload>
+        <payload_hash>1916180387</payload_hash>
+        <record_name>mmSessions.Ratelock Ticket Conversations V2</record_name>
+        <reverted_from/>
+        <source>b5e43a9ddb315c50f25513296896192f</source>
+        <source_table>sys_update_set</source_table>
+        <state>previous</state>
+        <sys_created_by>douglas.schamberg@movement.com</sys_created_by>
+        <sys_created_on>2020-08-20 10:48:40</sys_created_on>
+        <sys_id>c02724b4db765c10f2551329689619a4</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>1740b7c28e80000001</sys_recorded_at>
+        <sys_updated_by>douglas.schamberg@movement.com</sys_updated_by>
+        <sys_updated_on>2020-08-20 10:48:40</sys_updated_on>
+        <type>Angular Providers</type>
+        <update_guid>c82724b4db765c10b65d8b69c8f05aa3</update_guid>
+        <update_guid_history>c82724b4db765c10b65d8b69c8f05aa3:1916180387</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete display_value="">6ca7a4f4db765c10f25513296896194e</sys_audit_delete>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>douglas.schamberg@movement.com</sys_created_by>
+        <sys_created_on>2020-08-20 10:50:53</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_db_object display_value="" name="m2m_sp_ng_pro_sp_widget">m2m_sp_ng_pro_sp_widget</sys_db_object>
+        <sys_id>59f3a461e332425291e59e1f2dc66be4</sys_id>
+        <sys_metadata>0c2724b4db765c10f2551329689619a1</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>mmSessions.Ratelock Ticket Conversations V2</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_parent/>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_scope_delete display_value="">57712118eaee4a49ae47b2048a14ac31</sys_scope_delete>
+        <sys_update_name>m2m_sp_ng_pro_sp_widget_0c2724b4db765c10f2551329689619a1</sys_update_name>
+        <sys_update_version display_value="m2m_sp_ng_pro_sp_widget_0c2724b4db765c10f2551329689619a1">c02724b4db765c10f2551329689619a4</sys_update_version>
+        <sys_updated_by>douglas.schamberg@movement.com</sys_updated_by>
+        <sys_updated_on>2020-08-20 10:50:53</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>

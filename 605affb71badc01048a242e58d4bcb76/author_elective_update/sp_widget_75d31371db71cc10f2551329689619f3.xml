@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_widget">
+    <sp_widget action="DELETE">
+        <category>custom</category>
+        <client_script><![CDATA[function($scope) {
+  /* widget controller */
+  var c = this;
+	$scope.form = $scope.data.form;
+}]]></client_script>
+        <controller_as>c</controller_as>
+        <css/>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description/>
+        <docs/>
+        <field_list/>
+        <has_preview>false</has_preview>
+        <id>ratelock_ticket_fields_form</id>
+        <internal>false</internal>
+        <link><![CDATA[function link(scope, element, attrs, controller) {  }]]></link>
+        <name>Ratelock Ticket Fields Form</name>
+        <option_schema/>
+        <public>false</public>
+        <roles/>
+        <script><![CDATA[(function() {
+  /* populate the 'data' object */
+  /* e.g., data.table = $sp.getValue('table'); */
+	var record = $sp.getRecord();
+	var table = $sp.getParameter('table');
+	var sys_id = $sp.getParameter('sys_id');
+	
+	if (!sys_id && !table || !record)
+		return;
+	
+	data.canRead = record.canRead();
+	data.canWrite = record.canWrite();
+	data.form = [];
+	var form = $sp.getForm(table, sys_id);
+	data.f = form;
+	var fields = form._fields;
+	var _fields = Object.keys(fields);
+	for (var field=0;field<_fields.length;field++) {
+		var key = _fields[field];
+		var value = fields[key];
+		
+		if (value.choices) {
+			data.form.push({
+				name: value.name,
+				type: 'select',
+				value: value.choice,
+				choices: value.choices
+			});
+		}
+	}
+	
+	
+})();]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2019-12-19 12:43:15</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>75d31371db71cc10f2551329689619f3</sys_id>
+        <sys_mod_count>48</sys_mod_count>
+        <sys_name>Ratelock Ticket Fields Form</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sp_widget_75d31371db71cc10f2551329689619f3</sys_update_name>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2019-12-19 14:23:22</sys_updated_on>
+        <template><![CDATA[<widget id="widget-form" options="{'disableUIActions': true, 'mitHeaderOptions': true, 'hideRelatedLists': true}"></widget>]]></template>
+    </sp_widget>
+    <sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Ratelock">605affb71badc01048a242e58d4bcb76</application>
+        <file_path/>
+        <instance_id>94e8281edbb7470060a6f0e5bf9619f6</instance_id>
+        <instance_name>movementdev</instance_name>
+        <name>sp_widget_75d31371db71cc10f2551329689619f3</name>
+        <payload>&lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;record_update table="sp_widget"&gt;&lt;sp_widget action="INSERT_OR_UPDATE"&gt;&lt;category&gt;custom&lt;/category&gt;&lt;client_script&gt;&lt;![CDATA[function($scope) {
+  /* widget controller */
+  var c = this;
+	$scope.form = $scope.data.form;
+}]]&gt;&lt;/client_script&gt;&lt;controller_as&gt;c&lt;/controller_as&gt;&lt;css/&gt;&lt;data_table&gt;sp_instance&lt;/data_table&gt;&lt;demo_data/&gt;&lt;description/&gt;&lt;docs/&gt;&lt;field_list/&gt;&lt;has_preview&gt;false&lt;/has_preview&gt;&lt;id&gt;ratelock_ticket_fields_form&lt;/id&gt;&lt;internal&gt;false&lt;/internal&gt;&lt;link&gt;&lt;![CDATA[function link(scope, element, attrs, controller) {  }]]&gt;&lt;/link&gt;&lt;name&gt;Ratelock Ticket Fields Form&lt;/name&gt;&lt;option_schema/&gt;&lt;public&gt;false&lt;/public&gt;&lt;roles/&gt;&lt;script&gt;&lt;![CDATA[(function() {
+  /* populate the 'data' object */
+  /* e.g., data.table = $sp.getValue('table'); */
+	var record = $sp.getRecord();
+	var table = $sp.getParameter('table');
+	var sys_id = $sp.getParameter('sys_id');
+	
+	if (!sys_id &amp;&amp; !table || !record)
+		return;
+	
+	data.canRead = record.canRead();
+	data.canWrite = record.canWrite();
+	data.form = [];
+	var form = $sp.getForm(table, sys_id);
+	data.f = form;
+	var fields = form._fields;
+	var _fields = Object.keys(fields);
+	for (var field=0;field&lt;_fields.length;field++) {
+		var key = _fields[field];
+		var value = fields[key];
+		
+		if (value.choices) {
+			data.form.push({
+				name: value.name,
+				type: 'select',
+				value: value.choice,
+				choices: value.choices
+			});
+		}
+	}
+	
+	
+})();]]&gt;&lt;/script&gt;&lt;servicenow&gt;false&lt;/servicenow&gt;&lt;sys_class_name&gt;sp_widget&lt;/sys_class_name&gt;&lt;sys_created_by&gt;douglas.schamberg&lt;/sys_created_by&gt;&lt;sys_created_on&gt;2019-12-19 12:43:15&lt;/sys_created_on&gt;&lt;sys_customer_update&gt;false&lt;/sys_customer_update&gt;&lt;sys_id&gt;75d31371db71cc10f2551329689619f3&lt;/sys_id&gt;&lt;sys_mod_count&gt;48&lt;/sys_mod_count&gt;&lt;sys_name&gt;Ratelock Ticket Fields Form&lt;/sys_name&gt;&lt;sys_package display_value="Ratelock" source="x_momo_ratelock"&gt;605affb71badc01048a242e58d4bcb76&lt;/sys_package&gt;&lt;sys_policy/&gt;&lt;sys_replace_on_upgrade&gt;false&lt;/sys_replace_on_upgrade&gt;&lt;sys_scope display_value="Ratelock"&gt;605affb71badc01048a242e58d4bcb76&lt;/sys_scope&gt;&lt;sys_update_name&gt;sp_widget_75d31371db71cc10f2551329689619f3&lt;/sys_update_name&gt;&lt;sys_updated_by&gt;douglas.schamberg&lt;/sys_updated_by&gt;&lt;sys_updated_on&gt;2019-12-19 14:23:22&lt;/sys_updated_on&gt;&lt;template&gt;&lt;![CDATA[&lt;widget id="widget-form" options="{'disableUIActions': true, 'mitHeaderOptions': true, 'hideRelatedLists': true}"&gt;&lt;/widget&gt;]]&gt;&lt;/template&gt;&lt;/sp_widget&gt;&lt;/record_update&gt;</payload>
+        <payload_hash>-1964871758</payload_hash>
+        <record_name>Ratelock Ticket Fields Form</record_name>
+        <reverted_from/>
+        <source>a45affb71badc01048a242e58d4bcb78</source>
+        <source_table>sys_update_set</source_table>
+        <state>previous</state>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2019-12-19 14:23:22</sys_created_on>
+        <sys_id>e0ca2b7ddbb1cc10f2551329689619e2</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>16f1e8aaf610000001</sys_recorded_at>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2019-12-19 14:23:22</sys_updated_on>
+        <type>Widget</type>
+        <update_guid>a8ca2b7dc0b1cc104e1169cccac707e1</update_guid>
+        <update_guid_history>a8ca2b7dc0b1cc104e1169cccac707e1:-1964871758,a0ba6b3d2eb1cc106d20df78c969b3aa:832433929,6d386f3950b1cc10bb78e74ffa885170:900877354,6c28e7b97ab1cc1074d405a5a3978671:1353749104,4207a3394db1cc101e0271deb7e72d70:-1593947464,08076379fcb1cc10be080cf827164761:-480550371,4cd66f39ddb1cc10432d30ec7c0e7068:1129267387,2866a7f5d8b1cc106c64ddd64586c24b:-1458336573,ef56abb5cdb1cc101569230fa94104d4:349212255,03562339c3b1cc1047b5d47d944d1633:1188941627,9a562ff509b1cc109c87854c7a6624fe:349212255,9556a339fdb1cc10bdea738401170e33:-1458336573,76362ff51ab1cc10248e7ad6f346d23d:-525414221,5126eff572b1cc10fa89958c851e6bf3:1035181913,09f52ff519b1cc10c866e36017b3f635:26763654,31d5a7b5ddb1cc10127d7e649f5baf6c:1193797913,0cd56bf579b1cc1003915d7baf234092:2011877729,5b9567f5f7b1cc106045ec15b06a9ab2:776457402,3085a7b53fb1cc10d26bdabef90b8673:519224744,d975a7b50cb1cc107f2acfb475f23e11:1313945134,eb65af75d5b1cc10eca495c1131fcaee:519224744,cd15a3b52fb1cc102fe6fe0b12f87d39:1964487165,70d46f75fcb1cc10256f7a829ce41ccf:967074802,299463b532b1cc10646dc6c178c47a7d:-462554022,f894af756bb1cc109bf4711bce263e30:925006333,3364af7509b1cc1027b3a76bb054e1e6:1624128427,08646f75b8b1cc10affa2d92a58750a3:-841417223,1814e7750fb1cc10c78fee3f2392e3ea:1980740269,3904277126b1cc1099051a452e04ae42:1452574184,c980e3719ab1cc107d55d547dcf30bd8:-538831993,d770e371bcb1cc10522e4b951867c041:-1350775619,4510ab3159b1cc107a0ec17d8971b248:1926710532,2d0067318cb1cc10a2e4c2b6adb17cdf:1749115110,8edf573143b1cc10309a971735deb92f:-1541994022,9fcf57bdaf71cc10fb97ef00c4d51145:574714505,f1bf17bdab71cc10160306b9377237b5:313557114,a89e5bbde471cc1084a863a79915a23f:-1795409706,b87e9bbd2e71cc10a5c36971f320d505:-1239584747,316e1bf9ab71cc107eb0d6d1556096d5:1282913184,704e533dee71cc10e3c35ce499cfeb60:-403392160,553e17bd2271cc1068b41512875b58ab:-1413888624,1b2e5b3df371cc100773424668c5616d:-1425245823,f6ec9b3dad71cc10663e74447f09c158:-529976029,f2dc1b3dc671cc10145d2660ac10a7c6:1124831817,d9b9d339e971cc108c5b0b04d60991fd:-1561744847,a5a99b75b671cc106f2cbf24c9e17049:569118731,b50897f11971cc1084e2ca13e6cfd418:-964305318,6887dfb1c771cc100f80f7dd1a1c3e92:-2134213992,3dd313715171cc10e96a890d067e21f4:-463094309</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete display_value="">6ffaaf7ddbb1cc10f25513296896199a</sys_audit_delete>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2019-12-19 14:24:24</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_db_object display_value="" name="sp_widget">sp_widget</sys_db_object>
+        <sys_id>0241d89b576749678cebf1930cfb02a9</sys_id>
+        <sys_metadata>75d31371db71cc10f2551329689619f3</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>Ratelock Ticket Fields Form</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_parent/>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_scope_delete display_value="">57712118eaee4a49ae47b2048a14ac31</sys_scope_delete>
+        <sys_update_name>sp_widget_75d31371db71cc10f2551329689619f3</sys_update_name>
+        <sys_update_version display_value="sp_widget_75d31371db71cc10f2551329689619f3">e0ca2b7ddbb1cc10f2551329689619e2</sys_update_version>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2019-12-19 14:24:24</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>

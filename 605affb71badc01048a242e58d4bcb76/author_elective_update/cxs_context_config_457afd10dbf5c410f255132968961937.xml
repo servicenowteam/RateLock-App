@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update sys_domain="global" table="cxs_context_config">
+    <cxs_context_config action="DELETE">
+        <active>true</active>
+        <cxs_searcher_config display_value="Catalog only">d9fa7504eb53210070a9666cd206fef9</cxs_searcher_config>
+        <default_config>false</default_config>
+        <name>Ratelock Deflection</name>
+        <search_on_tab>true</search_on_tab>
+        <searcher_text>Default Sources</searcher_text>
+        <short_description/>
+        <sys_class_name>cxs_context_config</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2019-12-14 14:22:16</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_domain>global</sys_domain>
+        <sys_domain_path/>
+        <sys_id>457afd10dbf5c410f255132968961937</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>Ratelock Deflection</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>cxs_context_config_457afd10dbf5c410f255132968961937</sys_update_name>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2019-12-14 14:22:16</sys_updated_on>
+        <wildcard_search_active>false</wildcard_search_active>
+    </cxs_context_config>
+    <sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Ratelock">605affb71badc01048a242e58d4bcb76</application>
+        <file_path/>
+        <instance_id>94e8281edbb7470060a6f0e5bf9619f6</instance_id>
+        <instance_name>movementdev</instance_name>
+        <name>cxs_context_config_457afd10dbf5c410f255132968961937</name>
+        <payload><![CDATA[<?xml version="1.0" encoding="UTF-8"?><record_update sys_domain="global" table="cxs_context_config"><cxs_context_config action="INSERT_OR_UPDATE"><active>true</active><cxs_searcher_config display_value="Catalog only">d9fa7504eb53210070a9666cd206fef9</cxs_searcher_config><default_config>false</default_config><name>Ratelock Deflection</name><search_on_tab>true</search_on_tab><searcher_text>Default Sources</searcher_text><short_description/><sys_class_name>cxs_context_config</sys_class_name><sys_created_by>douglas.schamberg</sys_created_by><sys_created_on>2019-12-14 14:22:16</sys_created_on><sys_customer_update>false</sys_customer_update><sys_domain>global</sys_domain><sys_domain_path/><sys_id>457afd10dbf5c410f255132968961937</sys_id><sys_mod_count>0</sys_mod_count><sys_name>Ratelock Deflection</sys_name><sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package><sys_policy/><sys_replace_on_upgrade>false</sys_replace_on_upgrade><sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope><sys_update_name>cxs_context_config_457afd10dbf5c410f255132968961937</sys_update_name><sys_updated_by>douglas.schamberg</sys_updated_by><sys_updated_on>2019-12-14 14:22:16</sys_updated_on><wildcard_search_active>false</wildcard_search_active></cxs_context_config></record_update>]]></payload>
+        <payload_hash>-2031463635</payload_hash>
+        <record_name>Ratelock Deflection</record_name>
+        <reverted_from/>
+        <source>a45affb71badc01048a242e58d4bcb78</source>
+        <source_table>sys_update_set</source_table>
+        <state>previous</state>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2019-12-14 14:22:16</sys_created_on>
+        <sys_id>a78af150dbf5c410f25513296896192e</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>16f04c9e0200000001</sys_recorded_at>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2019-12-14 14:22:16</sys_updated_on>
+        <type>Search Context</type>
+        <update_guid>af8af15040f5c410525946c3b2dd812d</update_guid>
+        <update_guid_history>af8af15040f5c410525946c3b2dd812d:-2031463635</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete display_value="">a6baf550dbf5c410f25513296896194d</sys_audit_delete>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2019-12-14 14:23:01</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_db_object display_value="" name="cxs_context_config">cxs_context_config</sys_db_object>
+        <sys_id>04bea5f6c255491b80313365511aebf1</sys_id>
+        <sys_metadata>457afd10dbf5c410f255132968961937</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>Ratelock Deflection</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_parent/>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_scope_delete display_value="">57712118eaee4a49ae47b2048a14ac31</sys_scope_delete>
+        <sys_update_name>cxs_context_config_457afd10dbf5c410f255132968961937</sys_update_name>
+        <sys_update_version display_value="cxs_context_config_457afd10dbf5c410f255132968961937">a78af150dbf5c410f25513296896192e</sys_update_version>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2019-12-14 14:23:01</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>

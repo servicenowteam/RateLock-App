@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_instance">
+    <sp_instance action="DELETE">
+        <active>true</active>
+        <class_name/>
+        <color>default</color>
+        <css/>
+        <glyph/>
+        <id/>
+        <order>1</order>
+        <roles/>
+        <short_description/>
+        <size>md</size>
+        <sp_column display_value="3">afa2aed0dbb9c410f2551329689619ae</sp_column>
+        <sp_widget display_value="Ratesheets List">217fdfd4dbbdc410f25513296896198a</sp_widget>
+        <sys_class_name>sp_instance</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2019-12-14 21:44:12</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>11bf5bdcdbbdc410f255132968961959</sys_id>
+        <sys_mod_count>1</sys_mod_count>
+        <sys_name>Ratesheet Card</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sp_instance_11bf5bdcdbbdc410f255132968961959</sys_update_name>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-01-04 21:41:41</sys_updated_on>
+        <title>Ratesheet Card</title>
+        <url/>
+        <widget_parameters/>
+    </sp_instance>
+    <sys_translated_text action="DELETE" query="documentkey=11bf5bdcdbbdc410f255132968961959"/>
+<sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Ratelock">605affb71badc01048a242e58d4bcb76</application>
+        <file_path/>
+        <instance_id>94e8281edbb7470060a6f0e5bf9619f6</instance_id>
+        <instance_name>movementdev</instance_name>
+        <name>sp_instance_11bf5bdcdbbdc410f255132968961959</name>
+        <payload><![CDATA[<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_instance">
+    <sp_instance action="INSERT_OR_UPDATE">
+        <active>true</active>
+        <class_name/>
+        <color>default</color>
+        <css/>
+        <glyph/>
+        <id/>
+        <order>1</order>
+        <roles/>
+        <short_description/>
+        <size>md</size>
+        <sp_column display_value="3">afa2aed0dbb9c410f2551329689619ae</sp_column>
+        <sp_widget display_value="Ratesheets List">217fdfd4dbbdc410f25513296896198a</sp_widget>
+        <sys_class_name>sp_instance</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2019-12-14 21:44:12</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>11bf5bdcdbbdc410f255132968961959</sys_id>
+        <sys_mod_count>1</sys_mod_count>
+        <sys_name>Ratesheet Card</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sp_instance_11bf5bdcdbbdc410f255132968961959</sys_update_name>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-01-04 21:41:41</sys_updated_on>
+        <title>Ratesheet Card</title>
+        <url/>
+        <widget_parameters/>
+    </sp_instance>
+    <sys_translated_text action="delete_multiple" query="documentkey=11bf5bdcdbbdc410f255132968961959"/>
+</record_update>]]></payload>
+        <payload_hash>317170895</payload_hash>
+        <record_name>Ratesheet Card</record_name>
+        <reverted_from/>
+        <source>bf1c1be11b5a401048a242e58d4bcb30</source>
+        <source_table>sys_upgrade_history</source_table>
+        <state>previous</state>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-01-12 15:12:29</sys_created_on>
+        <sys_id>392c9be11b5a401048a242e58d4bcb81</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>16f9a5045070000001</sys_recorded_at>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-01-12 15:12:29</sys_updated_on>
+        <type>Instance</type>
+        <update_guid>752c9be1675a40103f3c2f629475a781</update_guid>
+        <update_guid_history>752c9be1675a40103f3c2f629475a781:0,d0f8dfad3c1a4010484c57401d7ab611:1795588275,87071f69991a4010653b6b3c94a44b57:0,3e361fe5da1a4010e2b6d9883fd8cd10:-454384865,def493e1261a40105d54e3f3317d6180:0,7874db61341a4010ecb67adb713fadd6:392243722,d823176dbad640104fe7aaa88a45272c:0,363217e9d3d640103f0771f9c7844551:-1390096385,f0f0976550d640105fafe28922d379f0:0,afd09f25a7d6401033e4c877b1c8b165:687829773,58101f61d0d6401067929999b52911e2:0,95ff83618ed640106bfd5ca9fd8b3710:687829773,327d87a9709640104eeccd3d20c580b0:0,8f5dc76937964010de8880813b828948:687829773,4588ab030c860890d8795aeffa7cfea1:1451446297,1dbf5bdc47bdc410626d76f77d347f5a:-627521174</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete display_value="">dd85a570dbe55410f2551329689619d0</sys_audit_delete>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-06-19 12:02:47</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_db_object display_value="" name="sp_instance">sp_instance</sys_db_object>
+        <sys_id>09d0e2100b6742d18a03e0d5f249a0f9</sys_id>
+        <sys_metadata>11bf5bdcdbbdc410f255132968961959</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>Ratesheet Card</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_parent/>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_scope_delete display_value="">57712118eaee4a49ae47b2048a14ac31</sys_scope_delete>
+        <sys_update_name>sp_instance_11bf5bdcdbbdc410f255132968961959</sys_update_name>
+        <sys_update_version display_value="sp_instance_11bf5bdcdbbdc410f255132968961959">392c9be11b5a401048a242e58d4bcb81</sys_update_version>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-06-19 12:02:47</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>

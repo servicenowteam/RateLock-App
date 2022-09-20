@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update sys_domain="global" table="sys_script">
+    <sys_script action="DELETE">
+        <abort_action>false</abort_action>
+        <access>package_private</access>
+        <action_delete>false</action_delete>
+        <action_insert>false</action_insert>
+        <action_query>false</action_query>
+        <action_update>true</action_update>
+        <active>true</active>
+        <add_message>false</add_message>
+        <advanced>true</advanced>
+        <change_fields>false</change_fields>
+        <client_callable>false</client_callable>
+        <collection>x_momo_ratelock_ticket</collection>
+        <condition/>
+        <description/>
+        <execute_function>false</execute_function>
+        <filter_condition table="x_momo_ratelock_ticket">stateCHANGESFROM5^EQ<item display_value="Resolved" endquery="false" field="state" goto="false" newquery="false" operator="CHANGESFROM" or="false" value="5"/>
+            <item endquery="true" field="" goto="false" newquery="false" operator="=" or="false" value=""/>
+        </filter_condition>
+        <is_rest>false</is_rest>
+        <message/>
+        <name>Re-Activate Ticket</name>
+        <order>100</order>
+        <priority>100</priority>
+        <rest_method/>
+        <rest_method_text/>
+        <rest_service/>
+        <rest_service_text/>
+        <rest_variables/>
+        <role_conditions/>
+        <script><![CDATA[(function executeRule(current, previous /*null when async*/) {
+	if (current.state != 6) {
+		current.resolved = '';
+		current.active = true;
+		current.update();
+	}
+	
+
+})(current, previous);]]></script>
+        <sys_class_name>sys_script</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2019-12-22 11:28:55</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_domain>global</sys_domain>
+        <sys_domain_path>/</sys_domain_path>
+        <sys_id>3c1f9afedbf9c050f2551329689619e7</sys_id>
+        <sys_mod_count>5</sys_mod_count>
+        <sys_name>Re-Activate Ticket</sys_name>
+        <sys_overrides/>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sys_script_3c1f9afedbf9c050f2551329689619e7</sys_update_name>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-03-25 13:17:00</sys_updated_on>
+        <template/>
+        <when>after</when>
+    </sys_script>
+    <sys_translated_text action="DELETE" query="documentkey=3c1f9afedbf9c050f2551329689619e7"/>
+    <sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Ratelock">605affb71badc01048a242e58d4bcb76</application>
+        <file_path/>
+        <instance_id>94e8281edbb7470060a6f0e5bf9619f6</instance_id>
+        <instance_name>movementdev</instance_name>
+        <name>sys_script_3c1f9afedbf9c050f2551329689619e7</name>
+        <payload>&lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;record_update sys_domain="global" table="sys_script"&gt;&lt;sys_script action="INSERT_OR_UPDATE"&gt;&lt;abort_action&gt;false&lt;/abort_action&gt;&lt;access&gt;package_private&lt;/access&gt;&lt;action_delete&gt;false&lt;/action_delete&gt;&lt;action_insert&gt;false&lt;/action_insert&gt;&lt;action_query&gt;false&lt;/action_query&gt;&lt;action_update&gt;true&lt;/action_update&gt;&lt;active&gt;true&lt;/active&gt;&lt;add_message&gt;false&lt;/add_message&gt;&lt;advanced&gt;true&lt;/advanced&gt;&lt;change_fields&gt;false&lt;/change_fields&gt;&lt;client_callable&gt;false&lt;/client_callable&gt;&lt;collection&gt;x_momo_ratelock_ticket&lt;/collection&gt;&lt;condition/&gt;&lt;description/&gt;&lt;execute_function&gt;false&lt;/execute_function&gt;&lt;filter_condition table="x_momo_ratelock_ticket"&gt;stateCHANGESFROM5^EQ&lt;item display_value="Resolved" endquery="false" field="state" goto="false" newquery="false" operator="CHANGESFROM" or="false" value="5"/&gt;&lt;item endquery="true" field="" goto="false" newquery="false" operator="=" or="false" value=""/&gt;&lt;/filter_condition&gt;&lt;is_rest&gt;false&lt;/is_rest&gt;&lt;message/&gt;&lt;name&gt;Re-Activate Ticket&lt;/name&gt;&lt;order&gt;100&lt;/order&gt;&lt;priority&gt;100&lt;/priority&gt;&lt;rest_method/&gt;&lt;rest_method_text/&gt;&lt;rest_service/&gt;&lt;rest_service_text/&gt;&lt;rest_variables/&gt;&lt;role_conditions/&gt;&lt;script&gt;&lt;![CDATA[(function executeRule(current, previous /*null when async*/) {
+	if (current.state != 6) {
+		current.resolved = '';
+		current.active = true;
+		current.update();
+	}
+	
+
+})(current, previous);]]&gt;&lt;/script&gt;&lt;sys_class_name&gt;sys_script&lt;/sys_class_name&gt;&lt;sys_created_by&gt;douglas.schamberg&lt;/sys_created_by&gt;&lt;sys_created_on&gt;2019-12-22 11:28:55&lt;/sys_created_on&gt;&lt;sys_customer_update&gt;false&lt;/sys_customer_update&gt;&lt;sys_domain&gt;global&lt;/sys_domain&gt;&lt;sys_domain_path&gt;/&lt;/sys_domain_path&gt;&lt;sys_id&gt;3c1f9afedbf9c050f2551329689619e7&lt;/sys_id&gt;&lt;sys_mod_count&gt;5&lt;/sys_mod_count&gt;&lt;sys_name&gt;Re-Activate Ticket&lt;/sys_name&gt;&lt;sys_overrides/&gt;&lt;sys_package display_value="Ratelock" source="x_momo_ratelock"&gt;605affb71badc01048a242e58d4bcb76&lt;/sys_package&gt;&lt;sys_policy/&gt;&lt;sys_replace_on_upgrade&gt;false&lt;/sys_replace_on_upgrade&gt;&lt;sys_scope display_value="Ratelock"&gt;605affb71badc01048a242e58d4bcb76&lt;/sys_scope&gt;&lt;sys_update_name&gt;sys_script_3c1f9afedbf9c050f2551329689619e7&lt;/sys_update_name&gt;&lt;sys_updated_by&gt;douglas.schamberg&lt;/sys_updated_by&gt;&lt;sys_updated_on&gt;2020-03-25 13:17:00&lt;/sys_updated_on&gt;&lt;template/&gt;&lt;when&gt;after&lt;/when&gt;&lt;/sys_script&gt;&lt;sys_translated_text action="delete_multiple" query="documentkey=3c1f9afedbf9c050f2551329689619e7"/&gt;&lt;/record_update&gt;</payload>
+        <payload_hash>449502121</payload_hash>
+        <record_name>Re-Activate Ticket</record_name>
+        <reverted_from/>
+        <source>74fc5f651b5a401048a242e58d4bcbbc</source>
+        <source_table>sys_update_set</source_table>
+        <state>previous</state>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-03-25 13:17:00</sys_created_on>
+        <sys_id>bdcd7289dbb38050f2551329689619bb</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>17111d6c5770000001</sys_recorded_at>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-03-25 13:17:00</sys_updated_on>
+        <type>Business Rule</type>
+        <update_guid>f1cd7289b9b38050a01ccf244c2620bb</update_guid>
+        <update_guid_history>f1cd7289b9b38050a01ccf244c2620bb:449502121,8c2cb2c5dab38050455c210f530b4d66:660841662,2a2c1fe1f15a401041dd910b71a8c27e:0,ee481b6d3e1a40107bbd28aed8401536:828943781,77075f69bc1a40103375b8db66f2de6e:0,bb369fe5a31a4010bff9dcc93558118b:-1076883867,07f4d3e1071a40109707dc87530ef1d5:0,71745f61851a40108c56ca503caa05e8:1333055149,4d23576dbed640101c078dc5de66f47f:0,3f3297e9dfd64010f7b4b28db216a420:2039244897,e9f01b65cfd64010d96aed408d1d9230:0,58e0df25b8d64010443f992248795aaf:2092988704,81109f614fd64010ae1ff7b4eb856b5b:0,eeffc3615dd64010b166583c5e5400d7:2092988704,5b7dc7a9789640100df690e0b3befffe:0,d32d43293a964010bc922649dadfd468:2092988704,c360c49eaa4ac0909da5641ba95382a5:1526124962,dc9dcfca8882cc501e21e2df7039fc1b:1708967881,1a11eaf2583dc050b103ae8332b2396f:1526124962,d29fd672223dc050b0a2ab61a403c052:-2126792177</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete/>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-03-25 13:17:26</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_db_object display_value="" name="sys_script">sys_script</sys_db_object>
+        <sys_id>2d5300a8da864378897a8bbe4ed7f364</sys_id>
+        <sys_metadata>3c1f9afedbf9c050f2551329689619e7</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>Re-Activate Ticket</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_parent display_value="">a94cdf251b5a401048a242e58d4bcbe4</sys_parent>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_scope_delete display_value="">57712118eaee4a49ae47b2048a14ac31</sys_scope_delete>
+        <sys_update_name>sys_script_3c1f9afedbf9c050f2551329689619e7</sys_update_name>
+        <sys_update_version display_value="sys_script_3c1f9afedbf9c050f2551329689619e7">bdcd7289dbb38050f2551329689619bb</sys_update_version>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-03-25 13:17:26</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>

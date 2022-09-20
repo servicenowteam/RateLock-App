@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_email_layout">
+    <sys_email_layout action="INSERT_OR_UPDATE">
+        <advanced>false</advanced>
+        <advanced_layout/>
+        <description/>
+        <layout><![CDATA[<style><!--
+.tdwrap{color:#ccc;line-height:1;font-size:10pt;}sup{color:#fff;}
+--></style>
+<!-- [if mso]><style>sup{mso-hide: all;}</style><![endif]-->
+<table style="width: 100%; background-color: #d8d8d8; text-align: center; padding: 10px; margin-bottom: 20px;" id="response-table">
+<tbody>
+<tr>
+<td>
+<table style="width: 100%; text-align: center; padding: 10px;">
+<tbody>
+<tr>
+<td style="color: #f4f4f4; height: 50px; border-bottom: 1px solid #f4f4f4; background-color: #f4f4f4; padding: 15px; text-align: center;"><img src="mmlogo-logo.pngx" vspace="" hspace="" border="" align="baseline" alt="" title="" style="align: baseline;" /></td>
+</tr>
+<tr>
+<td style="background-color: #ffffff; text-align: left; font-size: 16px; padding: 15px;">
+<p>${notification:body}</p>
+<p><span colspan="2"></span></p>
+<hr />
+<p></p>
+<p><span style="font-size: 14px;">Regards,</span></p>
+<p><span style="font-size: 14px;">Ratelock Team</span><span style="font-size: 14px;"> | </span><span style="font-size: 14px;"><a href="mailto:ratelock@movement.com">ratelock@movement.com</a></span></p>
+</td>
+</tr>
+<tr>
+<td style="color: #f4f4f4; height: 50px; border-bottom: 1px solid #f4f4f4; background-color: #f4f4f4; padding: 15px; text-align: center;"></td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+<p>${mail_script:add_loan_number_watermark}</p>]]></layout>
+        <name>Movement Ratelock Layout</name>
+        <sys_class_name>sys_email_layout</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-03-10 19:35:13</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>44840f90db6b0890f25513296896195c</sys_id>
+        <sys_mod_count>2</sys_mod_count>
+        <sys_name>Movement Ratelock Layout</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sys_email_layout_44840f90db6b0890f25513296896195c</sys_update_name>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-05-01 12:56:04</sys_updated_on>
+    </sys_email_layout>
+</record_update>

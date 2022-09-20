@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_instance">
+    <sp_instance action="DELETE">
+        <active>true</active>
+        <class_name/>
+        <color>default</color>
+        <css/>
+        <glyph/>
+        <id/>
+        <order>3</order>
+        <roles/>
+        <short_description/>
+        <size>md</size>
+        <sp_column display_value="1">fd4f72e41bfd841048a242e58d4bcbba</sp_column>
+        <sp_widget display_value="Ratelock Ticket Conversations">7bfacf241b31c41048a242e58d4bcbb6</sp_widget>
+        <sys_class_name>sp_instance</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2019-12-15 14:56:31</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>8ffb83241b31c41048a242e58d4bcbd3</sys_id>
+        <sys_mod_count>10</sys_mod_count>
+        <sys_name>Conversations</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sp_instance_8ffb83241b31c41048a242e58d4bcbd3</sys_update_name>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-01-01 10:00:45</sys_updated_on>
+        <title>Conversations</title>
+        <url/>
+        <widget_parameters><![CDATA[{
+	"use_dynamic_placeholder": {
+		"value": true,
+		"displayValue": true
+	},
+	"no_readable_journal_field_message": {
+		"value": "",
+		"displayValue": ""
+	},
+    "includeExtended": {
+    	"value": true,
+        "displayValue": true
+    }
+}]]></widget_parameters>
+    </sp_instance>
+    <sys_translated_text action="DELETE" query="documentkey=8ffb83241b31c41048a242e58d4bcbd3"/>
+<sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Ratelock">605affb71badc01048a242e58d4bcb76</application>
+        <file_path/>
+        <instance_id>94e8281edbb7470060a6f0e5bf9619f6</instance_id>
+        <instance_name>movementdev</instance_name>
+        <name>sp_instance_8ffb83241b31c41048a242e58d4bcbd3</name>
+        <payload>&lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;record_update table="sp_instance"&gt;
+    &lt;sp_instance action="INSERT_OR_UPDATE"&gt;
+        &lt;active&gt;true&lt;/active&gt;
+        &lt;class_name/&gt;
+        &lt;color&gt;default&lt;/color&gt;
+        &lt;css/&gt;
+        &lt;glyph/&gt;
+        &lt;id/&gt;
+        &lt;order&gt;3&lt;/order&gt;
+        &lt;roles/&gt;
+        &lt;short_description/&gt;
+        &lt;size&gt;md&lt;/size&gt;
+        &lt;sp_column display_value="1"&gt;fd4f72e41bfd841048a242e58d4bcbba&lt;/sp_column&gt;
+        &lt;sp_widget display_value="Ratelock Ticket Conversations"&gt;7bfacf241b31c41048a242e58d4bcbb6&lt;/sp_widget&gt;
+        &lt;sys_class_name&gt;sp_instance&lt;/sys_class_name&gt;
+        &lt;sys_created_by&gt;douglas.schamberg&lt;/sys_created_by&gt;
+        &lt;sys_created_on&gt;2019-12-15 14:56:31&lt;/sys_created_on&gt;
+        &lt;sys_customer_update&gt;false&lt;/sys_customer_update&gt;
+        &lt;sys_id&gt;8ffb83241b31c41048a242e58d4bcbd3&lt;/sys_id&gt;
+        &lt;sys_mod_count&gt;10&lt;/sys_mod_count&gt;
+        &lt;sys_name&gt;Conversations&lt;/sys_name&gt;
+        &lt;sys_package display_value="Ratelock" source="x_momo_ratelock"&gt;605affb71badc01048a242e58d4bcb76&lt;/sys_package&gt;
+        &lt;sys_policy/&gt;
+        &lt;sys_replace_on_upgrade&gt;false&lt;/sys_replace_on_upgrade&gt;
+        &lt;sys_scope display_value="Ratelock"&gt;605affb71badc01048a242e58d4bcb76&lt;/sys_scope&gt;
+        &lt;sys_update_name&gt;sp_instance_8ffb83241b31c41048a242e58d4bcbd3&lt;/sys_update_name&gt;
+        &lt;sys_updated_by&gt;douglas.schamberg&lt;/sys_updated_by&gt;
+        &lt;sys_updated_on&gt;2020-01-01 10:00:45&lt;/sys_updated_on&gt;
+        &lt;title&gt;Conversations&lt;/title&gt;
+        &lt;url/&gt;
+        &lt;widget_parameters&gt;&lt;![CDATA[{
+	"use_dynamic_placeholder": {
+		"value": true,
+		"displayValue": true
+	},
+	"no_readable_journal_field_message": {
+		"value": "",
+		"displayValue": ""
+	},
+    "includeExtended": {
+    	"value": true,
+        "displayValue": true
+    }
+}]]&gt;&lt;/widget_parameters&gt;
+    &lt;/sp_instance&gt;
+    &lt;sys_translated_text action="delete_multiple" query="documentkey=8ffb83241b31c41048a242e58d4bcbd3"/&gt;
+&lt;/record_update&gt;</payload>
+        <payload_hash>1958351166</payload_hash>
+        <record_name>Conversations</record_name>
+        <reverted_from/>
+        <source>bf1c1be11b5a401048a242e58d4bcb30</source>
+        <source_table>sys_upgrade_history</source_table>
+        <state>previous</state>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-01-12 15:12:29</sys_created_on>
+        <sys_id>752c9be11b5a401048a242e58d4bcb8c</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>16f9a50456c0000001</sys_recorded_at>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-01-12 15:12:29</sys_updated_on>
+        <type>Instance</type>
+        <update_guid>b12c9be1ca5a401097d90845554efd8c</update_guid>
+        <update_guid_history>b12c9be1ca5a401097d90845554efd8c:0,c5f813ed741a4010054bd609fb0a56ad:1473473406,93071f69511a4010adee23b0c6d48362:0,fb369fe5481a401075bd03bdb08696b2:833548442,9ef493e1751a4010b9ab7ef9753246c9:0,f9749f61c21a40107ddad4662584d902:-962964800,1023176dbdd6401033d2168c858bad38:0,b33297e9a8d6401054f9e9314f1c536d:829040295,38f097655fd640100aeff3cd3e7c0dfb:0,94e0df25dcd6401045fabceab056c8c7:794061851,ac101f6148d64010ec9b705cfc79bced:0,eaffc36165d640104a3da703b2cd27ef:794061851,767d87a96f964010f394439244c581bb:0,775d0b69ad964010754824ab4670c6d9:794061851,145be9024fca8c505499b6cafbb3764e:-193890606,193ba902f9ca8c5090cd57206cceee9e:586521196,65746986fc8a8c50167ab4a1c655406d:-193890606,09e26946208a8c50e4b270eaa297762c:-2072645634,fd4c6bfd6ab1cc10e32f9b4da2176f6b:974105840,23bf43e82a31c41075767819e80eb15f:-705346031,49ee0b281b31c4108b04fd7e72390c8b:897670495,289ccf242431c4100a78245d18a2238c:1687350090,116c0ba4b331c410ff9eef960e8a5720:-478871147,eb1c83a4e131c41081a9472ac759bf24:608695968,47fb83249c31c410de8b804164b4a4d5:-973890237</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete display_value="">ebc1f5d9db791c50f2551329689619e3</sys_audit_delete>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-07-03 12:29:07</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_db_object display_value="" name="sp_instance">sp_instance</sys_db_object>
+        <sys_id>0b8dca5c2f4a4381a67b47130509e821</sys_id>
+        <sys_metadata>8ffb83241b31c41048a242e58d4bcbd3</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>Conversations</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_parent/>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_scope_delete display_value="">57712118eaee4a49ae47b2048a14ac31</sys_scope_delete>
+        <sys_update_name>sp_instance_8ffb83241b31c41048a242e58d4bcbd3</sys_update_name>
+        <sys_update_version display_value="sp_instance_8ffb83241b31c41048a242e58d4bcbd3">752c9be11b5a401048a242e58d4bcb8c</sys_update_version>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-07-03 12:29:07</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>

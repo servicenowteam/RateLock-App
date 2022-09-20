@@ -1,0 +1,1114 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_widget">
+    <sp_widget action="INSERT_OR_UPDATE">
+        <category>custom</category>
+        <client_script><![CDATA[function ratelockList($scope, $element, $rootScope, spUtil, $timeout, $window, $document, snRecordWatcher) {
+  /* widget controller */
+  var c = this;
+
+  $scope.showSession = false;
+  $scope.table = $scope.data.table;
+  $scope.num_pages = $scope.data.num_pages;
+  $scope.currentPage = 1;
+  $scope.paginatorModelOptions = {
+    'default': 1000
+  };
+  $scope.isMobile = $window.innerWidth < 767;
+
+  $scope.tickets = $scope.data.tickets;
+
+  c.$onDestroy = function () {
+    $timeout.cancel();
+  };
+
+  c.$onInit = function () {
+    c.page = c.data.page;
+    c.totalItems = c.data.total - c.data.limit;
+    c.limit = c.data.limit;
+    c.totalPages = c.data.totalPages;
+		c.recordWatch();
+  };
+
+  
+
+  var xsScreenSize = isXSScreenSize();
+  angular.element($window).on('resize', function () {
+    if (xsScreenSize !== isXSScreenSize()) {
+      $scope.isMobile = true;
+    } else {
+      $scope.isMobile = false;
+    }
+  });
+
+  function isXSScreenSize() {
+    return $window.matchMedia('(max-width: 767px)').matches;
+  }
+	
+	c.recordWatcher = function(table, filter, callback) {
+		var channel = snRecordWatcher.initChannel(table, filter || '');
+		var subscribe = callback;
+		
+		channel.subscribe(subscribe);
+		
+		$scope.$watch('data.filter', function(value, prev) {
+			if (value !== prev) {
+				channel.unsubscribe();
+			}
+		});
+	};
+	
+	c.recordWatch = function() {
+		c.recordWatcher($scope.table, $scope.data.filter, function (response) {
+			if (response.data.operation === 'update') {
+				if (response.data.changes.includes('active')) {
+					if (response.data.record.active.value == "false") {
+						$rootScope.$broadcast('ratelock.ticket.live.resolved');
+						$scope.tickets = $scope.tickets.filter(function (item) {
+							return item.id != response.data.sys_id;
+						});
+					} else {
+						$rootScope.$broadcast('ratelock.ticket.live.created');
+					}
+					return;
+				}
+				if (response.data.changes.includes('ticket_history')) {
+					return;
+				}
+				if (response.data.changes.includes('priority') ||
+					response.data.changes.includes('assigned_to') ||
+					response.data.changes.includes('request_type') ||
+					response.data.changes.includes('loan_officer') ||
+					response.data.changes.includes('loan_number')) {
+					var tickets = $scope.tickets.filter(function(ticket) {
+						return ticket.id != response.data.sys_id;
+					});
+
+					if (tickets.length > 0) {
+						$scope.server.update().then(function (data) {
+							$scope.tickets = data.tickets;
+						});
+					}
+					return;
+				}
+
+				if (response.data.changes.includes("state")) {
+					if (["1", "2", "3"].includes(response.data.record.state.value)) {
+						$scope.server.update().then(function(data) {
+							$scope.tickets = data.tickets;
+						});
+					}
+				}
+			}
+		});
+	};
+
+  c.sortTickets = function (tickets) {
+    return tickets.sort(function (current, previous) {
+      return parseInt(current.priority.value) - parseInt(previous.priority.value);
+    });
+  };
+
+  c.getPriorityIcon = function (value) {
+    if (value == 1) {
+      return 'fa fa-exclamation';
+    }
+    return 'display-none';
+  };
+
+  c.getPriorityColor = function (value) {
+    if (value == 1) {
+      return 'danger priority';
+    } else if (value == 2) {
+      return 'normal priority';
+    } else {
+      return 'success priority';
+    }
+  };
+
+  c.getStateColor = function (value) {
+    if (value == 1) {
+      return 'success';
+    } else if (value == 2) {
+      return 'normal';
+    } else if (value == 3) {
+      return 'normal';
+    }
+  };
+
+  c.getTypeColor = function (value) {
+    if (value == 1) {
+      return 'general';
+    } else if (value == 2) {
+      return 'tpo';
+    } else if (value == 4) {
+      return 'bond';
+    } else if (value == 5) {
+			return "jumbo";
+		} else {
+      return 'normal';
+    }
+  };
+	
+	c.getRelatedIcon = function(ticketId) {
+
+		if ($scope.isRelatedLoading && ticketId == $scope.isRelatedOpen) {
+			return 'fa fa-spinner fa-spin';
+		}
+		if (ticketId != $scope.isRelatedOpen) {
+			return 'glyphicon glyphicon-chevron-right';
+		}
+		
+		if (ticketId == $scope.isRelatedOpen) {
+			return 'glyphicon glyphicon-chevron-down';
+		}
+	};
+	
+	c.calculateLoaderHeight = function() {
+		var elem = $element.find('div.panel-scroll')[0];
+		return elem.offsetHeight + 'px';
+	};
+
+  $window.addEventListener('beforeunload', function () {
+    $timeout.cancel();
+  });
+
+
+
+  $rootScope.$on('ratelock.quick-filter', function (evt, payload) {
+    $scope.data.queryParams = payload.query;
+    $scope.data.queryName = payload.name;
+    $scope.data.page = 1;
+    $scope.listIsLoading = true;
+    $scope.server.update().then(function (results) {
+      $scope.tickets = results.tickets;
+      var el = document.getElementById('panel-scroller');
+      $scope.listIsLoading = false;
+      el.scrollTop = 0;
+			c.recordWatch();
+    });
+  });
+
+  $scope.onPageChange = function (isFromPaginator) {
+    if (!$scope.data.page || $scope.data.page == 0 || $scope.data.page === '') return;
+    if (($scope.data.page == $scope.prev && angular.isDefined($scope.prev)) && !isFromPaginator) return;
+    $scope.prev = $scope.data.page;
+    $scope.listIsLoading = true;
+    $scope.next_text = '<i class="fas fa-spinner fa-spin"></i>';
+    $scope.server.update().then(function (results) {
+      $scope.tickets = results.tickets;
+      $scope.next_text = undefined;
+      $scope.listIsLoading = false;
+      var el = document.getElementById('panel-scroller');
+      el.scrollTop = 0;
+			c.recordWatch();
+    });
+  };
+
+  $scope.onInputPageChange = function () {
+    var pageTotal = $scope.data.totalPages;
+    var page = $scope.data.page;
+    if (typeof pageTotal === 'string') {
+      pageTotal = parseInt(pageTotal);
+    }
+    if (typeof page === 'string' && page !== '') {
+      page = parseInt(page);
+    }
+    if (page === pageTotal) return;
+
+    if (page > pageTotal) {
+      c.data.page = pageTotal;
+    }
+  };
+
+  c.formatDateTime = function (date) {
+    var dt = new Date(date);
+    var opts = {
+      year: 'numeric',
+      month: 'long',
+      hour12: true,
+      day: '2-digit',
+      hour: 'numeric',
+      minute: '2-digit'
+    };
+    var fdt = new Intl.DateTimeFormat("en", opts).format(dt);
+    var parts = fdt.split(',');
+    return parts[0] + ',' + parts[1] + ' at ' + parts[2];
+  }
+
+  c.toggleRelatedOpen = function (ticketId) {
+    if ($scope.isRelatedOpen === ticketId) {
+      $scope.isRelatedOpen = undefined;
+			$scope.isRelatedLoading = false;
+    } else {
+			$scope.isRelatedOpen = ticketId;
+		}
+  };
+
+  c.getInputPageClass = function () {
+    var page = $scope.data.page;
+    if (typeof page === 'string' && page) {
+      page = parseInt(page);
+    }
+    if (page > 99) {
+      return 'input-page-lg';
+    }
+  };
+}]]></client_script>
+        <controller_as>c</controller_as>
+        <css>$warn: rgb(255, 204, 0);
+$tpo: rgb(66, 135, 245);
+$jumbo: rgb(47, 1, 140);
+$general: rgba(0, 0, 0, 0.4);
+$paginator-boundary-link-color: rgba(0, 0, 0, 0.8);
+$bond: purple;
+
+
+
+::-webkit-scrollbar {
+  width: 0.2em;
+}
+
+::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 0.5px rgba(0, 0, 0, 0.1);
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: $brand-primary;
+  border-radius: 0.1em;
+  outline: 0.5px solid #eee;
+}
+
+i,
+span {
+  &amp;.priority {
+    text-decoration: underline;
+  }
+
+  &amp;.danger {
+    color: $danger;
+    font-weight: 700;
+  }
+
+  &amp;.warn {
+    color: $warn;
+    font-weight: 600;
+  }
+
+  &amp;.success {
+    color: $success;
+    font-weight: 600;
+  }
+
+  &amp;.normal {
+    color: inherit;
+
+    &amp;.priority {
+      font-weight: 600;
+      color: rgba(0, 0, 0, 0.6);
+
+    }
+  }
+
+  &amp;.tpo {
+    color: $tpo;
+    font-weight: 600;
+  }
+
+  &amp;.general {
+    color: $general;
+    font-weight: 600;
+  }
+  
+  &amp;.jumbo {
+		color: $jumbo;
+  }
+
+  &amp;.bond {
+    color: $bond;
+  }
+}
+
+.loader {
+  width: 100%;
+  height: 452px;
+  background: transparent;
+  padding: 0px 5px;
+  position: absolute;
+  top: 46.5px;
+  left: 0;
+  z-index: 5000;
+
+  &amp; .inner-loading {
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.5);
+    transition: all 0.4s ease;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    vertical-align: middle;
+    display: flex;
+
+    &amp; .loading-icon {
+      font-size: 2rem;
+      color: $brand-primary;
+    }
+
+  }
+
+}
+
+.ticker {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  line-height: 0;
+  font-size: 0;
+  z-index: 1000;
+}
+
+.ticker&gt;span {
+  border-bottom: 20px solid transparent;
+  border-right: 20px solid transparent;
+  transition: all 0.3s ease-in;
+
+  &amp;.green {
+    border-left: 20px solid green;
+  }
+
+  &amp;.red {
+    border-left: 20px solid red;
+  }
+
+  &amp;.yellow {
+    border-left: 20px solid #fcd80c;
+  }
+
+  &amp;.transparent {
+    border-left: 20px solid transparent;
+  }
+}
+
+.pager .next:not(.disabled)&gt;a,
+.pager .previous:not(.disabled)&gt;a {
+  color: $brand-primary;
+}
+
+.line-h-2 {
+  line-height: 2;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.font-xs {
+  font-size: 12px;
+}
+
+.panel-container {
+  border: none;
+}
+
+.panel-scroll {
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  max-height: 450px;
+  scroll-behavior: smooth;
+}
+
+.panel-body.pad-14 {
+  padding: 0px 14px 0px 14px;
+}
+
+.panel-secondary {
+  &amp; .panel-heading {
+    border-bottom: 1px solid #ccc;
+  }
+}
+
+.panel-body {
+  padding: 0px;
+}
+
+.pad-bottom {
+  padding: 0px 0px 30px 0px;
+}
+
+.pad-14 {
+  padding: 14px 14px 10px 14px;
+}
+
+.description {
+  font-size: 14px;
+  padding: 15px;
+  font-weight: 500;
+  width: 100%;
+  white-space: pre-wrap;
+}
+
+.list-group-no-records {
+  border: none;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  vertical-align: middle;
+  padding: 40px 0px;
+  background: transparent;
+}
+
+.primary-display {
+  font-size: 1.7rem;
+}
+
+
+.details-small {
+  font-size: 1.3rem;
+
+  &amp; div {
+    &amp; span {
+      &amp; b {
+        font-weight: 600;
+      }
+    }
+  }
+}
+
+.state-text {
+  font-weight: 700;
+}
+
+.accordion-clicker {
+  color: rgba(0, 0, 0, 0.8);
+
+  &amp;.glyphicon {
+    font-size: 12px;
+    padding-left: 5px;
+  }
+}
+
+.no-attachments-text {
+  &amp;:hover {
+    text-decoration: underline;
+  }
+}
+
+.detail-title {
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.accordion-link {
+  width: 100%;
+  display: block;
+
+  &amp;:focus,
+  &amp;:active {
+    outline: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+  }
+
+  &amp;:hover {
+    &amp; .accordion-clicker {
+      color: $brand-primary;
+    }
+  }
+}
+
+
+.list-group-no-records:hover {
+  text-decoration: underline;
+
+  -webkit-transition: all .3s ease-out;
+  -moz-transition: all .3s ease-out;
+  -ms-transition: all .3s ease-out;
+  transition: all .3s ease-out;
+}
+
+.list-link {
+  color: rgba(0, 0, 0, 0.8);
+}
+
+.list-link:hover,
+.list-link:active,
+.list-link:focus {
+  color: $brand-primary;
+}
+
+.list-group-item.primary-list {
+  border-left: none;
+  border-right: none;
+}
+
+.list-group-item:not(.primary-list:first-child) {
+  border-top: 1px solid #ccc;
+  border-bottom: 1px transparent;
+  border-left: 1px transparent;
+  border-right: 1px transparent;
+}
+
+.list-group-item.primary-list:hover {
+  border-radius: 0px;
+}
+
+.list-group-item.primary-list:first-child {
+  border: transparent;
+}
+
+.list-group-item.primary-list:last-child {
+  border-top: 1px solid #ccc;
+  border-bottom: 1px transparent;
+  border-left: 1px transparent;
+  border-right: 1px transparent;
+}
+
+.display-none {
+  display: none;
+}
+
+.avatar-container {
+  cursor: default;
+}
+
+.padding-l-sm {
+  padding-left: 15px;
+}
+
+.paginator-sm {
+  margin: 0px;
+}
+
+.pagination-page {
+
+  &amp;:not(.active),
+  &amp;:not(.disabled) {
+    &amp; a {
+      color: $brand-primary;
+    }
+  }
+
+  &amp;.active {
+    &amp; a {
+      color: #fff;
+    }
+  }
+}
+
+.pagination-next,
+.pagination-prev,
+.pagination-last,
+.pagination-first {
+  &amp;:not(.disabled) {
+    &amp; a {
+      color: $brand-primary;
+    }
+  }
+}
+
+.paginator-label {
+  &amp; small {
+    &amp; span:last-child {
+      display: inline-block;
+      color: $brand-primary;
+    }
+  }
+}
+
+.small-input {
+  display: inline-block;
+
+  &amp; input {
+    height: 24px;
+    width: 35px;
+    padding: 6px;
+    transition: width 0.3s ease-out;
+
+    &amp;::-webkit-outer-spin-button,
+    &amp;::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    &amp;[type=number] {
+      -moz-appearance: textfield;
+    }
+
+    &amp;:focus {
+      width: 40px;
+      border-color: $brand-primary;
+      outline: none;
+      box-shadow: none;
+      transition: width 0.3s ease-in;
+    }
+  }
+}
+
+.updated-time {
+  &amp;:hover {
+    text-decoration: underline;
+  }
+}
+
+.total-tickets {
+  vertical-align: middle;
+  font-weight: 500;
+}
+
+.primary-list.ng-enter {
+	animation: 0.3s fade-in;
+}
+
+.primary-list.ng-leave {
+	animation: 0.3s fade-out;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fade-out {
+	from { opacity: 1; }
+  to   { opacity: 0; }
+}
+
+
+
+@media screen and (max-width: 600px) {
+  .panel-scroll {
+    max-height: 350px;
+  }
+}
+
+@media screen and (max-width: 400px) {
+  .request-at-text {
+    margin-bottom: 10px;
+    color: rgba(0, 0, 0, 0.8);
+  }
+}
+
+@media screen and (min-width: 401px) {
+  .request-at-text {
+    color: transparent;
+    -webkit-transition: all .1s ease-out;
+    -moz-transition: all .1s ease-out;
+    -ms-transition: all .1s ease-out;
+    transition: all .1s ease-out;
+
+    &amp;.hover {
+      color: rgba(0, 0, 0, 0.8);
+      -webkit-transition: all .1s ease-in;
+      -moz-transition: all .1s ease-in;
+      -ms-transition: all .1s ease-in;
+      transition: all .1s ease-in;
+    }
+  }
+}</css>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description/>
+        <docs/>
+        <field_list/>
+        <has_preview>false</has_preview>
+        <id>ratelock_list</id>
+        <internal>false</internal>
+        <link><![CDATA[function link(scope, element, attrs, controller) {  }]]></link>
+        <name>Ratelock List</name>
+        <option_schema>[{"name":"table","section":"Data","default_value":"x_momo_ratelock_ticket","label":"table","type":"string"},{"name":"page","section":"Behavior","default_value":"1","label":"page","type":"integer"},{"name":"limit","section":"other","default_value":"100","label":"limit","type":"integer"}]</option_schema>
+        <public>false</public>
+        <roles/>
+        <script><![CDATA[(function () {
+  /* populate the 'data' object */
+  /* e.g., data.table = $sp.getValue('table'); */
+
+
+  gs.include('RatelockDateUtils');
+
+  data.table = (input ? input.table : undefined) || options.table || $sp.getParameter("table") || "x_momo_ratelock_ticket";
+
+  data.limit = (input ? input.limit : undefined) || options.limit || $sp.getParameter('sysparm_limit') || 40;
+
+  var session = gs.getSession();
+  var sessionData = getFilterSessionData(session);
+
+  if (sessionData) {
+    data.filter = sessionData.filter;
+    data.title = sessionData.title;
+  } else {
+    data.filter = 'state=1^active=true^resolvedISEMPTY';
+    data.title = 'Tickets';
+  }
+
+
+  if (data.limit > 40) {
+    data.limit = 40;
+  }
+
+
+
+  data.total = getTotal(data.table, (input ? (input.queryParams ? input.queryParams : data.filter) : data.filter));
+
+  data.page = (input ? input.page : undefined) || (sessionData ? sessionData.page : undefined) || data.page || 1;
+
+  // Really this is more just a previous state of end
+  var end = data.page === 1 ? data.limit : (data.page * data.limit);
+
+  data.start = data.page === 1 ? 0 : ((data.end ? data.end : end) - data.limit);
+  data.end = data.page === 1 ? data.limit : (data.page * data.limit);
+  data.totalPages = Math.max(Math.ceil(data.total / data.limit) || 0, 1);
+
+  if (data.total <= data.end) {
+    // get the remainder from the total
+    data.start = data.total - (data.total % data.limit);
+    // if the remainder is 0 then just subtract the limit
+    if (data.start === data.total) {
+      data.start = data.total - data.limit;
+    }
+    data.end = data.total;
+  }
+
+
+  if (input) {
+    if (input.newTicket) {
+      data.newTicket = getTicketFromInput(data.table, input.newTicket);
+    }
+    if ((input.queryName && input.queryParams) || input.page) {
+      if (input.queryName && input.queryParams) {
+        data.filter = input.queryParams;
+        data.title = input.queryName;
+      }
+
+      session.putClientData('ratelock:filter', JSON.stringify({
+        filter: data.filter,
+        title: data.title,
+        page: data.page
+      }));
+    }
+  }
+
+
+	var _opts = {
+    queryParams: data.filter,
+    limit: data.limit,
+    page: data.page,
+    total: data.total,
+    start: data.start,
+    end: data.end
+	};
+	
+  data.tickets = getRecords(data.table, _opts);
+
+
+
+  function getFilterSessionData(s) {
+    var _data;
+
+    try {
+      _data = JSON.parse(s.getClientData('ratelock:filter'));
+      return _data;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function getRecords(table, opts) {
+    var records = [];
+		var arrUtil = new global.ArrayUtil();
+    var gr = new GlideRecord(table);
+    if (opts.queryParams) {
+      gr.addEncodedQuery(opts.queryParams);
+    } else {
+      gr.addQuery('active', true);
+      gr.addNullQuery('resolved');
+      gr.addQuery('state', "1");
+    }
+
+    gr.orderBy('priority');
+    gr.orderBy('sys_created_on');
+    gr.chooseWindow(opts.start, opts.end, true);
+    gr.query();
+
+    while (gr.next()) {
+
+      if (gr.isValidRecord()) {
+        data.allowSessions = gr.canRead();
+      }
+			
+			
+      var payload = {
+        summary: gr.getValue('short_description'),
+        id: gr.getUniqueValue(),
+        description: gr.getValue('description'),
+        caller: gr.caller_id.nil() ? null : gr.getDisplayValue('caller_id'),
+        priority: {
+          value: gr.getValue("priority"),
+          display: gr.getDisplayValue('priority')
+        },
+        updatedAt: {
+          value: gr.getValue('sys_updated_on'),
+          display: RatelockDateUtils.formatDateTime(gr.sys_updated_on)
+        },
+        updatedBy: getUserDisplayName(gr.sys_updated_by) || gr.getDisplayValue('sys_updated_by'),
+        requestType: {
+          display: gr.getDisplayValue('request_type'),
+          value: gr.getValue('request_type')
+        },
+        openedAt: RatelockDateUtils.formatDateTime(gr.sys_created_on),
+        created: RatelockDateUtils.getNumericValue(gr.sys_created_on),
+        assignedTo: gr.assigned_to.nil() ? null : gr.getDisplayValue('assigned_to'),
+        state: {
+          value: gr.getValue('state'),
+          display: gr.getDisplayValue('state')
+        },
+        loan: gr.loan_number.nil() ? null : gr.getValue('loan_number'),
+        link: '?id=ratelock_ticket_form&sys_id=' + gr.getUniqueValue() + '&table=' + gr.getTableName()
+      };
+
+      payload.related = $sp.getWidget('ratelock_related_list', {
+        table: gr.getTableName(),
+        sys_id: gr.getUniqueValue(),
+        loan_number: gr.loan_number.nil() ? null : gr.getValue('loan_number')
+      });
+
+      payload.widget = $sp.getWidget('ratelock_list_sessions', {
+        sys_id: gr.getUniqueValue(),
+        table: gr.getTableName()
+      });
+      records.push(payload);
+    }
+    return records;
+  }
+
+  function getTotal(table, queryParams) {
+    var ga = new GlideAggregate(table);
+    ga.addAggregate('COUNT');
+
+    if (queryParams) {
+      ga.addEncodedQuery(queryParams);
+    } else {
+      ga.addQuery('active', true);
+      ga.addNullQuery('resolved');
+      ga.addQuery('state', "1");
+    }
+    ga.query();
+    ga.next();
+    return parseInt(ga.getAggregate('COUNT'));
+  }
+
+  function getTicketFromInput(table, ticketId) {
+    var tic = new GlideRecord(table);
+    tic.get(ticketId);
+    if (tic.isValidRecord()) {
+      var res = {
+        summary: tic.getValue('short_description'),
+        id: tic.getValue('sys_id'),
+        description: tic.getValue('description'),
+        caller: tic.caller_id.nil() ? null : tic.getDisplayValue('caller_id'),
+        priority: {
+          value: tic.getValue("priority"),
+          display: tic.getDisplayValue('priority')
+        },
+        requestType: {
+          display: tic.getDisplayValue('request_type'),
+          value: tic.getValue('request_type')
+        },
+        updatedAt: {
+          value: gr.getValue('sys_updated_on'),
+          display: RatelockDateUtils.formatDateTime(gr.sys_updated_on)
+        },
+        updatedBy: getUserDisplayName(tic.sys_updated_by) || gr.getDisplayValue('sys_updated_by'),
+        openedAt: RatelockDateUtils.formatDateTime(tic.sys_created_on),
+        created: RatelockDateUtils.getNumericValue(tic.sys_created_on),
+        assignedTo: tic.assigned_to.nil() ? null : tic.getDisplayValue('assigned_to'),
+        state: {
+          value: tic.getValue('state'),
+          display: tic.getDisplayValue('state')
+        },
+        loan: tic.loan_number.nil() ? null : tic.getValue('loan_number'),
+        link: '?id=ratelock_ticket_form&sys_id=' + tic.getUniqueValue() + '&table=' + tic.getTableName()
+      };
+
+      res.related = $sp.getWidget('ratelock_related_list', {
+        table: tic.getTableName(),
+        sys_id: tic.getUniqueValue(),
+        loan_number: tic.loan_number.nil() ? null : tic.getValue('loan_number')
+      });
+
+      res.widget = $sp.getWidget('ratelock_list_sessions', {
+        sys_id: tic.getUniqueValue(),
+        table: tic.getTableName()
+      });
+      return res;
+    }
+  }
+
+
+
+  function getUserDisplayName(userName) {
+    var user = new GlideRecord('sys_user');
+    user.addQuery('user_name', userName);
+    user.addQuery('active', true);
+    user.query();
+    while (user.next()) {
+      return user.getDisplayValue('name');
+    }
+  }
+
+})();]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2019-12-13 14:42:14</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>ea85f8801bb1041048a242e58d4bcb62</sys_id>
+        <sys_mod_count>1829</sys_mod_count>
+        <sys_name>Ratelock List</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sp_widget_ea85f8801bb1041048a242e58d4bcb62</sys_update_name>
+        <sys_updated_by>douglas.schamberg@movement.com</sys_updated_by>
+        <sys_updated_on>2020-11-05 10:22:25</sys_updated_on>
+        <template><![CDATA[<div class="panel panel-secondary panel-container">
+  <div class="panel-heading">
+    <div class="panel-title text-center">
+      <span ng-if="data.title !== 'Tickets'">Tickets - {{ data.title }}</span>
+      <span ng-if="data.title === 'Tickets'">{{ data.title }} - Active</span>
+    </div>
+  </div>
+  <div class="panel-body panel-scroll" id="panel-scroller">
+    <div class="loader" ng-show="listIsLoading"
+      ng-style="{'height': c.calculateLoaderHeight()}">
+      <div class="inner-loading">
+        <div class="loading-icon">
+          <i class="fa fa-spinner fa-spin fa-3x"></i>
+        </div>
+      </div>
+    </div>
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item primary-list" 
+          ng-mouseover="isHovering = ticket.id;"
+        	ng-mouseleave="isHovering = false;" 
+          ng-view 
+          ng-if="tickets.length > 0" 
+          ng-repeat="ticket in tickets track by ticket.id">
+        <sp-widget widget="ticket.widget"></sp-widget>
+        <div class="row padder">
+          <div class="row m-b-sm">
+            <div class="col-md-12">
+              <a class="list-link primary-display" ng-href="{{ ticket.link }}" href>
+                <span>{{ ticket.summary }}</span>
+              </a>
+            </div>
+          </div>
+          <div class="row padding-l-sm">
+            <div class="col-md-12">
+              <div class="text-muted details-small">
+                <div>
+                  <span>
+                    <span ng-class="c.getPriorityColor(ticket.priority.value)">{{ ticket.priority.display }}</span>
+                  </span>
+                </div>
+                <div ng-if="ticket.loan">
+                  <span>
+                    <b>Loan number</b>: <span>{{ ticket.loan }}</span>
+                  </span>
+                </div>
+                <div>
+                  <span>
+                    <b>Opened on</b>: <span>{{ ticket.openedAt }}</span>
+                  </span>
+                </div>
+
+                <div>
+                  <span>
+                    <b>Queue</b>: <span
+                      ng-class="c.getTypeColor(ticket.requestType.value)">{{ ticket.requestType.display }}</span>
+                  </span>
+                </div>
+                <div>
+                  <span>
+                    <b>State</b>: <span ng-class="c.getStateColor(ticket.state.value)">{{ ticket.state.display }}</span>
+                  </span>
+                </div>
+                <div ng-if="ticket.caller">
+                  <span>
+                    <b>Requested by</b>: <span>{{ ticket.caller }}</span>
+                  </span>
+                </div>
+                <div ng-if="ticket.assignedTo">
+                  <span>
+                    <b>Assigned to</b>: <span>{{ ticket.assignedTo }}</span>
+                  </span>
+                </div>
+                <div>
+                  <span>
+                    <b>Last updated</b>:
+                    <span ng-if="c.updatedTimeClicked != ticket.id" class="updated-time"
+                      ng-click="c.updatedTimeClicked = ticket.id;">
+                      <time>
+                        <sn-time-ago timestamp="ticket.updatedAt.value"></sn-time-ago>
+                      </time>
+                    </span>
+                    <span ng-if="c.updatedTimeClicked == ticket.id" class="updated-time"
+                      ng-click="c.updatedTimeClicked = undefined;">{{ ticket.updatedAt.display }}</span>
+                  </span>
+                </div>
+                <div>
+                  <span>
+                    <b>Updated by</b>: <span>{{ ticket.updatedBy }}</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row m-t-sm" ng-if="ticket.loan">
+            <div class="col-md-12">
+              <div class="padder-l">
+                <a href tabindex="0" ng-click="c.toggleRelatedOpen(ticket.id)" uib-accordian-transclude="heading"
+                  class="accordion-link">
+                  <span class="accordion-clicker">Related Ticket's</span>
+                  <span uib-accordion-header class="accordion-clicker"
+                    ng-class="c.getRelatedIcon(ticket.id)"></span>
+                </a>
+                <div class="panel-collapse collapse m-t" uib-collapse="isRelatedOpen != ticket.id">
+                  <sp-widget widget="ticket.related"></sp-widget>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </li>
+      <li class="list-group-item list-group-no-records" ng-if="tickets.length === 0">
+        <span class="no-records-text">${No active tickets}</span>
+      </li>
+    </ul>
+  </div>
+  <div class="panel-footer" ng-if="data.total > 0">
+    <div class="row m-l-none m-r-none">
+      <div class="col-md-12 col-xs-12">
+        <ul uib-pagination total-items="data.total" ng-model="data.page" ng-change="onPageChange(true)"
+          class="pagination-sm paginator-sm" boundary-links="true" items-per-page="c.limit" ng-disabled="listIsLoading"
+          force-ellipses="false"></ul>
+        <div class="paginator-label pull-right hidden-xs">
+          <small>
+            <span class="small-input">
+              <input type="number" ng-disabled="listIsLoading" min="1" class="form-control"
+                ng-class="c.getInputPageClass()" ng-model="data.page" ng-blur="onPageChange()"
+                ng-change="onInputPageChange()" />
+            </span>
+            <span class="padder-l"> out of {{ data.totalPages }} pages</span>
+          </small>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>]]></template>
+    </sp_widget>
+</record_update>

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_security_acl">
+    <sys_security_acl action="DELETE">
+        <active>true</active>
+        <admin_overrides>true</admin_overrides>
+        <advanced>false</advanced>
+        <condition/>
+        <description>Default access control on x_momo_ratelock_tickets</description>
+        <express_security>false</express_security>
+        <name>x_momo_ratelock_tickets</name>
+        <operation display_value="write">write</operation>
+        <script/>
+        <sys_class_name>sys_security_acl</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2019-12-13 16:14:59</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>30ca85c01b35041048a242e58d4bcb8c</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>x_momo_ratelock_tickets</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sys_security_acl_30ca85c01b35041048a242e58d4bcb8c</sys_update_name>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2019-12-13 16:14:59</sys_updated_on>
+        <type display_value="record">record</type>
+    </sys_security_acl>
+    <sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Ratelock">605affb71badc01048a242e58d4bcb76</application>
+        <file_path/>
+        <instance_id>94e8281edbb7470060a6f0e5bf9619f6</instance_id>
+        <instance_name>movementdev</instance_name>
+        <name>sys_security_acl_30ca85c01b35041048a242e58d4bcb8c</name>
+        <payload><![CDATA[<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_security_acl"><sys_security_acl action="INSERT_OR_UPDATE"><active>true</active><admin_overrides>true</admin_overrides><advanced>false</advanced><condition/><description>Default access control on x_momo_ratelock_tickets</description><express_security>false</express_security><name>x_momo_ratelock_tickets</name><operation display_value="write">write</operation><script/><sys_class_name>sys_security_acl</sys_class_name><sys_created_by>douglas.schamberg</sys_created_by><sys_created_on>2019-12-13 16:14:59</sys_created_on><sys_customer_update>false</sys_customer_update><sys_id>30ca85c01b35041048a242e58d4bcb8c</sys_id><sys_mod_count>0</sys_mod_count><sys_name>x_momo_ratelock_tickets</sys_name><sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package><sys_policy/><sys_replace_on_upgrade>false</sys_replace_on_upgrade><sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope><sys_update_name>sys_security_acl_30ca85c01b35041048a242e58d4bcb8c</sys_update_name><sys_updated_by>douglas.schamberg</sys_updated_by><sys_updated_on>2019-12-13 16:14:59</sys_updated_on><type display_value="record">record</type></sys_security_acl></record_update>]]></payload>
+        <payload_hash>-431067602</payload_hash>
+        <record_name>x_momo_ratelock_tickets</record_name>
+        <reverted_from/>
+        <source>a45affb71badc01048a242e58d4bcb78</source>
+        <source_table>sys_update_set</source_table>
+        <state>previous</state>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2019-12-13 16:14:59</sys_created_on>
+        <sys_id>3cca85c01b35041048a242e58d4bcb8e</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>16f000ab4710000001</sys_recorded_at>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2019-12-13 16:14:59</sys_updated_on>
+        <type>Access Control</type>
+        <update_guid>34ca85c09e350410a7961f972a387d8e</update_guid>
+        <update_guid_history>34ca85c09e350410a7961f972a387d8e:-431067602</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete/>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2019-12-13 16:15:16</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_db_object display_value="" name="sys_security_acl">sys_security_acl</sys_db_object>
+        <sys_id>45f50ccc5bd04b2c83af3aa7b7fdc4b1</sys_id>
+        <sys_metadata>30ca85c01b35041048a242e58d4bcb8c</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>x_momo_ratelock_tickets</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_parent display_value="">41ca85c01b35041048a242e58d4bcbb1</sys_parent>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_scope_delete display_value="">57712118eaee4a49ae47b2048a14ac31</sys_scope_delete>
+        <sys_update_name>sys_security_acl_30ca85c01b35041048a242e58d4bcb8c</sys_update_name>
+        <sys_update_version display_value="sys_security_acl_30ca85c01b35041048a242e58d4bcb8c">3cca85c01b35041048a242e58d4bcb8e</sys_update_version>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2019-12-13 16:15:16</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>

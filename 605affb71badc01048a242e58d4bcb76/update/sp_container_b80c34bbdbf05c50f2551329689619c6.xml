@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_container">
+    <sp_container action="INSERT_OR_UPDATE">
+        <background_color/>
+        <background_image/>
+        <background_style>default</background_style>
+        <bootstrap_alt>false</bootstrap_alt>
+        <class_name/>
+        <container_class_name/>
+        <name>Ratelock Search Results - Container 2</name>
+        <order>2</order>
+        <sp_page display_value="ratelock_search_results">2e6b743bdbf05c50f2551329689619b3</sp_page>
+        <subheader>false</subheader>
+        <sys_class_name>sp_container</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-05-22 09:56:07</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>b80c34bbdbf05c50f2551329689619c6</sys_id>
+        <sys_mod_count>1</sys_mod_count>
+        <sys_name>Ratelock Search Results - Container 2</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sp_container_b80c34bbdbf05c50f2551329689619c6</sys_update_name>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-05-22 10:03:01</sys_updated_on>
+        <title/>
+        <width>container-fluid</width>
+    </sp_container>
+</record_update>

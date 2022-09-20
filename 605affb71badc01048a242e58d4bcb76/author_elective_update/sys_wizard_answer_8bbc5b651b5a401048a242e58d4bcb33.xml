@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_wizard_answer">
+    <sys_wizard_answer action="DELETE">
+        <active>true</active>
+        <answer>Ratesheet</answer>
+        <button_label/>
+        <dependent_value/>
+        <element/>
+        <name>Ratesheet</name>
+        <next_question/>
+        <order>100</order>
+        <payload_name/>
+        <question display_value="Task" name="Task">91067a74db20320093373c8f9d961900</question>
+        <roles/>
+        <script/>
+        <sys_class_name>sys_wizard_answer</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-01-12 15:15:01</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>8bbc5b651b5a401048a242e58d4bcb33</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>Ratesheet</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sys_wizard_answer_8bbc5b651b5a401048a242e58d4bcb33</sys_update_name>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-01-12 15:15:01</sys_updated_on>
+        <table/>
+        <target_url>x_momo_ratelock_ratesheet.do</target_url>
+        <type>1</type>
+    </sys_wizard_answer>
+<sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Ratelock">605affb71badc01048a242e58d4bcb76</application>
+        <file_path/>
+        <instance_id>94e8281edbb7470060a6f0e5bf9619f6</instance_id>
+        <instance_name>movementdev</instance_name>
+        <name>sys_wizard_answer_8bbc5b651b5a401048a242e58d4bcb33</name>
+        <payload><![CDATA[<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_wizard_answer">
+    <sys_wizard_answer action="INSERT_OR_UPDATE">
+        <active>true</active>
+        <answer>Ratesheet</answer>
+        <button_label/>
+        <dependent_value/>
+        <element/>
+        <name>Ratesheet</name>
+        <next_question/>
+        <order>100</order>
+        <payload_name/>
+        <question display_value="Task" name="Task">91067a74db20320093373c8f9d961900</question>
+        <roles/>
+        <script/>
+        <sys_class_name>sys_wizard_answer</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-01-12 15:15:01</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>8bbc5b651b5a401048a242e58d4bcb33</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>Ratesheet</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sys_wizard_answer_8bbc5b651b5a401048a242e58d4bcb33</sys_update_name>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-01-12 15:15:01</sys_updated_on>
+        <table/>
+        <target_url>x_momo_ratelock_ratesheet.do</target_url>
+        <type>1</type>
+    </sys_wizard_answer>
+</record_update>]]></payload>
+        <payload_hash>-165151375</payload_hash>
+        <record_name>Ratesheet</record_name>
+        <reverted_from/>
+        <source>8de4b251db715c50f2551329689619db</source>
+        <source_table>sys_upgrade_history</source_table>
+        <state>previous</state>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-07-03 17:22:32</sys_created_on>
+        <sys_id>6df43291db715c50f2551329689619be</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>17315b382940000001</sys_recorded_at>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-07-03 17:22:32</sys_updated_on>
+        <type>Answer</type>
+        <update_guid>a9f4329136715c508b900980bb913cbe</update_guid>
+        <update_guid_history>a9f4329136715c508b900980bb913cbe:0,1fb43611ce715c5006bde06b2d5c4514:-1131768719,59472e19f2fd1c50fd4e574297bdfba9:0,c217ead571fd1c509d720f95774aad5f:-1131768719,d7932e9d7fbd1c50b874980dba3b9da3:0,1b63ea5da6bd1c50d9eef361fbc57623:-1131768719,20b2e29927bd1c5038b50ea5def524ba:0,0982ea1981bd1c5091bfeed938b2e4e0:-1131768719,7ad1ead1a3bd1c501e90afc5e950ebbc:0,3921aa9dc57d1c50c42163827e7999ae:-1131768719,3521aa9dda7d1c501c603d8b79f21eac:-730328731</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete/>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-07-03 17:28:55</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_db_object display_value="" name="sys_wizard_answer">sys_wizard_answer</sys_db_object>
+        <sys_id>058fbeca43d54af281742ec66907dc24</sys_id>
+        <sys_metadata>8bbc5b651b5a401048a242e58d4bcb33</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>Ratesheet</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_parent display_value="Task">91067a74db20320093373c8f9d961900</sys_parent>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_scope_delete display_value="">57712118eaee4a49ae47b2048a14ac31</sys_scope_delete>
+        <sys_update_name>sys_wizard_answer_8bbc5b651b5a401048a242e58d4bcb33</sys_update_name>
+        <sys_update_version display_value="sys_wizard_answer_8bbc5b651b5a401048a242e58d4bcb33">6df43291db715c50f2551329689619be</sys_update_version>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-07-03 17:28:55</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>

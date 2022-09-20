@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_instance">
+    <sp_instance action="DELETE">
+        <active>true</active>
+        <class_name/>
+        <color>default</color>
+        <css/>
+        <glyph/>
+        <id/>
+        <order>2</order>
+        <roles/>
+        <short_description/>
+        <size>md</size>
+        <sp_column display_value="1">fd4f72e41bfd841048a242e58d4bcbba</sp_column>
+        <sp_widget display_value="Ticket Conversations">85357f52cb30020000f8d856634c9c24</sp_widget>
+        <sys_class_name>sp_instance</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2019-12-15 14:01:00</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>f14f72e41bfd841048a242e58d4bcbbf</sys_id>
+        <sys_mod_count>2</sys_mod_count>
+        <sys_name>Conversation</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sp_instance_f14f72e41bfd841048a242e58d4bcbbf</sys_update_name>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2019-12-15 14:39:58</sys_updated_on>
+        <title>Conversation</title>
+        <url/>
+        <widget_parameters><![CDATA[{
+	"use_dynamic_placeholder": {
+		"value": "false",
+		"displayValue": "false"
+	},
+	"no_readable_journal_field_message": {
+		"value": "",
+		"displayValue": ""
+	}
+}]]></widget_parameters>
+    </sp_instance>
+    <sys_translated_text action="DELETE" query="documentkey=f14f72e41bfd841048a242e58d4bcbbf"/>
+    <sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Ratelock">605affb71badc01048a242e58d4bcb76</application>
+        <file_path/>
+        <instance_id>94e8281edbb7470060a6f0e5bf9619f6</instance_id>
+        <instance_name>movementdev</instance_name>
+        <name>sp_instance_f14f72e41bfd841048a242e58d4bcbbf</name>
+        <payload>&lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;record_update table="sp_instance"&gt;&lt;sp_instance action="INSERT_OR_UPDATE"&gt;&lt;active&gt;true&lt;/active&gt;&lt;class_name/&gt;&lt;color&gt;default&lt;/color&gt;&lt;css/&gt;&lt;glyph/&gt;&lt;id/&gt;&lt;order&gt;2&lt;/order&gt;&lt;roles/&gt;&lt;short_description/&gt;&lt;size&gt;md&lt;/size&gt;&lt;sp_column display_value="1"&gt;fd4f72e41bfd841048a242e58d4bcbba&lt;/sp_column&gt;&lt;sp_widget display_value="Ticket Conversations"&gt;85357f52cb30020000f8d856634c9c24&lt;/sp_widget&gt;&lt;sys_class_name&gt;sp_instance&lt;/sys_class_name&gt;&lt;sys_created_by&gt;douglas.schamberg&lt;/sys_created_by&gt;&lt;sys_created_on&gt;2019-12-15 14:01:00&lt;/sys_created_on&gt;&lt;sys_customer_update&gt;false&lt;/sys_customer_update&gt;&lt;sys_id&gt;f14f72e41bfd841048a242e58d4bcbbf&lt;/sys_id&gt;&lt;sys_mod_count&gt;2&lt;/sys_mod_count&gt;&lt;sys_name&gt;Conversation&lt;/sys_name&gt;&lt;sys_package display_value="Ratelock" source="x_momo_ratelock"&gt;605affb71badc01048a242e58d4bcb76&lt;/sys_package&gt;&lt;sys_policy/&gt;&lt;sys_replace_on_upgrade&gt;false&lt;/sys_replace_on_upgrade&gt;&lt;sys_scope display_value="Ratelock"&gt;605affb71badc01048a242e58d4bcb76&lt;/sys_scope&gt;&lt;sys_update_name&gt;sp_instance_f14f72e41bfd841048a242e58d4bcbbf&lt;/sys_update_name&gt;&lt;sys_updated_by&gt;douglas.schamberg&lt;/sys_updated_by&gt;&lt;sys_updated_on&gt;2019-12-15 14:39:58&lt;/sys_updated_on&gt;&lt;title&gt;Conversation&lt;/title&gt;&lt;url/&gt;&lt;widget_parameters&gt;&lt;![CDATA[{
+	"use_dynamic_placeholder": {
+		"value": "false",
+		"displayValue": "false"
+	},
+	"no_readable_journal_field_message": {
+		"value": "",
+		"displayValue": ""
+	}
+}]]&gt;&lt;/widget_parameters&gt;&lt;/sp_instance&gt;&lt;sys_translated_text action="delete_multiple" query="documentkey=f14f72e41bfd841048a242e58d4bcbbf"/&gt;&lt;/record_update&gt;</payload>
+        <payload_hash>2045060078</payload_hash>
+        <record_name>Conversation</record_name>
+        <reverted_from/>
+        <source>a45affb71badc01048a242e58d4bcb78</source>
+        <source_table>sys_update_set</source_table>
+        <state>previous</state>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2019-12-15 14:39:58</sys_created_on>
+        <sys_id>3c38c7601b31c41048a242e58d4bcb37</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>16f0a0071ed0000001</sys_recorded_at>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2019-12-15 14:39:58</sys_updated_on>
+        <type>Instance</type>
+        <update_guid>f038c760a831c41049e792d98ac4f637</update_guid>
+        <update_guid_history>f038c760a831c41049e792d98ac4f637:2045060078,f928c3603031c410f599879936cf699a:990793874,f54f72e422fd8410dbf4ff89898852c0:-1080893209</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete display_value="">26fb03641b31c41048a242e58d4bcb09</sys_audit_delete>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2019-12-15 14:56:29</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_db_object display_value="" name="sp_instance">sp_instance</sys_db_object>
+        <sys_id>005666d78ec844248001e023ef4b4010</sys_id>
+        <sys_metadata>f14f72e41bfd841048a242e58d4bcbbf</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>Conversation</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_parent/>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_scope_delete display_value="">57712118eaee4a49ae47b2048a14ac31</sys_scope_delete>
+        <sys_update_name>sp_instance_f14f72e41bfd841048a242e58d4bcbbf</sys_update_name>
+        <sys_update_version display_value="sp_instance_f14f72e41bfd841048a242e58d4bcbbf">3c38c7601b31c41048a242e58d4bcb37</sys_update_version>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2019-12-15 14:56:29</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>

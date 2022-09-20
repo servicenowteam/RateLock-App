@@ -1,0 +1,394 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_widget">
+    <sp_widget action="INSERT_OR_UPDATE">
+        <category>custom</category>
+        <client_script><![CDATA[function ratelockEmailLog($scope, $rootScope, $timeout) {
+  /* widget controller */
+  var c = this;
+
+  $rootScope.$on('ratelock.emails.' + c.data.sys_id + '.advancedSearch', function (evt, isAdvancedSearchEnabled) {
+    $scope.data.isAdvancedSearchEnabled = isAdvancedSearchEnabled;
+    $scope.server.update();
+  });
+
+  c.toggleOpenEmailDetails = function (id) {
+    if (id) {
+      if ($scope.emailLinkOpen && $scope.emailLinkOpen === id) {
+        $scope.emailLinkOpen = undefined;
+      } else {
+        $timeout(function () {
+          $scope.emailLinkOpen = id;
+        }, 200);
+      }
+    }
+  };
+
+  c.isOpen = function (id) {
+    if (!id || !$scope.emailLinkOpen) return false;
+    return $scope.emailLinkOpen === id;
+  };
+
+  c.getEmailLinkHeadingText = function (id) {
+    var msg = 'Show email details';
+    if (!id || !$scope.emailLinkOpen) return msg;
+    if ($scope.emailLinkOpen === id) {
+      return 'Hide email details';
+    }
+    return msg;
+  };
+
+
+  c.getEmailSrc = function (id) {
+    return '/email_display.do?email_id=' + id;
+  };
+}]]></client_script>
+        <controller_as>c</controller_as>
+        <css>.no-email-records {
+  padding: 60px;
+  align-items: center;
+  vertical-align: middle;
+  justify-content: center;
+  text-align: center;
+
+  &amp;:hover {
+    &amp; span {
+      text-decoration: underline;
+    }
+  }
+}
+
+.list-group-clear {
+  border: 1px solid transparent;
+  border-radius: 0px;
+}
+
+.email-frame {
+  overflow-y: hidden;
+
+  &amp; .panel-body {
+    overflow-y: hidden;
+
+    &amp; .email-details-inner {
+      overflow-y: hidden;
+    }
+  }
+}
+
+.email-frame {
+  overflow-y: hidden;
+
+  &amp; .panel-body {
+    overflow-y: hidden;
+
+    &amp; .email-details-inner {
+      overflow-y: hidden;
+    }
+  }
+}
+
+.email-panel-body {
+  padding-bottom: 5px;
+}
+
+.email-title,
+.email-details {
+  color: rgb(69, 84, 100);
+  font-size: 12px;
+}
+
+.email-title {
+  padding: 0px 0px 15px 0px;
+}
+
+.email-display-name {
+  margin-left: 5px;
+}
+
+.message-created {
+  display: inline-flex;
+}
+
+.email-dot {
+  background: rgba(69, 84, 100, 0.85);
+  display: inline-block;
+  height: 5px;
+  width: 5px;
+  border-radius: 50%;
+  vertical-align: middle;
+  margin: 6px 4px;
+}
+
+.text-align-right {
+  text-align: right;
+}
+
+.email-details {
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  align-items: center;
+  vertical-align: middle;
+  justify-content: center;
+  padding-bottom: 5px;
+
+  &amp; .email-details-container {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    vertical-align: middle;
+    overflow-y: hidden;
+  }
+}
+
+.email-panel {
+  border-radius: 0px;
+}
+
+iframe.card {
+  border: none !important;
+  overflow-y: hidden !important;
+
+  &amp; html {
+    padding: 15px;
+    overflow-y: hidden;
+  }
+}
+
+.emails-details-list-group {
+  margin-bottom: 0px;
+  max-width: 500px;
+  width: 100%;
+
+  &amp; .emails-details-list-group-item {
+    padding: 5px;
+
+    &amp; .email-details-link {
+      color: $brand-primary;
+
+      &amp;:hover {
+        text-decoration: underline;
+      }
+    }
+
+    &amp; .email-details-col:nth-child(1) {
+      font-weight: 700;
+    }
+
+    &amp; .email-details-col:nth-child(2) {
+      word-break: break-all;
+    }
+
+    &amp; .email-details-col.importance {
+      color: $danger;
+    }
+  }
+}
+
+.panel-clear {
+  &amp; .email-details-inner {
+    justify-content: center;
+    display: flex;
+
+    &amp;:first-child {
+      border: 1px solid #ccc;
+    }
+  }
+}
+
+.loading {
+  min-height: 400px;
+  display: flex;
+  width: 100%;
+  vertical-align: middle;
+  align-items: center;
+  justify-content: center;
+
+  &amp;.absolute-loader {
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: #fff;
+    z-index: 1049;
+  }
+
+  &amp; span.loading-inline {
+    font-size: 3rem;
+    font-weight: 700;
+    color: $brand-primary;
+  }
+}</css>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description/>
+        <docs/>
+        <field_list/>
+        <has_preview>false</has_preview>
+        <id>ratelock_email_feed</id>
+        <internal>false</internal>
+        <link><![CDATA[function link(scope, element, attrs, controller) {  }]]></link>
+        <name>Ratelock Email Log</name>
+        <option_schema/>
+        <public>false</public>
+        <roles/>
+        <script><![CDATA[(function() {
+  /* populate the 'data' object */
+  /* e.g., data.table = $sp.getValue('table'); */
+	gs.include('RatelockDateUtils');
+	data.table = options.table || $sp.getParameter('table');
+	data.sys_id = options.sys_id || $sp.getParameter('sys_id');
+	
+	data.emails = getEmailRecords(data.table, data.sys_id, (input ? input.enable_advanced_search : false));
+	
+	
+	function getEmailRecords(table, sysId, runAdvancedSearch) {
+    var entries = [];
+    var rec = new GlideRecord('sys_email');
+    if (runAdvancedSearch) {
+      rec.addQuery('instance', sysId)
+				.addOrCondition('body', 'CONTAINS', 'Loan Ref:' + sysId);
+    } else {
+      rec.addQuery('instance', sysId)
+    }
+
+    rec.orderByDesc('sys_created_on');
+    rec.query();
+		
+    while (rec.next()) {
+      entries.push({
+        sys_created_on: RatelockDateUtils.formatDateTime(rec.sys_created_on),
+        from: getCreatedBy(rec.user, rec.user_id),
+        sys_id: rec.getUniqueValue(),
+        type: getEmailType(rec.getValue('type')),
+        to: rec.getValue('direct'),
+        cc: rec.getValue('copied'),
+        importance: rec.importance.nil() ? null : rec.getValue('importance'),
+        subject: rec.getValue('subject')
+      });
+    }
+    return entries;
+  }
+	
+	function getCreatedBy(from, user) {
+    if (!user.nil()) {
+      return user.getDisplayValue();
+    } else if (from.nil()) {
+      return 'System';
+    } else {
+      return from.getDisplayValue();
+    }
+  }
+	
+	function getEmailType(type) {
+    switch (type) {
+      case 'sent':
+        return 'Email Sent';
+      case 'send-ready':
+        return 'Processing';
+      default:
+        return 'Email Received';
+    }
+  }
+})();]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-07-02 17:15:42</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>b3c9e509db35d850f2551329689619f0</sys_id>
+        <sys_mod_count>9</sys_mod_count>
+        <sys_name>Ratelock Email Log</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sp_widget_b3c9e509db35d850f2551329689619f0</sys_update_name>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-07-03 11:19:56</sys_updated_on>
+        <template><![CDATA['<div class="email-container padder">
+  <div class="loading" ng-if="c.loading">
+    <span class="loading-inline">
+      <i class="fa fa-spinner fa-spin" aria-hidden="true"></i>
+    </span>
+  </div>
+  <ul class="list-group" ng-show="c.data.emails">
+    <li class="list-group-item list-group-clear" ng-show="c.data.emails.length === 0">
+      <div class="no-email-records">
+        <span>${No emails found for this request}</span>
+      </div>
+    </li>
+    <li class="list-group-item list-group-clear" ng-repeat="record in c.data.emails track by record.sys_id"
+      ng-show="c.data.emails.length > 0">
+      <div class="panel panel-default m-b-none email-panel">
+        <div class="panel-body email-panel-body">
+          <div class="row email-title">
+            <div class="col-md-6">
+              <div class="email-title-avatar">
+                <span class="email-display-name">{{ ::record.from }}</span>
+              </div>
+            </div>
+            <div class="col-md-6 text-align-right">
+              <span class="text-muted message-created" ng-bind="record.sys_created_on"></span>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <div class="email-details">
+                <div class="email-details-container">
+                  <ul class="list-group emails-details-list-group m-b-none">
+                    <li class="list-group-item list-group-clear emails-details-list-group-item">
+                      <span class="email-details-col importance" ng-if="record.importance === 'high'">
+                        <i class="fa fa-exclamation" aria-hidden="true"></i>
+                      </span>
+                      <span class="email-details-col" ng-if="!record.importance">
+                        <i class="icon-mail"></i>
+                      </span>
+                      <span class="email-details-col m-l-xs">{{ record.type }}</span>
+                    </li>
+                    <li class="list-group-item list-group-clear emails-details-list-group-item">
+                      <span class="email-details-col">Subject: </span>
+                      <span class="email-details-col">{{ ::record.subject }}</span>
+                    </li>
+                    <li class="list-group-item list-group-clear emails-details-list-group-item">
+                      <span class="email-details-col">From: </span>
+                      <span class="email-details-col" ng-if="record.user">{{ ::record.user }}</span>
+                      <span class="email-details-col" ng-if="!record.user">{{ ::record.from }}</span>
+                    </li>
+                    <li class="list-group-item list-group-clear emails-details-list-group-item"
+                      ng-if="(record.to && record.to !== '')">
+                      <span class="email-details-col">To: </span>
+                      <span class="email-details-col break-to">{{ ::record.to }}</span>
+                    </li>
+                    <li class="list-group-item list-group-clear emails-details-list-group-item"
+                      ng-if="(record.cc && record.cc !== '')">
+                      <span class="email-details-col">CC: </span>
+                      <span class="email-details-col">{{ ::record.cc }}</span>
+                    </li>
+                    <li class="list-group-item list-group-clear emails-details-list-group-item">
+                      <a href class="email-details-link accordion-toggle"
+                        ng-click="c.toggleOpenEmailDetails(record.sys_id)">
+                        <span class="email-details-link-text" ng-bind="c.getEmailLinkHeadingText(record.sys_id)"></span>
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="panel-collapse collapse panel-clear email-frame" uib-collapse="!c.isOpen(record.sys_id)">
+            <div class="panel-body">
+              <div class="email-details-inner">
+                <iframe loading="lazy" style="width:100%;overflow-y:hidden;" sp-frame-resize
+                  is-showing="c.isOpen(record.sys_id)" allowfullscreen="false" allowpaymentrequest="false"
+                  frameborder="0" ng-src="{{ ::c.getEmailSrc(record.sys_id) }}"></iframe>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </li>
+  </ul>
+</div>]]></template>
+    </sp_widget>
+</record_update>

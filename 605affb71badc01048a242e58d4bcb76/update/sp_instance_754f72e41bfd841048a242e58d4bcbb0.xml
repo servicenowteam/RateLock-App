@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_instance">
+    <sp_instance action="INSERT_OR_UPDATE">
+        <active>true</active>
+        <class_name/>
+        <color>default</color>
+        <css/>
+        <glyph/>
+        <id>ratelock-breadcrumbs</id>
+        <order>1</order>
+        <roles/>
+        <short_description/>
+        <size>md</size>
+        <sp_column display_value="1">b54f72e41bfd841048a242e58d4bcb31</sp_column>
+        <sp_widget display_value="ratelock breadcrumbs">ad15e7e41bb1c41048a242e58d4bcb63</sp_widget>
+        <sys_class_name>sp_instance</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2019-12-15 14:01:00</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>754f72e41bfd841048a242e58d4bcbb0</sys_id>
+        <sys_mod_count>3</sys_mod_count>
+        <sys_name>Breadcrumbs</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sp_instance_754f72e41bfd841048a242e58d4bcbb0</sys_update_name>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-01-04 21:42:01</sys_updated_on>
+        <title>Breadcrumbs</title>
+        <url/>
+        <widget_parameters/>
+    </sp_instance>
+    <sys_translated_text action="delete_multiple" query="documentkey=754f72e41bfd841048a242e58d4bcbb0"/>
+</record_update>

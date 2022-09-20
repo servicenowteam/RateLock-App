@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_email_layout">
+    <sys_email_layout action="DELETE">
+        <advanced>false</advanced>
+        <advanced_layout/>
+        <description/>
+        <layout><![CDATA[<style><!--
+.tdwrap{color:#ccc;line-height:1;font-size:10pt;}sup{color:#fff;}
+--></style>
+<!-- [if mso]><style>sup{mso-hide: all;}</style><![endif]-->
+<p></p>
+<table style="width: 100%; background-color: #d8d8d8; text-align: center; padding: 10px; margin-bottom: 20px;">
+<tbody>
+<tr>
+<td>
+<table style="width: 100%; text-align: center; padding: 10px;">
+<tbody>
+<tr>
+<td style="color: #f4f4f4; height: 50px; border-bottom: 1px solid #f4f4f4; background-color: #f4f4f4; padding: 15px; text-align: center;"><img src="mmlogo-logo.pngx" vspace="" hspace="" border="" align="baseline" alt="" title="" style="align: baseline;" /></td>
+</tr>
+<tr>
+<td style="background-color: #ffffff; text-align: left; font-size: 16px; padding: 15px;">
+<p>${notification:body}</p>
+<p><span colspan="2"></span></p>
+<hr />
+<p></p>
+<p><span style="font-size: 14px;">Regards,</span></p>
+<p><span style="font-size: 14px;">Ratelock Team</span><span style="font-size: 14px;"> | </span><span style="font-size: 14px;"><a href="mailto:ratelock@movement.com">ratelock@movement.com</a></span></p>
+</td>
+</tr>
+<tr>
+<td style="color: #f4f4f4; height: 50px; border-bottom: 1px solid #f4f4f4; background-color: #f4f4f4; padding: 15px; text-align: center;"></td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>]]></layout>
+        <name>Movement Ratelock Layout_ece764811b120c9048a242e58d4bcbcf</name>
+        <sys_class_name>sys_email_layout</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-03-10 19:35:12</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>33740f90db6b0890f2551329689619aa</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>Movement Ratelock Layout_ece764811b120c9048a242e58d4bcbcf</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sys_email_layout_33740f90db6b0890f2551329689619aa</sys_update_name>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-03-10 19:35:12</sys_updated_on>
+    </sys_email_layout>
+    <sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Ratelock">605affb71badc01048a242e58d4bcb76</application>
+        <file_path/>
+        <instance_id>94e8281edbb7470060a6f0e5bf9619f6</instance_id>
+        <instance_name>movementdev</instance_name>
+        <name>sys_email_layout_33740f90db6b0890f2551329689619aa</name>
+        <payload>&lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;record_update table="sys_email_layout"&gt;&lt;sys_email_layout action="INSERT_OR_UPDATE"&gt;&lt;advanced&gt;false&lt;/advanced&gt;&lt;advanced_layout/&gt;&lt;description/&gt;&lt;layout&gt;&lt;![CDATA[&lt;style&gt;&lt;!--
+.tdwrap{color:#ccc;line-height:1;font-size:10pt;}sup{color:#fff;}
+--&gt;&lt;/style&gt;
+&lt;!-- [if mso]&gt;&lt;style&gt;sup{mso-hide: all;}&lt;/style&gt;&lt;![endif]--&gt;
+&lt;p&gt;&lt;/p&gt;
+&lt;table style="width: 100%; background-color: #d8d8d8; text-align: center; padding: 10px; margin-bottom: 20px;"&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;
+&lt;table style="width: 100%; text-align: center; padding: 10px;"&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style="color: #f4f4f4; height: 50px; border-bottom: 1px solid #f4f4f4; background-color: #f4f4f4; padding: 15px; text-align: center;"&gt;&lt;img src="mmlogo-logo.pngx" vspace="" hspace="" border="" align="baseline" alt="" title="" style="align: baseline;" /&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style="background-color: #ffffff; text-align: left; font-size: 16px; padding: 15px;"&gt;
+&lt;p&gt;${notification:body}&lt;/p&gt;
+&lt;p&gt;&lt;span colspan="2"&gt;&lt;/span&gt;&lt;/p&gt;
+&lt;hr /&gt;
+&lt;p&gt;&lt;/p&gt;
+&lt;p&gt;&lt;span style="font-size: 14px;"&gt;Regards,&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;&lt;span style="font-size: 14px;"&gt;Ratelock Team&lt;/span&gt;&lt;span style="font-size: 14px;"&gt; | &lt;/span&gt;&lt;span style="font-size: 14px;"&gt;&lt;a href="mailto:ratelock@movement.com"&gt;ratelock@movement.com&lt;/a&gt;&lt;/span&gt;&lt;/p&gt;
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style="color: #f4f4f4; height: 50px; border-bottom: 1px solid #f4f4f4; background-color: #f4f4f4; padding: 15px; text-align: center;"&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;]]&gt;&lt;/layout&gt;&lt;name&gt;Movement Ratelock Layout_ece764811b120c9048a242e58d4bcbcf&lt;/name&gt;&lt;sys_class_name&gt;sys_email_layout&lt;/sys_class_name&gt;&lt;sys_created_by&gt;douglas.schamberg&lt;/sys_created_by&gt;&lt;sys_created_on&gt;2020-03-10 19:35:12&lt;/sys_created_on&gt;&lt;sys_customer_update&gt;false&lt;/sys_customer_update&gt;&lt;sys_id&gt;33740f90db6b0890f2551329689619aa&lt;/sys_id&gt;&lt;sys_mod_count&gt;0&lt;/sys_mod_count&gt;&lt;sys_name&gt;Movement Ratelock Layout_ece764811b120c9048a242e58d4bcbcf&lt;/sys_name&gt;&lt;sys_package display_value="Ratelock" source="x_momo_ratelock"&gt;605affb71badc01048a242e58d4bcb76&lt;/sys_package&gt;&lt;sys_policy/&gt;&lt;sys_replace_on_upgrade&gt;false&lt;/sys_replace_on_upgrade&gt;&lt;sys_scope display_value="Ratelock"&gt;605affb71badc01048a242e58d4bcb76&lt;/sys_scope&gt;&lt;sys_update_name&gt;sys_email_layout_33740f90db6b0890f2551329689619aa&lt;/sys_update_name&gt;&lt;sys_updated_by&gt;douglas.schamberg&lt;/sys_updated_by&gt;&lt;sys_updated_on&gt;2020-03-10 19:35:12&lt;/sys_updated_on&gt;&lt;/sys_email_layout&gt;&lt;/record_update&gt;</payload>
+        <payload_hash>2097478567</payload_hash>
+        <record_name>Movement Ratelock Layout_ece764811b120c9048a242e58d4bcbcf</record_name>
+        <reverted_from/>
+        <source>74fc5f651b5a401048a242e58d4bcbbc</source>
+        <source_table>sys_update_set</source_table>
+        <state>previous</state>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-03-10 19:35:12</sys_created_on>
+        <sys_id>bf740f90db6b0890f2551329689619ab</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>170c5f1a29e0000001</sys_recorded_at>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-03-10 19:35:12</sys_updated_on>
+        <type>Email Layout</type>
+        <update_guid>b7740f90756b089014780b54377ab3ab</update_guid>
+        <update_guid_history>b7740f90756b089014780b54377ab3ab:2097478567</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete/>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-04-24 11:11:28</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_db_object display_value="" name="sys_email_layout">sys_email_layout</sys_db_object>
+        <sys_id>3761124b094f4b68b8e476f9462aaa40</sys_id>
+        <sys_metadata>33740f90db6b0890f2551329689619aa</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>Movement Ratelock Layout_ece764811b120c9048a242e58d4bcbcf</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_parent/>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_scope_delete display_value="">57712118eaee4a49ae47b2048a14ac31</sys_scope_delete>
+        <sys_update_name>sys_email_layout_33740f90db6b0890f2551329689619aa</sys_update_name>
+        <sys_update_version display_value="sys_email_layout_33740f90db6b0890f2551329689619aa">bf740f90db6b0890f2551329689619ab</sys_update_version>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-04-24 11:11:28</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>

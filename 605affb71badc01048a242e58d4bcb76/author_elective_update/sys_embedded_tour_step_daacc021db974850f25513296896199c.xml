@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update sys_domain="global" table="sys_embedded_tour_step">
+    <sys_embedded_tour_step action="DELETE">
+        <action>false</action>
+        <action_event>next</action_event>
+        <action_target/>
+        <action_target_ref display_value="xpath">12acc021db974850f25513296896199b</action_target_ref>
+        <active>true</active>
+        <content><![CDATA[Your replies or replies that are not from the caller will show up on this side of the conversation list. ]]></content>
+        <guide display_value="Ratelock Ticket Details">b1ea886ddb574850f255132968961912</guide>
+        <implicit>false</implicit>
+        <link/>
+        <name/>
+        <options>{"url":"/ratelock?id=ratelock_ticket_form&amp;table=x_momo_ratelock_ticket&amp;sys_id=12244ec31b724c1048a242e58d4bcb2d"}</options>
+        <order>7</order>
+        <placement>right</placement>
+        <step_type>step</step_type>
+        <sys_class_name>sys_embedded_tour_step</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-03-01 17:08:43</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_domain>global</sys_domain>
+        <sys_id>daacc021db974850f25513296896199c</sys_id>
+        <sys_mod_count>1</sys_mod_count>
+        <sys_name/>
+        <sys_overrides/>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sys_embedded_tour_step_daacc021db974850f25513296896199c</sys_update_name>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-03-01 17:08:46</sys_updated_on>
+        <target/>
+        <target_ref display_value="xpath">12acc021db974850f25513296896199b</target_ref>
+        <title/>
+        <ui_version>dynamic</ui_version>
+        <view/>
+        <window>ratelock</window>
+    </sys_embedded_tour_step>
+    <sys_translated_text action="DELETE" query="documentkey=daacc021db974850f25513296896199c"/>
+    <sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Ratelock">605affb71badc01048a242e58d4bcb76</application>
+        <file_path/>
+        <instance_id>94e8281edbb7470060a6f0e5bf9619f6</instance_id>
+        <instance_name>movementdev</instance_name>
+        <name>sys_embedded_tour_step_daacc021db974850f25513296896199c</name>
+        <payload>&lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;record_update sys_domain="global" table="sys_embedded_tour_step"&gt;&lt;sys_embedded_tour_step action="INSERT_OR_UPDATE"&gt;&lt;action&gt;false&lt;/action&gt;&lt;action_event&gt;next&lt;/action_event&gt;&lt;action_target/&gt;&lt;action_target_ref display_value="xpath"&gt;12acc021db974850f25513296896199b&lt;/action_target_ref&gt;&lt;active&gt;true&lt;/active&gt;&lt;content&gt;&lt;![CDATA[Your replies or replies that are not from the caller will show up on this side of the conversation list. ]]&gt;&lt;/content&gt;&lt;guide display_value="Ratelock Ticket Details"&gt;b1ea886ddb574850f255132968961912&lt;/guide&gt;&lt;implicit&gt;false&lt;/implicit&gt;&lt;link/&gt;&lt;name/&gt;&lt;options&gt;{"url":"/ratelock?id=ratelock_ticket_form&amp;amp;table=x_momo_ratelock_ticket&amp;amp;sys_id=12244ec31b724c1048a242e58d4bcb2d"}&lt;/options&gt;&lt;order&gt;7&lt;/order&gt;&lt;placement&gt;right&lt;/placement&gt;&lt;step_type&gt;step&lt;/step_type&gt;&lt;sys_class_name&gt;sys_embedded_tour_step&lt;/sys_class_name&gt;&lt;sys_created_by&gt;douglas.schamberg&lt;/sys_created_by&gt;&lt;sys_created_on&gt;2020-03-01 17:08:43&lt;/sys_created_on&gt;&lt;sys_customer_update&gt;false&lt;/sys_customer_update&gt;&lt;sys_domain&gt;global&lt;/sys_domain&gt;&lt;sys_id&gt;daacc021db974850f25513296896199c&lt;/sys_id&gt;&lt;sys_mod_count&gt;1&lt;/sys_mod_count&gt;&lt;sys_name/&gt;&lt;sys_overrides/&gt;&lt;sys_package display_value="Ratelock" source="x_momo_ratelock"&gt;605affb71badc01048a242e58d4bcb76&lt;/sys_package&gt;&lt;sys_policy/&gt;&lt;sys_replace_on_upgrade&gt;false&lt;/sys_replace_on_upgrade&gt;&lt;sys_scope display_value="Ratelock"&gt;605affb71badc01048a242e58d4bcb76&lt;/sys_scope&gt;&lt;sys_update_name&gt;sys_embedded_tour_step_daacc021db974850f25513296896199c&lt;/sys_update_name&gt;&lt;sys_updated_by&gt;douglas.schamberg&lt;/sys_updated_by&gt;&lt;sys_updated_on&gt;2020-03-01 17:08:46&lt;/sys_updated_on&gt;&lt;target/&gt;&lt;target_ref display_value="xpath"&gt;12acc021db974850f25513296896199b&lt;/target_ref&gt;&lt;title/&gt;&lt;ui_version&gt;dynamic&lt;/ui_version&gt;&lt;view/&gt;&lt;window&gt;ratelock&lt;/window&gt;&lt;/sys_embedded_tour_step&gt;&lt;sys_translated_text action="delete_multiple" query="documentkey=daacc021db974850f25513296896199c"/&gt;&lt;/record_update&gt;</payload>
+        <payload_hash>-484566002</payload_hash>
+        <record_name/>
+        <reverted_from/>
+        <source>74fc5f651b5a401048a242e58d4bcbbc</source>
+        <source_table>sys_update_set</source_table>
+        <state>previous</state>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-03-01 17:08:46</sys_created_on>
+        <sys_id>9bac0421db974850f25513296896197a</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>170971258e90000001</sys_recorded_at>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-03-01 17:08:46</sys_updated_on>
+        <type>Guided Tour Step</type>
+        <update_guid>9bacc02114974850bddc4676adbcd1a6</update_guid>
+        <update_guid_history>9bacc02114974850bddc4676adbcd1a6:-484566002,5eacc021da974850f40ba5961e86449d:-889396593</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete/>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-03-01 17:12:39</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_db_object display_value="" name="sys_embedded_tour_step">sys_embedded_tour_step</sys_db_object>
+        <sys_id>11e60f666b274d04818718a89de31fc1</sys_id>
+        <sys_metadata>daacc021db974850f25513296896199c</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name/>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_parent/>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_scope_delete display_value="">57712118eaee4a49ae47b2048a14ac31</sys_scope_delete>
+        <sys_update_name>sys_embedded_tour_step_daacc021db974850f25513296896199c</sys_update_name>
+        <sys_update_version display_value="sys_embedded_tour_step_daacc021db974850f25513296896199c">9bac0421db974850f25513296896197a</sys_update_version>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-03-01 17:12:39</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>

@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_widget">
+    <sp_widget action="INSERT_OR_UPDATE">
+        <category>custom</category>
+        <client_script><![CDATA[function ratelockRecipientsInput($scope, $rootScope, spUtil, $timeout) {
+	var c = this;
+	$scope.fromWatcher = false;
+	
+	spUtil.recordWatch($scope, $scope.data.table, "sys_id=" + $scope.data.sys_id, function(response) {
+		var data = response.data;
+		if (data.changes.includes('email_recipients')) {
+			$scope.fromWatcher = true;
+			if (!$scope.alreadyRefreshed) {
+				$scope.alreadyRefreshed = true;
+				$scope.server.refresh().then(function(results) {
+					console.log(results);
+					$scope.email_recipients.displayValue = results.data.displayValue;
+					$scope.email_recipients.value = results.data.value;
+					
+					$timeout(function() {
+						$scope.alreadyRefreshed = false;
+						$scope.fromWatcher = false;
+					}, 1000);
+				});
+			}
+		}
+	});
+	
+  $scope.email_recipients = {
+    displayValue: $scope.data.displayValue,
+    value: $scope.data.value,
+    name: 'email_recipients'
+  };
+	
+	$rootScope.$on('editor.mention.added', function(evt, payload) {
+		var item = payload.item;
+		if (payload.id !== c.options.sys_id) return;
+		if ($scope.email_recipients.value === '' || !$scope.email_recipients.value) {
+			$scope.data.displayValue = item.value;
+			$scope.data.value = item.id;
+		} else {
+			$scope.data.displayValue = $scope.data.displayValue + ',' + item.value;
+			$scope.data.value = $scope.data.value + ',' + item.id;
+		}
+		$scope.server.update();
+	});
+	
+	$scope.$on("field.change.email_recipients", function(evt, args) {
+		if (args.field.name === 'email_recipients' && args.newValue !== args.oldValue) {
+			$scope.data.displayValue = args.field.displayValue;
+			$scope.data.value = args.field.value;
+			if (!$scope.fromWatcher) {
+				$scope.server.update();
+			}
+		}
+  });
+}]]></client_script>
+        <controller_as>c</controller_as>
+        <css>.panel-heading {&#13;
+  border-radius:2px;&#13;
+} &#13;
+&#13;
+.sp-geo-canvas-container {&#13;
+  height: 400px; &#13;
+  width: 100%;&#13;
+}&#13;
+&#13;
+.other-name {&#13;
+  vertical-align:bottom;&#13;
+  padding-left:4px;&#13;
+  font-size:0.9em;&#13;
+}&#13;
+&#13;
+.other-item {&#13;
+  padding:2px;&#13;
+  white-space:nowrap;&#13;
+}&#13;
+&#13;
+.map-icon {&#13;
+  vertical-align:bottom;&#13;
+  height:30px;&#13;
+  padding:4px 0px 4px 4px;&#13;
+}  </css>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description/>
+        <docs/>
+        <field_list/>
+        <has_preview>false</has_preview>
+        <id>ratelock-recipients-input</id>
+        <internal>false</internal>
+        <link><![CDATA[function link(scope, element, attrs, controller) {  }]]></link>
+        <name>Ratelock Recipients Input</name>
+        <option_schema/>
+        <public>false</public>
+        <roles/>
+        <script><![CDATA[(function() {
+	data.table = options.table || $sp.getParameter('table');
+	data.sys_id = options.sys_id || $sp.getParameter('sys_id');
+	
+  var gr = $sp.getRecord();
+  if (gr == null) return;
+
+  data.canRead = $sp.canReadRecord(gr);
+  data.canWrite = gr.canWrite() && !gr.isNewRecord() && gr.getValue('state') != 6;
+  if (input && !gr.isNewRecord()) {
+    gr.setValue('email_recipients', input.value, input.displayValue);
+    gr.update();
+  }
+
+  data.value = gr.getValue('email_recipients');
+  data.displayValue = gr.getDisplayValue('email_recipients');
+})();]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-04-24 13:18:30</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>5cddd57adb54d050f255132968961997</sys_id>
+        <sys_mod_count>61</sys_mod_count>
+        <sys_name>Ratelock Recipients Input</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sp_widget_5cddd57adb54d050f255132968961997</sys_update_name>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-07-03 14:30:46</sys_updated_on>
+        <template><![CDATA[<sp-record-picker
+  field="email_recipients"
+  ng-if="data.canRead"
+  sn-disabled="!data.canWrite" 
+  table="'sys_user'"
+  display-field="'name'" 
+  search-fields="'name'" 
+  value-field="'email'" 
+  default-query="'active=true^emailISNOTEMPTY'" 
+  multiple="true"
+  placeholder="Email recipients"
+></sp-record-picker>
+]]></template>
+    </sp_widget>
+</record_update>

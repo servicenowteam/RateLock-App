@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_widget">
+    <sp_widget action="INSERT_OR_UPDATE">
+        <category>custom</category>
+        <client_script><![CDATA[function($rootScope) {
+  /* widget controller */
+  var c = this;
+	
+	c.getPriorityClass = function(priority, isClosed) {
+		if (isClosed) return 'closed';
+		if (priority == "1") return 'critical';
+		if (priority == "2") return 'normal';
+		if (priority == "3") return 'low';
+	};
+}]]></client_script>
+        <controller_as>c</controller_as>
+        <css>.list-group {
+	margin-bottom: 5px;
+}
+
+.list-group-item {
+  
+  &amp;.no-records {
+    border: none;
+  	text-align: center;
+  	display: flex;
+  	justify-content: center;
+  	align-items: center;
+  	vertical-align: middle;
+    
+    &amp;:hover {
+    	text-decoration: underline;
+
+      -webkit-transition: all .3s ease-out;
+      -moz-transition: all .3s ease-out;
+      -ms-transition: all .3s ease-out;
+      transition: all .3s ease-out;
+    }
+  }
+}
+
+.created-at {
+	text-align: right;
+}
+
+.list-link {
+  font-size: 16px;
+  outline: none;
+  
+  &amp;.closed {
+  	color: rgba(0, 0, 0, 0.4);
+  }
+  
+  &amp;:hover,
+  &amp;:focus {
+    transition: color 0.3s ease;
+    &amp;.critical {
+      color: $danger;
+    }
+    &amp;.low {
+      color: $success;
+    }
+    
+    &amp;.closed {
+    	color: rgba(0, 0, 0, 0.3);
+    }
+
+    &amp;.normal {
+      color: rgba(0, 0, 0, .6);
+    }
+  }
+
+  &amp;:focus {
+  	outline: none;
+  }
+  
+}</css>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description/>
+        <docs/>
+        <field_list/>
+        <has_preview>false</has_preview>
+        <id>ratelock_related_list</id>
+        <internal>false</internal>
+        <link><![CDATA[function link(scope, element, attrs, controller) {  }]]></link>
+        <name>Ratelock Related List</name>
+        <option_schema/>
+        <public>false</public>
+        <roles/>
+        <script><![CDATA[(function() {
+  /* populate the 'data' object */
+  /* e.g., data.table = $sp.getValue('table'); */
+	gs.include('RatelockDateUtils');
+	data.related = [];
+	var table = (input ? input.table : undefined) || options.table || $sp.getParameter('table');
+	var loan_number = (input ? input.loan_number : undefined) || options.loan_number;
+	var sys_id = (input ? input.sys_id : undefined) || options.sys_id || $sp.getParameter('sys_id');
+	if (table && loan_number && sys_id) {
+		data.related = getRecords(table, loan_number, sys_id);
+	}
+	
+	function getRecords(table, loanNumber, sysId) {
+		var records = [];
+		var gr = new GlideRecord(table);
+		gr.addNotNullQuery('loan_number');
+		gr.addQuery('sys_id', '!=', sysId)
+		gr.addQuery('loan_number', loanNumber);
+		gr.orderByDesc('sys_created_on');
+		gr.orderBy('priority');
+		
+		gr.query();
+		
+		while (gr.next()) {
+			records.push({
+				isClosed: gr.getValue('state') == 6,
+				link: '?id=ratelock_ticket_form&table=' + gr.getTableName() + '&sys_id=' + gr.getUniqueValue(),
+				summary: gr.getValue('short_description'),
+				id: gr.getUniqueValue(),
+				loan: gr.getValue('loan_number'),
+				priority: gr.getValue('priority'),
+				createdAt: RatelockDateUtils.formatDateTime(gr.sys_created_on)
+			});
+		}
+		
+		return records;
+	}
+})();]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-04-26 13:09:26</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>03ee2fd7db1c9450f255132968961968</sys_id>
+        <sys_mod_count>57</sys_mod_count>
+        <sys_name>Ratelock Related List</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sp_widget_03ee2fd7db1c9450f255132968961968</sys_update_name>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2021-01-15 20:30:21</sys_updated_on>
+        <template><![CDATA[<ul class="list-group">
+  <li class="list-group-item" 
+      ng-repeat="record in c.data.related track by record.id"
+      ng-if="c.data.related.length > 0">
+    <div class="row">
+      <div class="col-md-9">
+        <a href ng-class="::c.getPriorityClass(record.priority, record.isClosed)"
+           class="list-link"
+           ng-href="{{ ::record.link }}"
+           title="{{ ::record.summary }}"
+           target="_blank">
+          {{ ::record.summary }}
+        </a>
+      </div>
+      <div class="col-md-3 created-at">
+        <small>{{ ::record.createdAt }}</small>
+      </div>
+    </div>
+  	
+    
+  </li>
+  <li class="list-group-item no-records"
+      ng-if="c.data.related.length === 0">
+    ${No related tickets}
+  </li>
+</ul>]]></template>
+    </sp_widget>
+</record_update>

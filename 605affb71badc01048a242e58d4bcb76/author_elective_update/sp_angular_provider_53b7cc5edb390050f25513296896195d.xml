@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_angular_provider">
+    <sp_angular_provider action="DELETE">
+        <name>ambData</name>
+        <script><![CDATA[function(amb) {
+	var watcher;
+	var dataUpdatedHandlers = [];
+	function init(table, filter) {
+		if (watcher) {
+			watcher.unsubscribe();
+		}
+
+		if (table && filter) {
+			var watcherChannel = amb.getChannel(table, filter);
+			amb.connect();
+			watcher = watcherChannel.subscribe(function(message) {
+				if (!message.data) {
+					return;
+				}
+				dataUpdatedHandlers.forEach(function(fn) { fn.call(fn); });
+			});
+		}
+	}
+	return {
+		onDataUpdated: function(callbackFn) {
+			dataUpdatedHandlers.push(callbackFn);
+		},
+		initRecordWatcher: function(table, filter) {
+			init(table, filter);
+		}
+	};
+}]]></script>
+        <sys_class_name>sp_angular_provider</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2019-12-20 11:11:44</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>53b7cc5edb390050f25513296896195d</sys_id>
+        <sys_mod_count>1</sys_mod_count>
+        <sys_name>ambData</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sp_angular_provider_53b7cc5edb390050f25513296896195d</sys_update_name>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2019-12-20 11:46:46</sys_updated_on>
+        <type>factory</type>
+    </sp_angular_provider>
+    <sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Ratelock">605affb71badc01048a242e58d4bcb76</application>
+        <file_path/>
+        <instance_id>94e8281edbb7470060a6f0e5bf9619f6</instance_id>
+        <instance_name>movementdev</instance_name>
+        <name>sp_angular_provider_53b7cc5edb390050f25513296896195d</name>
+        <payload>&lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;record_update table="sp_angular_provider"&gt;&lt;sp_angular_provider action="INSERT_OR_UPDATE"&gt;&lt;name&gt;ambData&lt;/name&gt;&lt;script&gt;&lt;![CDATA[function(amb) {
+	var watcher;
+	var dataUpdatedHandlers = [];
+	function init(table, filter) {
+		if (watcher) {
+			watcher.unsubscribe();
+		}
+
+		if (table &amp;&amp; filter) {
+			var watcherChannel = amb.getChannel(table, filter);
+			amb.connect();
+			watcher = watcherChannel.subscribe(function(message) {
+				if (!message.data) {
+					return;
+				}
+				dataUpdatedHandlers.forEach(function(fn) { fn.call(fn); });
+			});
+		}
+	}
+	return {
+		onDataUpdated: function(callbackFn) {
+			dataUpdatedHandlers.push(callbackFn);
+		},
+		initRecordWatcher: function(table, filter) {
+			init(table, filter);
+		}
+	};
+}]]&gt;&lt;/script&gt;&lt;sys_class_name&gt;sp_angular_provider&lt;/sys_class_name&gt;&lt;sys_created_by&gt;douglas.schamberg&lt;/sys_created_by&gt;&lt;sys_created_on&gt;2019-12-20 11:11:44&lt;/sys_created_on&gt;&lt;sys_customer_update&gt;false&lt;/sys_customer_update&gt;&lt;sys_id&gt;53b7cc5edb390050f25513296896195d&lt;/sys_id&gt;&lt;sys_mod_count&gt;1&lt;/sys_mod_count&gt;&lt;sys_name&gt;ambData&lt;/sys_name&gt;&lt;sys_package display_value="Ratelock" source="x_momo_ratelock"&gt;605affb71badc01048a242e58d4bcb76&lt;/sys_package&gt;&lt;sys_policy/&gt;&lt;sys_replace_on_upgrade&gt;false&lt;/sys_replace_on_upgrade&gt;&lt;sys_scope display_value="Ratelock"&gt;605affb71badc01048a242e58d4bcb76&lt;/sys_scope&gt;&lt;sys_update_name&gt;sp_angular_provider_53b7cc5edb390050f25513296896195d&lt;/sys_update_name&gt;&lt;sys_updated_by&gt;douglas.schamberg&lt;/sys_updated_by&gt;&lt;sys_updated_on&gt;2019-12-20 11:46:46&lt;/sys_updated_on&gt;&lt;type&gt;factory&lt;/type&gt;&lt;/sp_angular_provider&gt;&lt;/record_update&gt;</payload>
+        <payload_hash>-1860767305</payload_hash>
+        <record_name>ambData</record_name>
+        <reverted_from/>
+        <source>a45affb71badc01048a242e58d4bcb78</source>
+        <source_table>sys_update_set</source_table>
+        <state>previous</state>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2019-12-20 11:46:46</sys_created_on>
+        <sys_id>4880141adb790050f255132968961982</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>16f2321a8a80000001</sys_recorded_at>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2019-12-20 11:46:46</sys_updated_on>
+        <type>Widget Angular Provider</type>
+        <update_guid>0080141a15790050d606c09be7bf5282</update_guid>
+        <update_guid_history>0080141a15790050d606c09be7bf5282:-1860767305,c7780c5a5c3900503a1f70e353223158:-964535311</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete display_value="">19f95416dbb90050f2551329689619f3</sys_audit_delete>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2019-12-20 12:28:05</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_db_object display_value="" name="sp_angular_provider">sp_angular_provider</sys_db_object>
+        <sys_id>b6a005224a0242069b9d1d3024553281</sys_id>
+        <sys_metadata>53b7cc5edb390050f25513296896195d</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>ambData</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_parent/>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_scope_delete display_value="">57712118eaee4a49ae47b2048a14ac31</sys_scope_delete>
+        <sys_update_name>sp_angular_provider_53b7cc5edb390050f25513296896195d</sys_update_name>
+        <sys_update_version display_value="sp_angular_provider_53b7cc5edb390050f25513296896195d">4880141adb790050f255132968961982</sys_update_version>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2019-12-20 12:28:05</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>

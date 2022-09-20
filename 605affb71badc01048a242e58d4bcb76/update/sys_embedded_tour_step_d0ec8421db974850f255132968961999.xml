@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update sys_domain="global" table="sys_embedded_tour_step">
+    <sys_embedded_tour_step action="INSERT_OR_UPDATE">
+        <action>false</action>
+        <action_event>next</action_event>
+        <action_target/>
+        <action_target_ref display_value="xpath">18ec8421db974850f255132968961997</action_target_ref>
+        <active>true</active>
+        <content><![CDATA[You can edit the details of the ratelock request here]]></content>
+        <guide display_value="Ratelock Ticket Details">b1ea886ddb574850f255132968961912</guide>
+        <implicit>false</implicit>
+        <link/>
+        <name/>
+        <options>{"url":"/ratelock?id=ratelock_ticket_form&amp;table=x_momo_ratelock_ticket&amp;sys_id=12244ec31b724c1048a242e58d4bcb2d"}</options>
+        <order>7</order>
+        <placement>left</placement>
+        <skippable>false</skippable>
+        <step_type>step</step_type>
+        <sys_class_name>sys_embedded_tour_step</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-03-01 17:09:41</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_domain>global</sys_domain>
+        <sys_id>d0ec8421db974850f255132968961999</sys_id>
+        <sys_mod_count>3</sys_mod_count>
+        <sys_name/>
+        <sys_overrides/>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sys_embedded_tour_step_d0ec8421db974850f255132968961999</sys_update_name>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-03-01 17:12:46</sys_updated_on>
+        <target/>
+        <target_ref display_value="xpath">18ec8421db974850f255132968961997</target_ref>
+        <title/>
+        <ui_version>dynamic</ui_version>
+        <view/>
+        <window>ratelock</window>
+    </sys_embedded_tour_step>
+    <sys_translated_text action="delete_multiple" query="documentkey=d0ec8421db974850f255132968961999"/>
+</record_update>

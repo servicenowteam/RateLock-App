@@ -1,0 +1,794 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_angular_provider">
+    <sp_angular_provider action="DELETE">
+        <name>ratelockRecordPicker</name>
+        <script><![CDATA[function ratelockRecordPicker($timeout, $http, urlTools, filterExpressionParser, escapeHtml, i18n) {
+  var cache = {};
+
+  function cleanLabel(val) {
+    if (typeof val == "object")
+      return typeof val.display_value == "string" ? val.display_value.trim() : "";
+    return typeof val == "string" ? val.trim() : val;
+  }
+  return {
+    restrict: 'E',
+    replace: true,
+    scope: {
+      field: '=',
+      table: '=',
+      fallbackTable: "=?",
+      defaultQuery: '=?',
+      startswith: '=?',
+      searchFields: '=?',
+      valueField: '=?',
+      displayField: '=?',
+      displayFields: '=?',
+      pageSize: '=?',
+      onChange: '&',
+      snDisabled: '=',
+      multiple: '=?',
+      options: '=?',
+      placeholder: '@'
+    },
+    template: '<input type="text" ng-disabled="snDisabled" style="min-width: 150px;" name="{{field.name}}" ng-model="field.value"' + ' sn-atf-data-type="reference" sn-atf-data-type-params=\'{"reference" : "{{table}}", "reference_qual" : "{{defaultQuery}}",' + ' "valueField" : "{{valueField}}", "displayField" : "{{displayField}}"}\' sn-atf-class="builtin:ATF.BaseSNRecordPicker" sn-atf-component-value="{{field}}"/>',
+    controller: function ($scope) {
+      if (!angular.isNumber($scope.pageSize))
+        $scope.pageSize = 20;
+      if (!angular.isDefined($scope.valueField))
+        $scope.valueField = 'sys_id';
+      this.filterResults = function (data, page) {
+        return {
+          results: data.data.result,
+          more: (page * $scope.pageSize < parseInt(data.headers('x-total-count'), 10))
+        };
+      };
+    },
+    link: function (scope, element, attrs, ctrl) {
+      var isExecuting = false;
+      var hasAlreadyFallbacked = false;
+      var select2Helpers = {
+        formatSelection: function (item) {
+          return escapeHtml(getDisplayValue(item));
+        },
+        formatNoMatches: function(term) {
+          return escapeHtml(term);
+        },
+        formatResult: function (item) {
+          var displayFields = getdisplayFields(item);
+          if (displayFields.length == 1)
+            return escapeHtml(cleanLabel(displayFields[0]));
+          if (displayFields.length > 1) {
+            var markup = escapeHtml(cleanLabel(displayFields[0]));
+            var width = 100 / (displayFields.length - 1);
+            markup += "<div>";
+            for (var i = 1; i < displayFields.length; i++)
+              markup += "<div style='width: " + width + "%;' class='select2-additional-display-field'>" + escapeHtml(cleanLabel(displayFields[i])) + "</div>";
+            markup += "</div>";
+            return markup;
+          }
+          return "";
+        },
+        search: function (queryParams) {
+          var url = '/api/now/table/' + scope.table + '?' + urlTools.encodeURIParameters(queryParams.data);
+          if (scope.options && scope.options.cache && cache[url])
+            return queryParams.success(cache[url]);
+          return $http.get(url).then(function (response) {
+            if (scope.options && scope.options.cache) {
+              cache[url] = response;
+            }
+            if (response.data.result.length === 0) {
+              if (!/(?=(@.*\.[A-Za-z]+$))/gm.test(queryParams.data.field_value)) {
+                return queryParams.success(response);
+              }
+              response.data.result = [{
+                sys_id: queryParams.data.field_value,
+                name: queryParams.data.field_value
+              }];
+            }
+            return queryParams.success(response);
+          });
+        },
+        initSelection: function (elem, callback) {
+          if (scope.field.displayValue) {
+            if (scope.multiple) {
+              var items = [],
+                sel;
+              var values = scope.field.value.split(',');
+              var displayValues = scope.field.displayValue.split(',');
+              for (var i = 0; i < values.length; i++) {
+                sel = {};
+                sel[scope.valueField] = values[i];
+                sel[scope.displayField] = displayValues[i];
+                items.push(sel);
+              }
+              callback(items);
+            } else {
+              var sel = {};
+              sel[scope.valueField] = scope.field.value;
+              sel[scope.displayField] = scope.field.displayValue;
+              callback(sel);
+            }
+          } else
+            callback([]);
+        }
+      };
+      var config = {
+        width: '100%',
+        containerCssClass: 'select2-reference ng-form-element',
+        placeholder: scope.placeholder || '    ',
+        formatSearching: '',
+        allowClear: (scope.options && typeof scope.options.allowClear !== "undefined") ? scope.options.allowClear : true,
+        id: function (item) {
+          return item[scope.valueField];
+        },
+        ajax: {
+          quietMillis: NOW.ac_wait_time,
+          data: function (filterText, page) {
+            var params = {
+              sysparm_offset: (scope.pageSize * (page - 1)),
+              sysparm_limit: scope.pageSize,
+              sysparm_query: buildQuery(filterText, scope.searchFields, scope.defaultQuery),
+              sysparm_display_value: true,
+              field_value: filterText
+            };
+            return params;
+          },
+          results: function (data, page) {
+            return ctrl.filterResults(data, page, scope.pageSize);
+          },
+          transport: select2Helpers.search
+        },
+        formatSelection: select2Helpers.formatSelection,
+        formatResult: select2Helpers.formatResult,
+        formatResultCssClass: function () {
+          return '';
+        },
+        initSelection: select2Helpers.initSelection,
+        multiple: scope.multiple
+      };
+
+      function buildQuery(filterText, searchFields, defaultQuery) {
+        var queryParts = [];
+        var operator = "CONTAINS";
+        if (scope.startswith)
+          operator = "STARTSWITH";
+        if (filterText.startsWith("*")) {
+          filterText = filterText.substring(1);
+          operator = "CONTAINS";
+        }
+        if (defaultQuery)
+          queryParts.push(defaultQuery);
+        var filterExpression = filterExpressionParser.parse(filterText, operator);
+        if (searchFields != null) {
+          var fields = searchFields.split(',');
+          if (filterExpression.filterText != '') {
+            var OR = "";
+            for (var i = 0; i < fields.length; i++) {
+              queryParts.push(OR + fields[i] + filterExpression.operator + filterExpression.filterText);
+              OR = "OR";
+            }
+          }
+          for (var i = 0; i < fields.length; i++)
+            queryParts.push('ORDERBY' + fields[i]);
+          queryParts.push('EQ');
+        }
+        return queryParts.join('^');
+      }
+      scope.field = scope.field || {};
+      var initTimeout = null;
+      var value = scope.field.value;
+      var oldValue = scope.field.value;
+      var $select;
+
+      function init() {
+        element.css("opacity", 0);
+        $timeout.cancel(initTimeout);
+        initTimeout = $timeout(function () {
+          i18n.getMessage('Searching...', function (searchingMsg) {
+            config.formatSearching = function () {
+              return searchingMsg;
+            };
+          });
+          element.css("opacity", 1);
+          element.select2("destroy");
+          $select = element.select2(config);
+          $select.bind("change", onChanged);
+          $select.bind("select2-selecting", onSelecting);
+          $select.bind("select2-removing", onRemoving);
+          $select.bind("sn-atf-setvalue", onAtfSetValue);
+          scope.$emit('select2.ready', element);
+        });
+      }
+
+      function onAtfSetValue(e) {
+        var valueToSet = e.detail ? e.detail.newValue : null;
+        if (valueToSet) {
+          oldValue = scope.field.value;
+          scope.field.value = valueToSet.value;
+          scope.field.displayValue = valueToSet.displayValue;
+          $select.select2('val', valueToSet.value).select2('close');
+          scope.$apply(function () {
+            callChange(oldValue, e);
+          });
+        }
+      }
+
+      function onSelecting(e) {
+        isExecuting = true;
+        oldValue = scope.field.value;
+        var selectedItem = e.choice;
+        if (scope.multiple && selectedItem[scope.valueField] != '') {
+          var values = !scope.field.value ? [] : scope.field.value.split(',');
+          var displayValues = !scope.field.displayValue ? [] : scope.field.displayValue.split(',');
+          values.push(selectedItem[scope.valueField]);
+          displayValues.push(getDisplayValue(selectedItem));
+          scope.field.value = values.join(',');
+          scope.field.displayValue = displayValues.join(',');
+          e.preventDefault();
+          $select.select2('val', values).select2('close');
+          scope.$apply(function () {
+            callChange(oldValue, e);
+          });
+        }
+      }
+
+      function onRemoving(e) {
+        isExecuting = true;
+        oldValue = scope.field.value;
+        var removed = e.choice;
+        if (scope.multiple) {
+          var values = scope.field.value.split(',');
+          var displayValues = scope.field.displayValue.split(',');
+          for (var i = values.length - 1; i >= 0; i--) {
+            if (removed[scope.valueField] == values[i]) {
+              values.splice(i, 1);
+              displayValues.splice(i, 1);
+              break;
+            }
+          }
+          scope.field.value = values.join(',');
+          scope.field.displayValue = displayValues.join(',');
+          e.preventDefault();
+          $select.select2('val', scope.field.value.split(','));
+          scope.$apply(function () {
+            callChange(oldValue, e);
+          });
+        }
+      }
+
+      function callChange(oldValue, e) {
+        var f = scope.field;
+        var p = {
+          field: f,
+          newValue: f.value,
+          oldValue: oldValue,
+          displayValue: f.displayValue
+        }
+        scope.$emit("field.change", p);
+        scope.$emit("field.change." + f.name, p);
+        if (scope.onChange)
+          try {
+            scope.onChange(e);
+          } catch (ex) {
+            console.log("directive.snRecordPicker error in onChange")
+            console.log(ex)
+          }
+        isExecuting = false;
+      }
+
+      function onChanged(e) {
+        e.stopImmediatePropagation();
+        if (scope.$$phase || scope.$root.$$phase) {
+          console.warn('in digest, returning early');
+          return;
+        }
+        if (e.added) {
+          var selectedItem = e.added;
+          if (!scope.multiple) {
+            scope.field.value = selectedItem[scope.valueField];
+            if (scope.field.value) {
+              scope.field.displayValue = getDisplayValue(selectedItem);
+            } else
+              scope.field.displayValue = '';
+          }
+        } else if (e.removed) {
+          if (!scope.multiple) {
+            scope.field.displayValue = '';
+            scope.field.value = '';
+          }
+        }
+        scope.$apply(function () {
+          callChange(oldValue, e);
+        });
+      }
+
+      function getDisplayValue(selectedItem) {
+        var displayValue = selectedItem[scope.valueField];
+        if (selectedItem) {
+          if (scope.displayField && angular.isDefined(selectedItem[scope.displayField]))
+            displayValue = selectedItem[scope.displayField];
+          else if (selectedItem.name)
+            displayValue = selectedItem.name;
+          else if (selectedItem.title)
+            displayValue = selectedItem.title;
+        }
+        return cleanLabel(displayValue);
+      }
+
+      function getdisplayFields(selectedItem) {
+        var displayFields = [];
+        if (selectedItem && selectedItem[scope.valueField]) {
+          var current = "";
+          if (scope.displayField && angular.isDefined(selectedItem[scope.displayField]))
+            current = selectedItem[scope.displayField];
+          else if (selectedItem.name)
+            current = selectedItem.name;
+          else if (selectedItem.title)
+            current = selectedItem.title;
+          displayFields.push(current);
+        }
+        if (scope.displayFields) {
+          var columns = scope.displayFields.split(",");
+          for (var i = 0; i < columns.length; i++) {
+            var column = columns[i];
+            if (selectedItem[column])
+              displayFields.push(selectedItem[column]);
+          }
+        }
+        return displayFields;
+      }
+      scope.$watch("field.value", function (newValue) {
+        if (isExecuting)
+          return;
+        if (angular.isDefined(newValue) && $select) {
+          if (scope.multiple)
+            $select.select2('val', newValue.split(',')).select2('close');
+          else
+            $select.select2('val', newValue).select2('close');
+        }
+      });
+      if (attrs.displayValue) {
+        attrs.$observe('displayValue', function (value) {
+          scope.field.value = value;
+        });
+      }
+      init();
+    }
+  };
+}]]></script>
+        <sys_class_name>sp_angular_provider</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-01-05 19:06:20</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>727e806f1b02449048a242e58d4bcb5e</sys_id>
+        <sys_mod_count>81</sys_mod_count>
+        <sys_name>ratelockRecordPicker</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sp_angular_provider_727e806f1b02449048a242e58d4bcb5e</sys_update_name>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-01-05 22:40:28</sys_updated_on>
+        <type>directive</type>
+    </sp_angular_provider>
+<sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Ratelock">605affb71badc01048a242e58d4bcb76</application>
+        <file_path/>
+        <instance_id>94e8281edbb7470060a6f0e5bf9619f6</instance_id>
+        <instance_name>movementdev</instance_name>
+        <name>sp_angular_provider_727e806f1b02449048a242e58d4bcb5e</name>
+        <payload>&lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;record_update table="sp_angular_provider"&gt;
+    &lt;sp_angular_provider action="INSERT_OR_UPDATE"&gt;
+        &lt;name&gt;ratelockRecordPicker&lt;/name&gt;
+        &lt;script&gt;&lt;![CDATA[function ratelockRecordPicker($timeout, $http, urlTools, filterExpressionParser, escapeHtml, i18n) {
+  var cache = {};
+
+  function cleanLabel(val) {
+    if (typeof val == "object")
+      return typeof val.display_value == "string" ? val.display_value.trim() : "";
+    return typeof val == "string" ? val.trim() : val;
+  }
+  return {
+    restrict: 'E',
+    replace: true,
+    scope: {
+      field: '=',
+      table: '=',
+      fallbackTable: "=?",
+      defaultQuery: '=?',
+      startswith: '=?',
+      searchFields: '=?',
+      valueField: '=?',
+      displayField: '=?',
+      displayFields: '=?',
+      pageSize: '=?',
+      onChange: '&amp;',
+      snDisabled: '=',
+      multiple: '=?',
+      options: '=?',
+      placeholder: '@'
+    },
+    template: '&lt;input type="text" ng-disabled="snDisabled" style="min-width: 150px;" name="{{field.name}}" ng-model="field.value"' + ' sn-atf-data-type="reference" sn-atf-data-type-params=\'{"reference" : "{{table}}", "reference_qual" : "{{defaultQuery}}",' + ' "valueField" : "{{valueField}}", "displayField" : "{{displayField}}"}\' sn-atf-class="builtin:ATF.BaseSNRecordPicker" sn-atf-component-value="{{field}}"/&gt;',
+    controller: function ($scope) {
+      if (!angular.isNumber($scope.pageSize))
+        $scope.pageSize = 20;
+      if (!angular.isDefined($scope.valueField))
+        $scope.valueField = 'sys_id';
+      this.filterResults = function (data, page) {
+        return {
+          results: data.data.result,
+          more: (page * $scope.pageSize &lt; parseInt(data.headers('x-total-count'), 10))
+        };
+      };
+    },
+    link: function (scope, element, attrs, ctrl) {
+      var isExecuting = false;
+      var hasAlreadyFallbacked = false;
+      var select2Helpers = {
+        formatSelection: function (item) {
+          return escapeHtml(getDisplayValue(item));
+        },
+        formatNoMatches: function(term) {
+          return escapeHtml(term);
+        },
+        formatResult: function (item) {
+          var displayFields = getdisplayFields(item);
+          if (displayFields.length == 1)
+            return escapeHtml(cleanLabel(displayFields[0]));
+          if (displayFields.length &gt; 1) {
+            var markup = escapeHtml(cleanLabel(displayFields[0]));
+            var width = 100 / (displayFields.length - 1);
+            markup += "&lt;div&gt;";
+            for (var i = 1; i &lt; displayFields.length; i++)
+              markup += "&lt;div style='width: " + width + "%;' class='select2-additional-display-field'&gt;" + escapeHtml(cleanLabel(displayFields[i])) + "&lt;/div&gt;";
+            markup += "&lt;/div&gt;";
+            return markup;
+          }
+          return "";
+        },
+        search: function (queryParams) {
+          var url = '/api/now/table/' + scope.table + '?' + urlTools.encodeURIParameters(queryParams.data);
+          if (scope.options &amp;&amp; scope.options.cache &amp;&amp; cache[url])
+            return queryParams.success(cache[url]);
+          return $http.get(url).then(function (response) {
+            if (scope.options &amp;&amp; scope.options.cache) {
+              cache[url] = response;
+            }
+            if (response.data.result.length === 0) {
+              if (!/(?=(@.*\.[A-Za-z]+$))/gm.test(queryParams.data.field_value)) {
+                return queryParams.success(response);
+              }
+              response.data.result = [{
+                sys_id: queryParams.data.field_value,
+                name: queryParams.data.field_value
+              }];
+            }
+            return queryParams.success(response);
+          });
+        },
+        initSelection: function (elem, callback) {
+          if (scope.field.displayValue) {
+            if (scope.multiple) {
+              var items = [],
+                sel;
+              var values = scope.field.value.split(',');
+              var displayValues = scope.field.displayValue.split(',');
+              for (var i = 0; i &lt; values.length; i++) {
+                sel = {};
+                sel[scope.valueField] = values[i];
+                sel[scope.displayField] = displayValues[i];
+                items.push(sel);
+              }
+              callback(items);
+            } else {
+              var sel = {};
+              sel[scope.valueField] = scope.field.value;
+              sel[scope.displayField] = scope.field.displayValue;
+              callback(sel);
+            }
+          } else
+            callback([]);
+        }
+      };
+      var config = {
+        width: '100%',
+        containerCssClass: 'select2-reference ng-form-element',
+        placeholder: scope.placeholder || '    ',
+        formatSearching: '',
+        allowClear: (scope.options &amp;&amp; typeof scope.options.allowClear !== "undefined") ? scope.options.allowClear : true,
+        id: function (item) {
+          return item[scope.valueField];
+        },
+        ajax: {
+          quietMillis: NOW.ac_wait_time,
+          data: function (filterText, page) {
+            var params = {
+              sysparm_offset: (scope.pageSize * (page - 1)),
+              sysparm_limit: scope.pageSize,
+              sysparm_query: buildQuery(filterText, scope.searchFields, scope.defaultQuery),
+              sysparm_display_value: true,
+              field_value: filterText
+            };
+            return params;
+          },
+          results: function (data, page) {
+            return ctrl.filterResults(data, page, scope.pageSize);
+          },
+          transport: select2Helpers.search
+        },
+        formatSelection: select2Helpers.formatSelection,
+        formatResult: select2Helpers.formatResult,
+        formatResultCssClass: function () {
+          return '';
+        },
+        initSelection: select2Helpers.initSelection,
+        multiple: scope.multiple
+      };
+
+      function buildQuery(filterText, searchFields, defaultQuery) {
+        var queryParts = [];
+        var operator = "CONTAINS";
+        if (scope.startswith)
+          operator = "STARTSWITH";
+        if (filterText.startsWith("*")) {
+          filterText = filterText.substring(1);
+          operator = "CONTAINS";
+        }
+        if (defaultQuery)
+          queryParts.push(defaultQuery);
+        var filterExpression = filterExpressionParser.parse(filterText, operator);
+        if (searchFields != null) {
+          var fields = searchFields.split(',');
+          if (filterExpression.filterText != '') {
+            var OR = "";
+            for (var i = 0; i &lt; fields.length; i++) {
+              queryParts.push(OR + fields[i] + filterExpression.operator + filterExpression.filterText);
+              OR = "OR";
+            }
+          }
+          for (var i = 0; i &lt; fields.length; i++)
+            queryParts.push('ORDERBY' + fields[i]);
+          queryParts.push('EQ');
+        }
+        return queryParts.join('^');
+      }
+      scope.field = scope.field || {};
+      var initTimeout = null;
+      var value = scope.field.value;
+      var oldValue = scope.field.value;
+      var $select;
+
+      function init() {
+        element.css("opacity", 0);
+        $timeout.cancel(initTimeout);
+        initTimeout = $timeout(function () {
+          i18n.getMessage('Searching...', function (searchingMsg) {
+            config.formatSearching = function () {
+              return searchingMsg;
+            };
+          });
+          element.css("opacity", 1);
+          element.select2("destroy");
+          $select = element.select2(config);
+          $select.bind("change", onChanged);
+          $select.bind("select2-selecting", onSelecting);
+          $select.bind("select2-removing", onRemoving);
+          $select.bind("sn-atf-setvalue", onAtfSetValue);
+          scope.$emit('select2.ready', element);
+        });
+      }
+
+      function onAtfSetValue(e) {
+        var valueToSet = e.detail ? e.detail.newValue : null;
+        if (valueToSet) {
+          oldValue = scope.field.value;
+          scope.field.value = valueToSet.value;
+          scope.field.displayValue = valueToSet.displayValue;
+          $select.select2('val', valueToSet.value).select2('close');
+          scope.$apply(function () {
+            callChange(oldValue, e);
+          });
+        }
+      }
+
+      function onSelecting(e) {
+        isExecuting = true;
+        oldValue = scope.field.value;
+        var selectedItem = e.choice;
+        if (scope.multiple &amp;&amp; selectedItem[scope.valueField] != '') {
+          var values = !scope.field.value ? [] : scope.field.value.split(',');
+          var displayValues = !scope.field.displayValue ? [] : scope.field.displayValue.split(',');
+          values.push(selectedItem[scope.valueField]);
+          displayValues.push(getDisplayValue(selectedItem));
+          scope.field.value = values.join(',');
+          scope.field.displayValue = displayValues.join(',');
+          e.preventDefault();
+          $select.select2('val', values).select2('close');
+          scope.$apply(function () {
+            callChange(oldValue, e);
+          });
+        }
+      }
+
+      function onRemoving(e) {
+        isExecuting = true;
+        oldValue = scope.field.value;
+        var removed = e.choice;
+        if (scope.multiple) {
+          var values = scope.field.value.split(',');
+          var displayValues = scope.field.displayValue.split(',');
+          for (var i = values.length - 1; i &gt;= 0; i--) {
+            if (removed[scope.valueField] == values[i]) {
+              values.splice(i, 1);
+              displayValues.splice(i, 1);
+              break;
+            }
+          }
+          scope.field.value = values.join(',');
+          scope.field.displayValue = displayValues.join(',');
+          e.preventDefault();
+          $select.select2('val', scope.field.value.split(','));
+          scope.$apply(function () {
+            callChange(oldValue, e);
+          });
+        }
+      }
+
+      function callChange(oldValue, e) {
+        var f = scope.field;
+        var p = {
+          field: f,
+          newValue: f.value,
+          oldValue: oldValue,
+          displayValue: f.displayValue
+        }
+        scope.$emit("field.change", p);
+        scope.$emit("field.change." + f.name, p);
+        if (scope.onChange)
+          try {
+            scope.onChange(e);
+          } catch (ex) {
+            console.log("directive.snRecordPicker error in onChange")
+            console.log(ex)
+          }
+        isExecuting = false;
+      }
+
+      function onChanged(e) {
+        e.stopImmediatePropagation();
+        if (scope.$$phase || scope.$root.$$phase) {
+          console.warn('in digest, returning early');
+          return;
+        }
+        if (e.added) {
+          var selectedItem = e.added;
+          if (!scope.multiple) {
+            scope.field.value = selectedItem[scope.valueField];
+            if (scope.field.value) {
+              scope.field.displayValue = getDisplayValue(selectedItem);
+            } else
+              scope.field.displayValue = '';
+          }
+        } else if (e.removed) {
+          if (!scope.multiple) {
+            scope.field.displayValue = '';
+            scope.field.value = '';
+          }
+        }
+        scope.$apply(function () {
+          callChange(oldValue, e);
+        });
+      }
+
+      function getDisplayValue(selectedItem) {
+        var displayValue = selectedItem[scope.valueField];
+        if (selectedItem) {
+          if (scope.displayField &amp;&amp; angular.isDefined(selectedItem[scope.displayField]))
+            displayValue = selectedItem[scope.displayField];
+          else if (selectedItem.name)
+            displayValue = selectedItem.name;
+          else if (selectedItem.title)
+            displayValue = selectedItem.title;
+        }
+        return cleanLabel(displayValue);
+      }
+
+      function getdisplayFields(selectedItem) {
+        var displayFields = [];
+        if (selectedItem &amp;&amp; selectedItem[scope.valueField]) {
+          var current = "";
+          if (scope.displayField &amp;&amp; angular.isDefined(selectedItem[scope.displayField]))
+            current = selectedItem[scope.displayField];
+          else if (selectedItem.name)
+            current = selectedItem.name;
+          else if (selectedItem.title)
+            current = selectedItem.title;
+          displayFields.push(current);
+        }
+        if (scope.displayFields) {
+          var columns = scope.displayFields.split(",");
+          for (var i = 0; i &lt; columns.length; i++) {
+            var column = columns[i];
+            if (selectedItem[column])
+              displayFields.push(selectedItem[column]);
+          }
+        }
+        return displayFields;
+      }
+      scope.$watch("field.value", function (newValue) {
+        if (isExecuting)
+          return;
+        if (angular.isDefined(newValue) &amp;&amp; $select) {
+          if (scope.multiple)
+            $select.select2('val', newValue.split(',')).select2('close');
+          else
+            $select.select2('val', newValue).select2('close');
+        }
+      });
+      if (attrs.displayValue) {
+        attrs.$observe('displayValue', function (value) {
+          scope.field.value = value;
+        });
+      }
+      init();
+    }
+  };
+}]]&gt;&lt;/script&gt;
+        &lt;sys_class_name&gt;sp_angular_provider&lt;/sys_class_name&gt;
+        &lt;sys_created_by&gt;douglas.schamberg&lt;/sys_created_by&gt;
+        &lt;sys_created_on&gt;2020-01-05 19:06:20&lt;/sys_created_on&gt;
+        &lt;sys_customer_update&gt;false&lt;/sys_customer_update&gt;
+        &lt;sys_id&gt;727e806f1b02449048a242e58d4bcb5e&lt;/sys_id&gt;
+        &lt;sys_mod_count&gt;81&lt;/sys_mod_count&gt;
+        &lt;sys_name&gt;ratelockRecordPicker&lt;/sys_name&gt;
+        &lt;sys_package display_value="Ratelock" source="x_momo_ratelock"&gt;605affb71badc01048a242e58d4bcb76&lt;/sys_package&gt;
+        &lt;sys_policy/&gt;
+        &lt;sys_replace_on_upgrade&gt;false&lt;/sys_replace_on_upgrade&gt;
+        &lt;sys_scope display_value="Ratelock"&gt;605affb71badc01048a242e58d4bcb76&lt;/sys_scope&gt;
+        &lt;sys_update_name&gt;sp_angular_provider_727e806f1b02449048a242e58d4bcb5e&lt;/sys_update_name&gt;
+        &lt;sys_updated_by&gt;douglas.schamberg&lt;/sys_updated_by&gt;
+        &lt;sys_updated_on&gt;2020-01-05 22:40:28&lt;/sys_updated_on&gt;
+        &lt;type&gt;directive&lt;/type&gt;
+    &lt;/sp_angular_provider&gt;
+&lt;/record_update&gt;</payload>
+        <payload_hash>859051463</payload_hash>
+        <record_name>ratelockRecordPicker</record_name>
+        <reverted_from/>
+        <source>bf1c1be11b5a401048a242e58d4bcb30</source>
+        <source_table>sys_upgrade_history</source_table>
+        <state>previous</state>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-01-12 15:12:28</sys_created_on>
+        <sys_id>b52c9be11b5a401048a242e58d4bcb4a</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>16f9a5042c00000001</sys_recorded_at>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-01-12 15:12:28</sys_updated_on>
+        <type>Widget Angular Provider</type>
+        <update_guid>f12c9be1555a4010b0d84116c3ae084a</update_guid>
+        <update_guid_history>f12c9be1555a4010b0d84116c3ae084a:0,a5f853eddb1a40105e3ebb747f4cf0c2:596611210,c7071f693a1a4010b9430f0c74783a15:0,38461329d91a40109811e31996d12ab8:876697396,4af493e1ec1a4010657152e585b74f4b:0,327413a1f21a40101266dd930f32d91c:641433322,5c23d36de7d640105e0017cccbd89ac1:0,49421be994d640104e095aa36d105595:-41700347,70f09765f8d64010366b0e1197ae22b7:0,4de0536515d64010372aa3944dcb511f:-2091047159,d4101f61bdd64010a2bfb040eddee5a9:0,77ff476186d6401021717354eacc7ca2:-2091047159,227d87a9ba9640104c79801a15f22577:0,786dcb690696401032ee606c52c74e2d:-2091047159,3b8ff467ff0644903477fe649e6345e1:-134936323,91de34674506449071e5e797354f36e9:-2045719364,588efc2702064490a3bc6f5104144c41:1250517473,195e3c2759064490e5fcd31df766923d:-2045719364,f33eb827ac064490d0c0f1f01411ef66:520306064,813e78e37a06449052ff8f2840be1255:-1978327319,861e34279c064490eb446bed470fc913:-2045719364,c3ed70276a0644908fc0e76566ba4c5b:-1978327319,d04df8a3a50644902d6fc1ca2c2b113d:-2045719364,758cf4a33f064490e1c2e84a4d950803:-1835941665,0c7cb0a3250644901e76f56756d9f14d:-2072891742,564cb0a3f6064490cf810b34164ff4ae:-1835941665,e80c30a3e706449066b27a72f4a69fb6:-2072891742,97f7b46f25c2449018f9f0cc78b7eb1e:-1835941665,d6f7f06fc4c24490b0fd8baa725e3f18:-1876968970,8ec7b06fc0c24490e21fea4d7a42f0e1:-1179418827,3997302fcbc24490c5568657e15e6b66:887857462,48c6b8eb4dc244902fa21d35659f725d:-1121518615,29c7a4ab48824490ec7dcd7e6b292e4b:1665930704,ca7720abe98244907aef31eadddf75da:-1790108452,3037e86b25824490ae26e05f50c787e8:2009276887,5d17ec2b4a8244901d25369062ab5171:1549094664,a0e6646ba1824490ce5d8e47a90ef1eb:1653374197,56d62c2bb8824490a195ccbf6a455321:-977197643,0076e42b698244908b58cb16c81f0455:-1655877504,1446e0e7468244908700e15814e624a9:-1559843992,6ff5e4e777824490548e24ef3fd1387c:-1812562695,e02560e79682449085f7d3ef4fc78ef4:-1713616752,32d460e7ec8244909413b3667327d7ee:-768488097,1a346c67a9824490c73ed512f8187111:988906353,24e36c67f6824490406c6f21ff3d12fa:-542114608,20b36c67be8244909d20a4a6f7869708:-1458758366,a99368677e82449096f2d69504523a8b:-1656781704,298364275582449024286ab07d9d3ca6:-1403568343,2752e027a5824490bafbd3f646da5af5:1274981773,c212ace3c8824490dce0f3d1af3cbace:238491284,8ae168e352824490840d9ba58d22b030:36261446,a6a160a3ee8244903dfb5fbc52e0c8be:-1280946546,2c916ca34882449007833c0d34146ef7:977783197,668124e3bd824490551b6ebff76638f2:134658964,680168a3b6824490864de1e222a9b28c:-1175154701,a6e068a3d2824490836b6c7d6b94a986:580297662,5f8060a30a82449030938c97fcc98a7b:-882815546,3c7060a39e824490554d1b406b6e7290:850263795,1870206398824490ae1a428a2d0ad2d6:618982996,cb7fdc238e8244907dddcbde93752e2c:2004988350,402f1023ec824490b92f57ce379e0a27:-730078814,97fe10237b82449055c9394abdfe8001:1350851601,feded4af9b42449097374d6098f163f9:-911592141,40ae50ef114244900b018e7dbd13b387:679651958,f64c506fdf4244903a389a975187b60f:1280739371,800c142f68424490261319b747d7d0b2:-2133884443,8edb942f69424490bea3b8819fd5e5c7:488188857,4ebb102f6c424490d349ee0daf7a56dc:-2133884443,bf9b142fd84244905926141328f4faaa:-1675751981,9e7b18eb8c42449096c824b9b84d53d8:1027143413,4c7b102fcf424490e5148522c29dfeb0:1218602783,f85bd8eb35424490ca68c7f0327b7c6b:-279135719,092bd8ebcb42449006c931ed1d546f65:-1313650914,cdea50eb9b424490698bac2f6779b033:-1704924241,6f9a5cabc1424490717e0a46cdb20915:-216268250,bf8a5cab684244905240cdf71e2cfa51:-318320687,a57a5cabe9424490b5b974134301360e:-216268250,a95ad46b5842449061e71770ff3c8138:1194301698,0a3a1c6bc8424490f842d01de7dad6c0:-292025789,0e899c2baf4244904467f8b82531dbeb:259731513,9449d0e7b2424490e0a1ff1eea26ddac:326099081,fec89ce7d5424490fa57364b53bb51bc:-689995187,fdc890e73d42449013fbe4ae7ed4bf33:1498482935,c24750e79a4244908e4dd09c9fe2a9ef:1734284299,89b454e38b424490d3a02f15d518ee2e:-1803776493,58839ca3dc424490c1f60329a8c6060e:-270535214,9e1394a31f424490ef2a1c29fe8e7d4a:-2000041723,c91354a306424490d3aebf56eddcdde7:-656586104,b69250ef12024490ff5a0a6beafb0ef3:-1769853734,2d52dc23da4244901635e5d18418809d:-373197815,0fd198efeb0244908fe575112cfcd04e:1266201261,44c15c23204244901c275b71ee0eecc1:-235449931,cd3058af240244909f734f52bedb89a4:483695476,491058af1f024490aa52a111b18f1217:-645713004,38cf48afc2024490324d3af79d7eb99e:-902508152,d38ecc2f8602449037114f36262a5c79:-1205200177</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete display_value="">a679bc6fdb90d450f2551329689619b0</sys_audit_delete>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-04-26 18:35:10</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_db_object display_value="" name="sp_angular_provider">sp_angular_provider</sys_db_object>
+        <sys_id>17508f4249e94dc4857586db029a46e9</sys_id>
+        <sys_metadata>727e806f1b02449048a242e58d4bcb5e</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>ratelockRecordPicker</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_parent/>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_scope_delete display_value="">57712118eaee4a49ae47b2048a14ac31</sys_scope_delete>
+        <sys_update_name>sp_angular_provider_727e806f1b02449048a242e58d4bcb5e</sys_update_name>
+        <sys_update_version display_value="sp_angular_provider_727e806f1b02449048a242e58d4bcb5e">b52c9be11b5a401048a242e58d4bcb4a</sys_update_version>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-04-26 18:35:10</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>

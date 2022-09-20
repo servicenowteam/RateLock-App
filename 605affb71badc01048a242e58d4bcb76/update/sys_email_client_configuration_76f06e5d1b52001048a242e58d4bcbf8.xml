@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_email_client_configuration">
+    <sys_email_client_configuration action="INSERT_OR_UPDATE">
+        <active>true</active>
+        <attachment_send_action>attach_to_email_record</attachment_send_action>
+        <default_configuration>false</default_configuration>
+        <display_from>false</display_from>
+        <display_reply_to>true</display_reply_to>
+        <email_address_filters/>
+        <email_attachment_condition/>
+        <name>Ratelock Email Client</name>
+        <recipient_qualifiers>216e40a13b221300c869c2c703efc461,6da15ca13b221300c869c2c703efc48a</recipient_qualifiers>
+        <sys_class_name>sys_email_client_configuration</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-01-11 16:15:49</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>76f06e5d1b52001048a242e58d4bcbf8</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>Ratelock Email Client</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sys_email_client_configuration_76f06e5d1b52001048a242e58d4bcbf8</sys_update_name>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-01-11 16:15:49</sys_updated_on>
+        <table>x_momo_ratelock_ticket</table>
+        <to_optional>false</to_optional>
+    </sys_email_client_configuration>
+</record_update>

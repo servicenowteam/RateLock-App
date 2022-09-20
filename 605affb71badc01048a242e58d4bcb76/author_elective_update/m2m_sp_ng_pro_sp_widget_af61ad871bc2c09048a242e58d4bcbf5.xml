@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="m2m_sp_ng_pro_sp_widget">
+    <m2m_sp_ng_pro_sp_widget action="DELETE">
+        <sp_angular_provider display_value="ratelockListSessionTicker">beacdd431b82c09048a242e58d4bcb15</sp_angular_provider>
+        <sp_widget display_value="Ratelock List">ea85f8801bb1041048a242e58d4bcb62</sp_widget>
+        <sys_class_name>m2m_sp_ng_pro_sp_widget</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-01-04 11:51:29</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>af61ad871bc2c09048a242e58d4bcbf5</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>ratelockListSessionTicker.Ratelock List</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>m2m_sp_ng_pro_sp_widget_af61ad871bc2c09048a242e58d4bcbf5</sys_update_name>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-01-04 11:51:29</sys_updated_on>
+    </m2m_sp_ng_pro_sp_widget>
+    <sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Ratelock">605affb71badc01048a242e58d4bcb76</application>
+        <file_path/>
+        <instance_id>94e8281edbb7470060a6f0e5bf9619f6</instance_id>
+        <instance_name>movementdev</instance_name>
+        <name>m2m_sp_ng_pro_sp_widget_af61ad871bc2c09048a242e58d4bcbf5</name>
+        <payload><![CDATA[<?xml version="1.0" encoding="UTF-8"?><record_update table="m2m_sp_ng_pro_sp_widget"><m2m_sp_ng_pro_sp_widget action="INSERT_OR_UPDATE"><sp_angular_provider display_value="ratelockListSessionTicker">beacdd431b82c09048a242e58d4bcb15</sp_angular_provider><sp_widget display_value="Ratelock List">ea85f8801bb1041048a242e58d4bcb62</sp_widget><sys_class_name>m2m_sp_ng_pro_sp_widget</sys_class_name><sys_created_by>douglas.schamberg</sys_created_by><sys_created_on>2020-01-04 11:51:29</sys_created_on><sys_customer_update>false</sys_customer_update><sys_id>af61ad871bc2c09048a242e58d4bcbf5</sys_id><sys_mod_count>0</sys_mod_count><sys_name>ratelockListSessionTicker.Ratelock List</sys_name><sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package><sys_policy/><sys_replace_on_upgrade>false</sys_replace_on_upgrade><sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope><sys_update_name>m2m_sp_ng_pro_sp_widget_af61ad871bc2c09048a242e58d4bcbf5</sys_update_name><sys_updated_by>douglas.schamberg</sys_updated_by><sys_updated_on>2020-01-04 11:51:29</sys_updated_on></m2m_sp_ng_pro_sp_widget></record_update>]]></payload>
+        <payload_hash>1616228205</payload_hash>
+        <record_name>ratelockListSessionTicker.Ratelock List</record_name>
+        <reverted_from/>
+        <source>a45affb71badc01048a242e58d4bcb78</source>
+        <source_table>sys_update_set</source_table>
+        <state>previous</state>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-01-04 11:51:29</sys_created_on>
+        <sys_id>a361ad871bc2c09048a242e58d4bcbf8</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>16f706560300000001</sys_recorded_at>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-01-04 11:51:29</sys_updated_on>
+        <type>Angular Providers</type>
+        <update_guid>ab61ad876ec2c0909099637e78a01df7</update_guid>
+        <update_guid_history>ab61ad876ec2c0909099637e78a01df7:1616228205</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete display_value="">7a5275cfdb0ec490f255132968961921</sys_audit_delete>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-01-04 13:05:26</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_db_object display_value="" name="m2m_sp_ng_pro_sp_widget">m2m_sp_ng_pro_sp_widget</sys_db_object>
+        <sys_id>22f309e7b4974e80b9c5e93914c45100</sys_id>
+        <sys_metadata>af61ad871bc2c09048a242e58d4bcbf5</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>ratelockListSessionTicker.Ratelock List</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_parent/>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_scope_delete display_value="">57712118eaee4a49ae47b2048a14ac31</sys_scope_delete>
+        <sys_update_name>m2m_sp_ng_pro_sp_widget_af61ad871bc2c09048a242e58d4bcbf5</sys_update_name>
+        <sys_update_version display_value="m2m_sp_ng_pro_sp_widget_af61ad871bc2c09048a242e58d4bcbf5">a361ad871bc2c09048a242e58d4bcbf8</sys_update_version>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-01-04 13:05:26</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>

@@ -1,0 +1,479 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update sys_domain="global" table="sysevent_in_email_action">
+    <sysevent_in_email_action action="INSERT_OR_UPDATE">
+        <action>record_action</action>
+        <active>true</active>
+        <assignment_operator/>
+        <condition_script/>
+        <description/>
+        <event_name>email.read</event_name>
+        <filter_condition table="sys_email">recipientsLIKEratelock@movement.com^ORheadersLIKEReturn-Path:&lt;ratelock@movement.com&gt;^ORrecipientsLIKEtporatelock@movement.com^ORrecipientsLIKElock911@movement.com^ORrecipientsLIKEbondteam@movementmortgage.com^ORrecipientsLIKEbondteam@movement.com^ORrecipientsLIKEcorrespondentlock@movement.com^ORrecipientsLIKEPCRLnotification@movement.com^ORrecipientsLIKEprogramchange@movement.com^EQ<item endquery="false" field="recipients" goto="false" newquery="false" operator="LIKE" or="false" value="ratelock@movement.com"/>
+            <item endquery="false" field="headers" goto="false" newquery="false" operator="LIKE" or="true" value="Return-Path:&lt;ratelock@movement.com&gt;"/>
+            <item endquery="false" field="recipients" goto="false" newquery="false" operator="LIKE" or="true" value="tporatelock@movement.com"/>
+            <item endquery="false" field="recipients" goto="false" newquery="false" operator="LIKE" or="true" value="lock911@movement.com"/>
+            <item endquery="false" field="recipients" goto="false" newquery="false" operator="LIKE" or="true" value="bondteam@movementmortgage.com"/>
+            <item endquery="false" field="recipients" goto="false" newquery="false" operator="LIKE" or="true" value="bondteam@movement.com"/>
+            <item endquery="false" field="recipients" goto="false" newquery="false" operator="LIKE" or="true" value="correspondentlock@movement.com"/>
+            <item endquery="false" field="recipients" goto="false" newquery="false" operator="LIKE" or="true" value="PCRLnotification@movement.com"/>
+            <item endquery="false" field="recipients" goto="false" newquery="false" operator="LIKE" or="true" value="programchange@movement.com"/>
+            <item endquery="true" field="" goto="false" newquery="false" operator="=" or="false" value=""/>
+        </filter_condition>
+        <from/>
+        <name>Ratelock</name>
+        <order>60</order>
+        <plus_address/>
+        <reply_email/>
+        <required_roles/>
+        <script><![CDATA[(function runAction(current, event, email, logger, classifier, sys_email) {
+
+  var INVESTOR_EMAIL_ACCOUNTS = [
+    'slancaster@fareverse.com',
+    'tiaabankrates@tiaabank.com',
+    'lenderrelations@tiaabank.com',
+    'correspondent_lending@tiaabank.com',
+    'jpm_loanregistration@jpmorgan.com',
+    'lockdesk@galtonfunding.com',
+    'dg.conduit_ratesheet@baml.com',
+    'redwood.lockdesk@redwoodtrust.com',
+    'redwood.announcements@redwoodtrust.com',
+    'breanna.banks@aig.com',
+    'clpricing@aig.com',
+    'correspondentpriceline@wellsfargo.com',
+    'reply-80022208-40179127_html-919991454-60128-0@mail.chaseb2b.com',
+    'correspondentratelock@cit.com',
+    'marc.burns@cit.com',
+    'ratelock@movement.com'
+  ];
+
+  var isInvestorEmail = isInvestor(INVESTOR_EMAIL_ACCOUNTS, email.from);
+
+
+
+  var loan_number = false;
+  var ticket_number = false;
+  var isBondTeam = false;
+
+  var isAutoReply = autoReplyHeaderExists(email.headers);
+
+  if (email.body.loan_ref) {
+    if (!ticketIsClosed(current.getTableName(), email.body.loan_ref)) {
+      ticket_number = email.body.loan_ref;
+	  // add bond team flag here
+    }
+  }
+
+  if (/[\d]{9}/gi.test(email.subject) && /tporatelock@movement\.com/gi.test(email.recipients) && !ticket_number) {
+    loan_number = getLoanNumber(email.subject, /[\d]{9}/gi);
+  } else if (/[\d]{9}/gi.test(email.subject) && /correspondentlock@movement\.com/gi.test(email.recipients)  && !ticket_number) {
+    loan_number = getLoanNumber(email.subject, /[\d]{9}/gi);
+  } else if (/3[0-9]{9}|[0-9]{7}/gi.test(email.subject) && !ticket_number) {
+    loan_number = getLoanNumber(email.subject, /3[0-9]{9}|[0-9]{7}/gi);
+  }
+
+  if (!/^(3[0-9]{9}|[0-9]{7})$/gi.test(loan_number) && !/^[\d]{9}$/gi.test(loan_number)) {
+    loan_number = false;
+  }
+
+
+  var caller = email.from_sys_id == "5136503cc611227c0183e96598c4f706" ? null : email.from_sys_id;
+  var isEmailingUserVIP = getVIPUser(caller);
+  var exists = recordExists(loan_number);
+
+  if (!loan_number && !ticket_number && !isAutoReply || isInvestorEmail) {
+    if (isInvestorEmail) {
+      var emailAttachments = hasValidEmailAttachment(sys_email.sys_id.toString());
+      if (emailAttachments) {
+        createRateSheet(sys_email.sys_id.toString());
+      }
+    }
+    createNewRecord(current.getTableName(), {
+      text: email.body_text,
+      html: email.body_html,
+      subject: email.subject,
+      userId: email.from_sys_id,
+      recipients: getRecipients(email.recipients_array, email.from)
+    }, sys_email.sys_id.toString());
+
+  } else if (!exists && !ticket_number && !isAutoReply) {
+    createNewRecord(current.getTableName(), {
+      text: email.body_text,
+      html: email.body_html,
+      subject: email.subject,
+      userId: email.from_sys_id,
+      recipients: getRecipients(email.recipients_array, email.from),
+      priority: getPriorityAndType(email.recipients_array, 'priority'),
+      type: getPriorityAndType(email.recipients_array, 'request_type'),
+      loan: loan_number
+    }, sys_email.sys_id.toString());
+  } else if (!isAutoReply) {
+    getRecordFromCurrent(loan_number, ticket_number, {
+      id: sys_email.sys_id.toString(),
+      html: email.body_html,
+      recipients: email.recipients_array,
+      from: email.from
+    });
+  }
+
+  function getVIPUser(user) {
+    if (!user) return false;
+    var gr = new GlideRecord('sys_user');
+    gr.get(user);
+    try {
+      if (gr.isValid()) {
+        return Boolean(gr.getValue('vip') == true);
+      }
+    } catch (e) {}
+    return false;
+  }
+
+  function createNewRecord(table, payload, sysEmailId) {
+    var gr = new GlideRecord(table);
+    gr.initialize();
+    gr.description = payload.text;
+    gr.short_description = payload.subject;
+    gr.caller_id = (payload.userId == "5136503cc611227c0183e96598c4f706") ? null : payload.userId;
+    gr.request_type = (!payload.type ? 3 : payload.type);
+    gr.priority = (!payload.priority ? 3 : payload.priority);
+    gr.loan_number = (!payload.loan ? '' : payload.loan);
+    gr.email_recipients = payload.recipients;
+    gr.insert();
+    gr.comments = '[code]' + attachEmailPicturesToHTML(payload.html, gr.getUniqueValue(), sysEmailId) + '[/code]';
+    gr.update();
+    attachInstanceToEmailRecord(gr.getTableName(), gr.getUniqueValue(), sysEmailId);
+  }
+
+  function ticketIsClosed(table, sysId) {
+    var gr = new GlideRecord(table);
+    gr.get(sysId);
+    if (gr.isValidRecord()) {
+      return gr.getValue('state') == '6';
+    }
+    return false;
+  }
+
+
+
+  function getPriorityAndType(arr, field) {
+    for (var i = 0; i < arr.length; i++) {
+      if ((arr[i].toLowerCase() == 'lock911@movement.com' || isEmailingUserVIP) && field == 'priority') {
+        return "1";
+      } else if (arr[i].toLowerCase() == 'tporatelock@movement.com' && field == 'request_type') {
+        return "2";
+      } else if (arr[i].toLowerCase() == 'correspondentlock@movement.com' && field == 'request_type') {
+        return "6";
+      } else if ((arr[i].toLowerCase() == 'bondteam@movementmortgage.com' || arr[i].toLowerCase() == "bondteam@movement.com") && field == 'request_type') {
+        return "4";
+      }
+    }
+
+    if (field == 'priority') {
+      return "2";
+    } else if (field == 'request_type') {
+      return "1";
+    }
+  }
+
+  function isInvestor(investors, from) {
+    var arrUtil = new global.ArrayUtil();
+    return arrUtil.contains(investors, from);
+  }
+
+  function getRecordFromCurrent(loanNumber, ticketNumber, payload) {
+    if (!loanNumber && !ticketNumber) return false;
+    var isCritical = false;
+
+    try {
+      isCritical = getPriority(payload.recipients);
+    } catch (e) {}
+
+    var ticket = new GlideRecord('x_momo_ratelock_ticket');
+    if (!ticketNumber) {
+      ticket.addQuery('active', true).addOrCondition('state', '5');
+      ticket.addNotNullQuery('loan_number');
+      ticket.addQuery('loan_number', loanNumber);
+      ticket.addQuery('creation_source', 'email');
+    } else {
+      ticket.setLimit(1);
+      ticket.addQuery('sys_id', ticketNumber);
+    }
+    ticket.query();
+
+    while (ticket.next()) {
+      if (ticket.getValue('priority') != 1 && isCritical) {
+        ticket.setValue("priority", "1");
+      }
+      ticket.comments = '[code]' + attachEmailPicturesToHTML(payload.html, ticket.getUniqueValue(), payload.id, ticketNumber) + '[/code]';
+      var currentWatchList = ticket.email_recipients.nil() ? [] :
+        ticket.getValue('email_recipients').toLowerCase().split(',');
+      ticket.email_recipients = getRecipients(payload.recipients, payload.from, currentWatchList);
+      ticket.update();
+      attachInstanceToEmailRecord(ticket.getTableName(), ticket.getUniqueValue(), payload.id);
+      return ticket;
+    }
+  }
+
+  function getRecipients(recipients, fromAddress, currentRecipients) {
+    var util = new global.ArrayUtil();
+    var groupEmails = getSysGroupsEmails();
+
+    var ratelockEmails = [
+      'ratelock@movement.com',
+      'lock911@movement.com',
+      'bondteam@movement.com',
+      'bondteam@movementmortgage.com',
+      'tporatelock@movement.com',
+      'movementdev@service-now.com',
+      'movement@service-now.com',
+      'correspondentlock@movement.com',
+      fromAddress
+    ];
+
+    var EXCLUDED_RECIPIENTS = util.concat(ratelockEmails, groupEmails);
+    var recips = [];
+    if (currentRecipients) {
+      if (Array.isArray(currentRecipients)) {
+        EXCLUDED_RECIPIENTS = util.concat(EXCLUDED_RECIPIENTS, currentRecipients);
+        recips = currentRecipients;
+      }
+    }
+
+    for (var i in recipients) {
+      if (!util.contains(EXCLUDED_RECIPIENTS, recipients[i].toLowerCase())) {
+        recips.push(recipients[i].toLowerCase());
+      }
+    }
+    return util.unique(recips).join(',');
+  }
+
+  function getSysGroupsEmails() {
+    var emails = [];
+    var gr = new GlideRecord('sys_user_group');
+    gr.addQuery('active', true);
+    gr.addNotNullQuery('email');
+    gr.query();
+    while (gr.next()) {
+      var gEmail = gr.getValue('email');
+      emails.push(gEmail.toLowerCase());
+    }
+    return emails;
+  }
+
+  function attachInstanceToEmailRecord(targetTable, instanceId, emailId) {
+    var gr = new GlideRecord('sys_email');
+    gr.get(emailId);
+    if (gr.isValidRecord()) {
+      gr.instance = instanceId;
+      gr.target_table = targetTable;
+      gr.update();
+    }
+  }
+
+  function getPriority(recipients) {
+    if (recipients.length > 0) {
+      for (var i = 0; i < recipients.length; i++) {
+        if (recipients[i].toLowerCase() == 'lock911@movement.com') {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  function recordExists(loanNumber) {
+    if (!loanNumber) return false;
+
+    var ga = new GlideAggregate('x_momo_ratelock_ticket');
+    ga.addAggregate('COUNT');
+    ga.addNotNullQuery('loan_number');
+    ga.addQuery('state', '!=', "6");
+    ga.addQuery('creation_source', 'email');
+    ga.addQuery('loan_number', loanNumber);
+    ga.query();
+
+    while (ga.next()) {
+      var count = parseInt(ga.getAggregate('COUNT'));
+
+      return count > 0;
+    }
+
+    return false;
+  }
+
+  function getLoanNumber(subject, regex) {
+    var m;
+    while ((m = regex.exec(subject)) !== null) {
+      if (m.index === regex.lastIndex) {
+        regex.lastIndex++;
+      }
+
+      for (var i in m) {
+        return m[0];
+      }
+    }
+    return null;
+  }
+
+
+  function attachEmailPicturesToHTML(message, sys_id, emailSysId, ticketNumber) {
+    var images_to_delete = [];
+    var attachment = new GlideRecord('sys_attachment');
+    var msg_with_attachments = message;
+    attachment.addQuery('table_sys_id', emailSysId);
+    attachment.addQuery('table_name', 'sys_email');
+    attachment.addQuery('content_type', 'STARTSWITH', 'image/');
+    attachment.query();
+    while (attachment.next()) {
+      var regex = new RegExp('\\<img.*src\\=\\"cid:' + attachment.getValue('file_name') + '@.*?\\"\\>', 'gm');
+      var src = '<img src="' + attachment.sys_id.toString() + '.iix" class="img-responsive">';
+      if (regex.test(message)) {
+        msg_with_attachments = msg_with_attachments.replace(regex, src);
+        images_to_delete.push(attachment.getValue('file_name'));
+      }
+    }
+    var sys_attachment = new GlideSysAttachment();
+    sys_attachment.copy('sys_email', emailSysId, 'x_momo_ratelock_ticket', sys_id);
+    var _attachment = new GlideRecord('sys_attachment');
+    _attachment.addQuery('table_sys_id', sys_id);
+    _attachment.addQuery('table_name', 'x_momo_ratelock_ticket');
+    _attachment.query();
+
+    while (_attachment.next()) {
+      var file_name = _attachment.getValue('file_name');
+      for (var i = 0; i < images_to_delete.length; i++) {
+        if (images_to_delete[i] == file_name) {
+          var _sys_attachment = new GlideSysAttachment();
+          _sys_attachment.deleteAttachment(_attachment.getUniqueValue());
+        }
+      }
+    }
+
+    if (ticketNumber) {
+      // Super basic removal of reply chain for emails
+      // being responded to via a ticket conversation
+      if (isFrontAppEmail(email.headers)) {
+        return msg_with_attachments.replace(/(<div>[\n]+<div style="border:none;border-top:solid #E1E1E1 1\.0pt;padding:3\.0pt 0in 0in 0in">[\S\s\n]+<div(.*?)current-comment(.*?)>[\S\s\n]+<\/div>[\s\S\n]+(?=<\/body>))/gmi, '')
+          .replace(/<base(.*?)>/gmi, '')
+          .replace(/<title>(.*?)<\/title>/gmi, '')
+          .replace(/(<div(.*?)current-comment(.*?)>[\S\s\n]+<\/div>[\s\S\n]+)/gmi, '')
+          .replace(/<div(.*?)class="gmail_extra">[\S\s\n]+<\/div>/gmi, '')
+          .replace(/<div(.*?)divRplyFwdMsg(.*?)>[\S\s\n]+<\/div>/gmi, '')
+          .replace(/<a/gmi, '<a target="_blank" rel="noreferrer" ');
+      }
+      return msg_with_attachments.replace(/(<div>[\n]+<div style="border:none;border-top:solid #E1E1E1 1\.0pt;padding:3\.0pt 0in 0in 0in">[\S\s\n]+<div(.*?)current-comment(.*?)>[\S\s\n]+<\/div>[\s\S\n]+(?=<\/body>))/gmi, '')
+        .replace(/<base(.*?)>/gmi, '')
+        .replace(/<title>(.*?)<\/title>/gmi, '')
+        .replace(/(<div(.*?)current-comment(.*?)>[\S\s\n]+<\/div>[\s\S\n]+(?=<\/body>))/gmi, '')
+        .replace(/<div(.*?)class="gmail_extra">[\S\s\n]+<\/div>/gmi, '')
+        .replace(/<div(.*?)divRplyFwdMsg(.*?)>[\S\s\n]+<\/div>/gmi, '')
+        .replace(/<a/gmi, '<a target="_blank" rel="noreferrer" ');
+        
+    }
+    // if there is no reference number 
+    // or this is a front app email
+    // do not replace the email chain (could be needed)
+    // still replace target and rel attributes on links
+    return msg_with_attachments.replace(/<a/gmi, '<a target="_blank" rel="noreferrer" ')
+      .replace(/<base(.*?)>/gmi, '')
+      .replace(/<title>(.*?)<\/title>/gmi, '')
+      .replace(/<p>Loan Ref:(.*?)<\/p>/gmi, '');
+  }
+
+  function hasValidEmailAttachment(sysId) {
+    var attachment = new GlideAggregate('sys_attachment');
+    attachment.addAggregate('COUNT');
+    attachment.addQuery('table_sys_id', sysId);
+    attachment.addQuery('table_name', 'sys_email');
+    attachment.addQuery('file_name', 'ENDSWITH', '.xlsx')
+      .addOrCondition('file_name', 'ENDSWITH', '.xls')
+      .addOrCondition('file_name', 'ENDSWITH', '.csv')
+      .addOrCondition('file_name', 'ENDSWITH', '.pdf')
+      .addOrCondition('file_name', 'ENDSWITH', '.docx');
+    attachment.query();
+    while (attachment.next()) {
+      var count = parseInt(attachment.getAggregate('COUNT'));
+      return count > 0;
+    }
+  }
+
+
+
+  function createRateSheet(emailSysId) {
+
+    var sheet = new GlideRecord('x_momo_ratelock_ratesheet');
+    sheet.initialize();
+    sheet.insert();
+
+    var sys_attachment = new GlideSysAttachment();
+
+    sys_attachment.copy('sys_email', emailSysId, 'x_momo_ratelock_ratesheet', sheet.getUniqueValue());
+
+    var _attachment = new GlideRecord('sys_attachment');
+
+    _attachment.addQuery('table_sys_id', sheet.getUniqueValue());
+    _attachment.addQuery('table_name', 'x_momo_ratelock_ratesheet');
+    _attachment.addQuery('content_type', 'STARTSWITH', 'image/')
+      .addOrCondition('content_type', 'STARTSWITH', 'message/');
+    _attachment.query();
+    while (_attachment.next()) {
+      _attachment.deleteRecord();
+    }
+  }
+
+  /**
+   * Checks for auto reply headers. We are using this over a conditional statement
+   * as we do not want to pass this down the inbound action chain. We just want to
+   * discard it entirely. 
+   * 
+   * Note do not check for `X-Auto-Response-Suppress` header, since the MSDN docs
+   * are super vague, internal groups sending will actually add this header if they
+   * are supressing auto responses.
+   * @see https://docs.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxcmail/ced68690-498a-4567-9d14-5c01f974d8b1?redirectedfrom=MSDN
+   * 
+   * @param {string} headers The email headers provided by email object.
+   * 
+   * @returns {boolean} Will return true if there is an auto reply or not.
+   */
+  function autoReplyHeaderExists(headers) {
+    if (/[Xx]-[Aa]utoreply/gmi.test(headers) || /[Xx]-[Aa]utorespond/gmi.test(headers)) {
+      return true;
+    }
+
+    if (/[Aa]uto-[Ss]ubmitted/gmi.test(headers)) {
+      return !/[Aa]uto-[Ss]ubmitted:((?=(\sno))|(?=(no)))/gmi.test(headers);
+    }
+    return false;
+  }
+  
+  /**
+   * Front App, @link https://frontapp.com, does not follow proper RFC standards which throws off
+   * parsing the email. In turn, we have to make some adjustments in order to properly
+   * parse messages.
+  */
+  function isFrontAppEmail(headers) {
+    return /[Xx]-[Ff]ront-[Ii]D/gmi.test(headers);
+  }
+
+})(current, event, email, logger, classifier, sys_email);]]></script>
+        <stop_processing>false</stop_processing>
+        <sys_class_name>sysevent_in_email_action</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2019-12-19 09:52:36</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_domain>global</sys_domain>
+        <sys_domain_path>/</sys_domain_path>
+        <sys_id>285c6a31dbbd8c10f255132968961965</sys_id>
+        <sys_mod_count>449</sys_mod_count>
+        <sys_name>Ratelock</sys_name>
+        <sys_overrides/>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sysevent_in_email_action_285c6a31dbbd8c10f255132968961965</sys_update_name>
+        <sys_updated_by>Adrian.Wilson</sys_updated_by>
+        <sys_updated_on>2022-04-19 15:49:46</sys_updated_on>
+        <table>x_momo_ratelock_ticket</table>
+        <template/>
+        <type/>
+    </sysevent_in_email_action>
+    <sys_translated_text action="delete_multiple" query="documentkey=285c6a31dbbd8c10f255132968961965"/>
+</record_update>

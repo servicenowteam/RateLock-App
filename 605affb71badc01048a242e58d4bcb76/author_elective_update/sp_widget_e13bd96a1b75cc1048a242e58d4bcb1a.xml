@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_widget">
+    <sp_widget action="DELETE">
+        <category>custom</category>
+        <client_script><![CDATA[function($scope, $rootScope, $window, ratelockSession) {
+  /* widget controller */
+	var c = this;
+	
+	$scope.sessions = {};
+	
+	c.$onInit = function() {
+		ratelockSession.subscribe($scope.data.table, $scope.data.ticket.sys_id, function(message) {
+			if (message.data.rl_sessions) {
+				Object.keys(message.data.rl_sessions).forEach(function(key) {
+					var session = message.data.rl_sessions[key];
+					if (session.session_id != $window.NOW.session_id) {
+						if (session.status == 'exiting' && $scope.sessions.hasOwnProperty(key)) {
+							$scope.sessions[key] = angular.extend(session, { softDelete: true });
+						} else {
+							$scope.sessions[key] = angular.extend(session, { softDelete: false });
+						}
+					}
+				});
+			}
+		});
+	};
+	$window.onload = c.$onInit;
+	$window.addEventListener('load', c.$onInit);
+	
+	$scope.sessionCount = function() {
+		var num = 0;
+		
+		if (!$scope.sessions) {
+			$scope.showSession = false;
+			return;
+		}
+			
+		
+		var keys = Object.keys($scope.sessions);
+		var journalFields = $scope.data.ticket.journalFields;
+		if (keys.length <= 0) {
+			$scope.showSession = false;
+			return;
+		}
+		for (var i = 0; i < keys.length; i++) {
+			var session = $scope.sessions[keys[i]];
+			var canUserReadJournalField = false;
+			var status = session.status;
+			
+			if (status == "")
+				continue;
+			
+			for (var j = 0; j < journalFields.length; j++) {
+				if (journalFields[j].field_name === session.field_type) {
+					canUserReadJournalField = journalFields[j].can_read;
+					break;
+				}
+			}
+
+			if (status === "typing" && canUserReadJournalField) 
+				session.statusDisplay = $scope.data.ticket.msgs.typing || status;
+			else 
+				session.statusDisplay = $scope.data.ticket.msgs.viewing || "viewing";
+			if ($scope.data.ticket.sys_id === session.sys_id)
+				num++;
+			else
+				return;
+		}
+		return num;
+	}
+}]]></client_script>
+        <controller_as>c</controller_as>
+        <css>.ticker {
+	position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  line-height: 0;
+  font-size: 0;
+  z-index: 1000;
+}
+
+.ticker &gt; span {
+  border-bottom: 20px solid transparent;
+  border-right: 20px solid transparent;
+  transition: all 0.3s ease-in;
+	&amp;.green {
+    border-left: 20px solid green;
+  }
+  &amp;.red {
+    border-left: 20px solid red;
+  }
+  &amp;.yellow {
+    border-left: 20px solid #fcd80c;
+  }
+  &amp;.transparent {
+  	border-left: 20px solid transparent;
+  }
+}</css>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description/>
+        <docs/>
+        <field_list/>
+        <has_preview>false</has_preview>
+        <id>ratelock_list_sessions</id>
+        <internal>false</internal>
+        <link><![CDATA[function link(scope, element, attrs, controller) {  }]]></link>
+        <name>Ratelock List Sessions</name>
+        <option_schema>[{"name":"table","section":"Data","default_value":"x_momo_ratelock_ticket","label":"table","type":"string"}]</option_schema>
+        <public>false</public>
+        <roles/>
+        <script><![CDATA[(function() {
+  /* populate the 'data' object */
+  /* e.g., data.table = $sp.getValue('table'); */
+  data.table = options.table;
+	data.ticket = options.ticket;
+})();]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2019-12-21 11:51:39</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>e13bd96a1b75cc1048a242e58d4bcb1a</sys_id>
+        <sys_mod_count>163</sys_mod_count>
+        <sys_name>Ratelock List Sessions</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sp_widget_e13bd96a1b75cc1048a242e58d4bcb1a</sys_update_name>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-01-02 16:43:15</sys_updated_on>
+        <template><![CDATA[<div class="ticker" ng-show="!s.softDelete" ng-repeat="s in sessions">
+  <span uib-tooltip="{{s.user_display_name}} is {{s.status}}"
+        ng-class="{'transparent': (s.status != 'viewing' && s.status != 'typing'), 'green': (s.status == 'viewing'), 'red': (s.status == 'typing')}" 
+        tooltip-placement="top"
+        tooltip-append-to-body="true"></span>
+</div>]]></template>
+    </sp_widget>
+    <sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Ratelock">605affb71badc01048a242e58d4bcb76</application>
+        <file_path/>
+        <instance_id>94e8281edbb7470060a6f0e5bf9619f6</instance_id>
+        <instance_name>movementdev</instance_name>
+        <name>sp_widget_e13bd96a1b75cc1048a242e58d4bcb1a</name>
+        <payload>&lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;record_update table="sp_widget"&gt;&lt;sp_widget action="INSERT_OR_UPDATE"&gt;&lt;category&gt;custom&lt;/category&gt;&lt;client_script&gt;&lt;![CDATA[function($scope, $rootScope, $window, ratelockSession) {
+  /* widget controller */
+	var c = this;
+	
+	$scope.sessions = {};
+	
+	c.$onInit = function() {
+		ratelockSession.subscribe($scope.data.table, $scope.data.ticket.sys_id, function(message) {
+			if (message.data.rl_sessions) {
+				Object.keys(message.data.rl_sessions).forEach(function(key) {
+					var session = message.data.rl_sessions[key];
+					if (session.session_id != $window.NOW.session_id) {
+						if (session.status == 'exiting' &amp;&amp; $scope.sessions.hasOwnProperty(key)) {
+							$scope.sessions[key] = angular.extend(session, { softDelete: true });
+						} else {
+							$scope.sessions[key] = angular.extend(session, { softDelete: false });
+						}
+					}
+				});
+			}
+		});
+	};
+	$window.onload = c.$onInit;
+	$window.addEventListener('load', c.$onInit);
+	
+	$scope.sessionCount = function() {
+		var num = 0;
+		
+		if (!$scope.sessions) {
+			$scope.showSession = false;
+			return;
+		}
+			
+		
+		var keys = Object.keys($scope.sessions);
+		var journalFields = $scope.data.ticket.journalFields;
+		if (keys.length &lt;= 0) {
+			$scope.showSession = false;
+			return;
+		}
+		for (var i = 0; i &lt; keys.length; i++) {
+			var session = $scope.sessions[keys[i]];
+			var canUserReadJournalField = false;
+			var status = session.status;
+			
+			if (status == "")
+				continue;
+			
+			for (var j = 0; j &lt; journalFields.length; j++) {
+				if (journalFields[j].field_name === session.field_type) {
+					canUserReadJournalField = journalFields[j].can_read;
+					break;
+				}
+			}
+
+			if (status === "typing" &amp;&amp; canUserReadJournalField) 
+				session.statusDisplay = $scope.data.ticket.msgs.typing || status;
+			else 
+				session.statusDisplay = $scope.data.ticket.msgs.viewing || "viewing";
+			if ($scope.data.ticket.sys_id === session.sys_id)
+				num++;
+			else
+				return;
+		}
+		return num;
+	}
+}]]&gt;&lt;/client_script&gt;&lt;controller_as&gt;c&lt;/controller_as&gt;&lt;css&gt;.ticker {
+	position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  line-height: 0;
+  font-size: 0;
+  z-index: 1000;
+}
+
+.ticker &amp;gt; span {
+  border-bottom: 20px solid transparent;
+  border-right: 20px solid transparent;
+  transition: all 0.3s ease-in;
+	&amp;amp;.green {
+    border-left: 20px solid green;
+  }
+  &amp;amp;.red {
+    border-left: 20px solid red;
+  }
+  &amp;amp;.yellow {
+    border-left: 20px solid #fcd80c;
+  }
+  &amp;amp;.transparent {
+  	border-left: 20px solid transparent;
+  }
+}&lt;/css&gt;&lt;data_table&gt;sp_instance&lt;/data_table&gt;&lt;demo_data/&gt;&lt;description/&gt;&lt;docs/&gt;&lt;field_list/&gt;&lt;has_preview&gt;false&lt;/has_preview&gt;&lt;id&gt;ratelock_list_sessions&lt;/id&gt;&lt;internal&gt;false&lt;/internal&gt;&lt;link&gt;&lt;![CDATA[function link(scope, element, attrs, controller) {  }]]&gt;&lt;/link&gt;&lt;name&gt;Ratelock List Sessions&lt;/name&gt;&lt;option_schema&gt;[{"name":"table","section":"Data","default_value":"x_momo_ratelock_ticket","label":"table","type":"string"}]&lt;/option_schema&gt;&lt;public&gt;false&lt;/public&gt;&lt;roles/&gt;&lt;script&gt;&lt;![CDATA[(function() {
+  /* populate the 'data' object */
+  /* e.g., data.table = $sp.getValue('table'); */
+  data.table = options.table;
+	data.ticket = options.ticket;
+})();]]&gt;&lt;/script&gt;&lt;servicenow&gt;false&lt;/servicenow&gt;&lt;sys_class_name&gt;sp_widget&lt;/sys_class_name&gt;&lt;sys_created_by&gt;douglas.schamberg&lt;/sys_created_by&gt;&lt;sys_created_on&gt;2019-12-21 11:51:39&lt;/sys_created_on&gt;&lt;sys_customer_update&gt;false&lt;/sys_customer_update&gt;&lt;sys_id&gt;e13bd96a1b75cc1048a242e58d4bcb1a&lt;/sys_id&gt;&lt;sys_mod_count&gt;163&lt;/sys_mod_count&gt;&lt;sys_name&gt;Ratelock List Sessions&lt;/sys_name&gt;&lt;sys_package display_value="Ratelock" source="x_momo_ratelock"&gt;605affb71badc01048a242e58d4bcb76&lt;/sys_package&gt;&lt;sys_policy/&gt;&lt;sys_replace_on_upgrade&gt;false&lt;/sys_replace_on_upgrade&gt;&lt;sys_scope display_value="Ratelock"&gt;605affb71badc01048a242e58d4bcb76&lt;/sys_scope&gt;&lt;sys_update_name&gt;sp_widget_e13bd96a1b75cc1048a242e58d4bcb1a&lt;/sys_update_name&gt;&lt;sys_updated_by&gt;douglas.schamberg&lt;/sys_updated_by&gt;&lt;sys_updated_on&gt;2020-01-02 16:43:15&lt;/sys_updated_on&gt;&lt;template&gt;&lt;![CDATA[&lt;div class="ticker" ng-show="!s.softDelete" ng-repeat="s in sessions"&gt;
+  &lt;span uib-tooltip="{{s.user_display_name}} is {{s.status}}"
+        ng-class="{'transparent': (s.status != 'viewing' &amp;&amp; s.status != 'typing'), 'green': (s.status == 'viewing'), 'red': (s.status == 'typing')}" 
+        tooltip-placement="top"
+        tooltip-append-to-body="true"&gt;&lt;/span&gt;
+&lt;/div&gt;]]&gt;&lt;/template&gt;&lt;/sp_widget&gt;&lt;/record_update&gt;</payload>
+        <payload_hash>-630357457</payload_hash>
+        <record_name>Ratelock List Sessions</record_name>
+        <reverted_from/>
+        <source>a45affb71badc01048a242e58d4bcb78</source>
+        <source_table>sys_update_set</source_table>
+        <state>previous</state>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-01-02 16:43:15</sys_created_on>
+        <sys_id>4a0150621b8a009048a242e58d4bcba6</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>16f6723c6c00000001</sys_recorded_at>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-01-02 16:43:15</sys_updated_on>
+        <type>Widget</type>
+        <update_guid>02015062ee8a0090882f6917241a45a6</update_guid>
+        <update_guid_history>02015062ee8a0090882f6917241a45a6:-630357457,da405822518a009044dee853f500a3aa:-889682961,4fffbd4e1d0e8c50bf6a6a2d7e0398d4:-630357457,dc9f3d4e840e8c504e5f9493c77eb4c4:1419791001,d8adb5caf40e8c509cab3a1e1dc80c78:-89400152,477169c2548a8c501725bb2ddf07f2b7:-1761076486,0121a1c29a8a8c503d08bacfe31ed7b4:1630489434,b690ed822a8a8c50e929c37922beb971:46793415,8080e182928a8c50a1a355f819ebfd38:-909030342,77606d823d8a8c5095a493a632c75b0e:1752014611,91ced102db8a8c508f1521f32aa4c0bc:-2078980042,3bbe5d02938a8c50a1376c1ed0384a48:-1431092913,909e99020b8a8c50b880e3a5646ed2a8:2027756396,9c5e91ce104a8c5002e03e80fb7d20e1:-1640194821,3b0e194e8c4a8c501573cb9563e5434f:-1940112413,73dcd98e604a8c50f71ac1274e44e7d9:-818723197,62dcd54ed64a8c50cf63ff09318d1cdb:1420872058,244b9d0e9f4a8c5009f023ec0d3b4237:162895045,8b1bd90e724a8c506c574d14552b1b8d:1674328329,8dfa150e304a8c50c64cf9495748df22:906405961,1ee8954a134a8c5043979f141e8f60da:-1876526308,b848dd0a254a8c500fdce3f75938cd07:-923618224,6e285d0ac44a8c502d2e68d116fc744c:1979078465,c277590aa24a8c50f917f25e794792a9:-1224755417,19055946ea4a8c50efcad7dc4e1ce2c1:-1815658957,b0d45146884a8c50bda79b7473dfebd1:302808694,45941146da4a8c50f3b1f0d0fb24ebfb:2003402042,1d7191427a4a8c50ec3054d0310c0ca1:989221066,4e219502054a8c504e1a9245e4d64a87:-854379311,5ed055020f4a8c50211c673b55c34907:1199458186,85b0ddce4a0a8c50bf06b69166aff1f1:256812918,a9ff858e6e0a8c503cbc02bf6ea6f0ad:-928701118,6b5a09c63f0a8c502087f63332855c7d:2046072614,000a8d860d0a8c505ae2543d2a612219:1572550928,8ee98d86700a8c50afbc18a8291b450a:-1785700916,8fa94586da0a8c503002b70359bbeb52:-1722614178,63798186b80a8c50ca5badf3c61333d7:-1832712870,75490d46400a8c504bc4181158da37cd:869869545,a809c946420a8c504495792b962df45f:207356658,bd98c1463f0a8c5099367c94ef2236d7:1327669519,7df74506b20a8c5079efc59baea1c773:888639982,9bd74506c40a8c5015860468aea1928b:-1140862299,43b74506850a8c50d4eb3607cb1e076a:1325331226,b48781c23f0a8c508f61eb374fa8c342:749960485,c41781c20f0a8c50c87b2e2d7fd73234:-454647179,2ad64982f90a8c50f298f934aae96966:-901821449,15b6c182dc0a8c50e3b2f64beef365c7:-1690716989,51664582450a8c50e7565daddde2ac76:322316213,3e264982f80a8c50ca893d7c76f7673b:-1258419807,80e5c102e30a8c509496d9ee6b459c93:-1930462926,3765c9424d0a8c5059f62eba0421d635:1030613217,cf928d0ea3c68c503e7c6c8f7dcd358f:248583467,28f009caa8c68c505dfd365d46b9722c:-1794314839,6690010edec68c50ec1bc0d689fc7834:629436609,9d8049ca17c68c502770595559610ddf:-1428038762,1930c5cacec68c5062f2d9fdfd9d91c2:-1185923838,3e20c1ca24c68c50f366df9a4b853166:-2024117749,8e1085ca0cc68c5046625042b437c04b:-1027446920,cdefb0caebc68c5087626de004bdd0e4:-596575200,7ace3c4a58c68c5009f707cea5bdfb1a:724763223,ccbeb44a72c68c500fee8bd5bee82ea2:-54438332,f6cc7c8606c68c506d884a89964aa40b:-745767694,0ca93842d4c68c50ea522f0a72766775:57912250,ea3930c215c68c50916371db2abe3419:716975115,b10c240679868c50345203f7cce9dcce:-1880996812,85eac80b5cf1405084101e55a38c3c57:-629751570,5cba040b17f14050fb47fe5425bd685b:1839606716,8a8a0cc731f140508249f8ecbaf52d36:1692461047,f70a08c762f14050e94d8d9bca94f473:1999710063,32f940c779f140507a8582397f1ffd5c:2126756213,eee98887f8f14050f134b960b817fca8:-1393753045,31e984873df140500ff062216c923f36:200916788,c5d9c4c788f140505edebd19f9f3f845:1571590594,98e78047c8f140505643f0e7415e05b2:-755758525,a4c34c8b3ab140508a089297deff1948:76294748,f0b3400361f14050de4853a6b245f006:1467815697,b6c15372d0310450f6853fef1bd8ae48:1810333450,031362ae12b9cc10814b6793ed997572:-349751113,4c62266e9bb9cc1079447dbfa1394080:-823036797,1452262e4cb9cc10616451aac6971333:-1026617663,e3f1262e8fb9cc10938d992c0a28a286:-706773146,9eef56a6e8b9cc10f6c92ca882b00e4f:236645538,560bd26601b9cc10fa37f7747368c513:455310681,7a9ad626c6b9cc10bcf30c4ca64fdb7a:290491168,46695ee291b9cc10af4ac9557ae0b14e:1290748708,0568126234b9cc10ae146318fb17b555:-1763828131,4ce6126230b9cc10e5b319bc4593254c:-288638799,be069eaec079cc108217a2bc3ee04d0b:-714219610,5a75d2ee5679cc10fe6c69cf3c4fd5c6:1873101943,6d55d2eebf79cc10ab0ed60d17b640be:1053785487,1c5516ae6979cc10b3e7e26c181ca2aa:-1502071056,f8451a6e2679cc107f1df1dabb820804:-1708426264,4f05d2aeaa79cc1092d182951d1a6db8:1880007830,41059eaebb79cc10ea7d19a2bfd0ad02:1514269623,5cb4d66ee479cc10c3c8a81fefe17e0e:-1925550613,138496ae0879cc10d12e36d7b9d1f830:-786206533,5174162e5279cc1009be7ad1744f6c98:1866607413,aa54522e1079cc102df9ff0378d25fea:-1022330997,3a231aeac279cc10a35652052ab7cb35:-1900927624,d923d62ea479cc10ccac395faa4db701:1933776521,9792d66a3479cc10b27e45b74f6c0af3:2066247730,d292d6ead379cc102ddc6466dea81df6:-1775428683,1e42d6ea0179cc108707344316a1d9d0:864486652,91f1d6ea9879cc109a037646dfe570c8:1295801983,49d196aa1679cc107825728ffe35366e:-797485981,cd91deaaab79cc10821fb2db30c47588:1930144102,a771de2a8b79cc1036fa5d6c107b26e2:-71327023,f01196aa4279cc106b9e23016a64a026:580757455,a3e0d66a4379cc10bfe1914bc6c1d7e0:416238311,4e805e6af379cc108b8bdc19ce84fb1b:2038329700,99801e6aab79cc104cb7a1e7728fa5ad:276396195,0520962a5279cc10f1a608701821e5ef:-556936716,5cdfce2af179cc10d213b4f8e61b0991:-1047718143,1d9f862af379cc1045b05ed49ab0bf70:1740194736,435f862a0379cc106b78842261f471c5:-1242631508,222f8e667879cc1061f90d4717cf683a:146125983,129e46e62a79cc107f04b5f91bd9e366:1870075727,c86e42666879cc106e28633a977e47fd:-1075770842,105ec2e60479cc1082fedd0de3b3c6e0:-368860233,37fd8ea6c679cc1096e955c655be5660:-1049641275,1d5c42663f79cc103064cd5a8fa9f2f3:1365536561,a1ab8ae2bc79cc10a196338227352e48:-132208478,327b4ea2ca79cc105966fe9e3cbb26cb:-1458291410,813b0aa25c79cc100f6c0f4211e5fe7a:1686462512,1afa8ae2a679cc10f57bcd855e1b0117:-928819541,f5facea20679cc106993f530ce4fba48:1958440808,1f4a8ea27279cc10f1ad60dd6b387559:-1080511429,9d4a4ea2cb79cc109fce394a3dea15b6:330983216,ecd986a2f679cc100eeebb5d4b37aa48:-1956616459,58a982a2d279cc104335bad5ecb717d3:1744191095,62890e627e79cc10a2d86ec315d64bd5:1033470725,34890a620279cc102a27f238533c339a:-876794650,1379ce62bf79cc104bcb77782f2a8dde:-1866767653,501946aaa339cc10b82a8dc047803047:-195048004,91704ee6f739cc103cec09c815963501:-1912462182,bd1dfde21e39cc10e63dc0b9d63fd67d:750079942,5dcc7122d439cc10580aab988f057fbb:-1304233918,47acf5e20639cc10833dc698440a83be:-1435707898,9b4c3d22d339cc107750a9957850ac06:-1938515774,f24c31228939cc1080f3acd159d7f355:-1270597555,9d1bf962e439cc1078619d62997b02c2:-1400883584,710bb5621939cc10db7448427fc5f1a1:1096550027,6889712e69f5cc1053cbf08170610f06:-662870081,a36535a6d0f5cc105aa033204183bce9:1938145768,28ff252644f5cc10708c9d9ef71c434d:103840019,de3829ea04b5cc10240bac022b140278:544223973,e2c7adeaeab5cc1078ae6b043895d445:460007306,c926616a49b5cc102e0a27a5a8ac25db:1697162720,6bf561aa7db5cc100995f23f35d95cdc:1796073289,b2f561aab5b5cc108976359da908f3b7:1538821290,8cb5ade624b5cc10181272e52cafe4ea:1627688492,2755ad2a33b5cc10d263ad0967716f7f:157318803,b251e9e20ab5cc108fddb264c795329f:-786752943,d651a56224b5cc104262aa26b374c51e:1226417204,7031e9e230b5cc1093f8b717e1d01e99:589280891,db9025a2b7b5cc10c251e8566049f586:-1690796394,e28f956236b5cc10ac4f5b3f7c526fc9:222692077,136fd522d0b5cc10d6986e12f5103b94:-804422262,792f556242b5cc10f7ea5c9547f22df3:-1620182993,bb7ed122a4b5cc10fc709d1e9fb86b01:989860127,879d19ae3c75cc10aebc86eeb41ee2d5:-2101225980,419d19aee075cc10b6f541b9e70022e1:-471436657,e85bd16e1b75cc109b0666d1c2feae6f:1811807615,693bd96a5075cc1095d3fb47667c501b:71265568</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete display_value="">b620e42a1bca009048a242e58d4bcba8</sys_audit_delete>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-01-02 17:49:23</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_db_object display_value="" name="sp_widget">sp_widget</sys_db_object>
+        <sys_id>34c90bac2d7f4ae49e7abe38f1897490</sys_id>
+        <sys_metadata>e13bd96a1b75cc1048a242e58d4bcb1a</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>Ratelock List Sessions</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_parent/>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_scope_delete display_value="">57712118eaee4a49ae47b2048a14ac31</sys_scope_delete>
+        <sys_update_name>sp_widget_e13bd96a1b75cc1048a242e58d4bcb1a</sys_update_name>
+        <sys_update_version display_value="sp_widget_e13bd96a1b75cc1048a242e58d4bcb1a">4a0150621b8a009048a242e58d4bcba6</sys_update_version>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-01-02 17:49:23</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>

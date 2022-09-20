@@ -1,0 +1,358 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update sys_domain="global" table="sysevent_in_email_action">
+    <sysevent_in_email_action action="DELETE">
+        <action>record_action</action>
+        <active>false</active>
+        <assignment_operator/>
+        <condition_script/>
+        <description/>
+        <event_name>email.read</event_name>
+        <filter_condition table="sys_email">recipientsLIKEratelock@movement.com^ORheadersLIKEReturn-Path:&lt;ratelock@movement.com&gt;^EQ<item endquery="false" field="recipients" goto="false" newquery="false" operator="LIKE" or="false" value="ratelock@movement.com"/>
+            <item endquery="false" field="headers" goto="false" newquery="false" operator="LIKE" or="true" value="Return-Path:&lt;ratelock@movement.com&gt;"/>
+            <item endquery="true" field="" goto="false" newquery="false" operator="=" or="false" value=""/>
+        </filter_condition>
+        <from/>
+        <name>Reply Ratelock</name>
+        <order>69</order>
+        <plus_address/>
+        <reply_email/>
+        <required_roles/>
+        <script><![CDATA[var VALID_FILE_EXTENSIONS = [
+  '.csv',
+  '.pdf',
+  '.xls',
+  '.docx'
+];
+var __attachments = getAttachments();
+var loan_number;
+var loan_number;
+if (/[\d]{7}|[\d]{10}/gi.test(email.subject)) {
+  loan_number = getLoanNumber(email.subject);
+} else if (/[\d]{7}|[\d]{10}/gi.test(email.body_text)) {
+  loan_number = getLoanNumber(email.body_text);
+}
+
+if (!/[\d]{7}|[\d]{10}/gi.test(loan_number)) {
+  loan_number = null;
+}
+
+
+if (loan_number) {
+  current.description = email.body_text;
+  current.short_description = email.subject;
+  current.caller_id = email.from_sys_id == "5136503cc611227c0183e96598c4f706" ? null : email.from_sys_id;
+  current.priority = 2;
+  current.state = 1;
+  var isTPO;
+  var is911;
+  for (var i = 0; i < email.recipients_array.length; i++) {
+    if (email.reciepients_array[i].toLowerCase() == 'lock911@movement.com') {
+      current.priority = 1;
+      is911 = true;
+    } else if (email.reciepients_array[i].toLowerCase() == 'tporatelock@movement.com') {
+      current.request_type = 2;
+      isTPO = true;
+    }
+  }
+  if (!isTPO) {
+    current.request_type = 1;
+  }
+
+  if (!is911) {
+    current.priority = 2;
+  }
+  current.comments = '[code]' + email.body_html + '[/code]';
+  current.watch_list = getWatchList();
+  current.loan_number = loan_number;
+  current.insert();
+} else {
+  createRateSheet(__attachments);
+  current.description = email.body_text;
+  current.short_description = email.subject;
+  current.caller_id = email.from_sys_id == "5136503cc611227c0183e96598c4f706" ? null : email.from_sys_id;
+  current.priority = 3;
+  current.watch_list = getWatchList();
+  current.state = 1;
+  current.comments = '[code]' + email.body_html + '[/code]';
+  current.request_type = 3;
+  current.insert();
+}
+
+
+
+function getLoanNumber(message) {
+  var regex = /.*(?=([\d]{7}|[\d]{10})).*/gm;
+  var matches = regex.exec(message);
+  if (matches.length > 0) {
+    for (var i = 0; i < matches.length; i++) {
+      if (/^[\d]{7}|[\d]{10}$/gm.test(matches[i])) {
+        return matches[i].trim();
+      }
+    }
+  }
+  return;
+}
+
+
+function getAttachments() {
+  var attachment = new GlideRecord('sys_attachment');
+  attachment.addQuery('table_sys_id', sys_email.sys_id.toString());
+  attachment.addQuery('table_name', 'sys_email');
+  var qc = attachment.addQuery('file_name', 'ENDSWITH', '.xlsx');
+  for (var i in VALID_FILE_EXTENSIONS) {
+    qc.addOrCondition('file_name', 'ENDSWITH', VALID_FILE_EXTENSIONS[i]);
+  }
+  attachment.query();
+  return attachment.next();
+}
+
+function getWatchList() {
+  var excluded = ['ratelock@movement.com', 'lock911@movement.com', 'tporatelock@movement.com'];
+  var groups = new GlideRecord('sys_user_group');
+  groups.addEncodedQuery('active=true^emailIN' + email.recipients);
+  groups.query();
+  while (groups.next()) {
+    excluded.push(groups.getValue('email'));
+  }
+  var recipients_array = email.recipients.split(',');
+  var filtered = recipients_array.filter(function (em) {
+    for (var i = 0; i < excluded.length; i++) {
+      if (excluded[i] == em) {
+        return false;
+      }
+    }
+    return true;
+  });
+
+  if (gs.nil(current.watch_list)) return filtered.join(',');
+
+  if (filtered.length > 0) {
+    return current.watch_list + ',' + filtered.join(',');
+  }
+
+  return filtered.join(',');
+}
+
+function createRateSheet(has_next) {
+  if (!has_next) return;
+  var sheet = new GlideRecord('x_momo_ratelock_ratesheet');
+  sheet.initialize();
+  sheet.insert();
+  var sys_attachment = new GlideSysAttachment();
+  sys_attachment.copy('sys_email', sys_email.sys_id.toString(), 'x_momo_ratelock_ratesheet', sheet.getUniqueValue().toString());
+  var _attachment = new GlideRecord('sys_attachment');
+  _attachment.addQuery('table_sys_id', sheet.getUniqueValue());
+  _attachment.addQuery('table_name', 'x_momo_ratelock_ratesheet');
+  var qc = _attachment.addQuery('file_name', 'ENDSWITH', '.xlsx');
+  for (var i in VALID_FILE_EXTENSIONS) {
+    qc.addOrCondition('file_name', 'ENDSWITH', VALID_FILE_EXTENSIONS[i]);
+  }
+  _attachment.query();
+  while (_attachment.next()) {
+    _attachment.deleteRecord();
+  }
+}]]></script>
+        <stop_processing>true</stop_processing>
+        <sys_class_name>sysevent_in_email_action</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-01-10 18:47:55</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_domain>global</sys_domain>
+        <sys_domain_path>/</sys_domain_path>
+        <sys_id>d64a71c11b960c9048a242e58d4bcbe7</sys_id>
+        <sys_mod_count>7</sys_mod_count>
+        <sys_name>Reply Ratelock</sys_name>
+        <sys_overrides/>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sysevent_in_email_action_d64a71c11b960c9048a242e58d4bcbe7</sys_update_name>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-01-11 13:36:28</sys_updated_on>
+        <table>x_momo_ratelock_ticket</table>
+        <template/>
+        <type>reply</type>
+    </sysevent_in_email_action>
+    <sys_translated_text action="DELETE" query="documentkey=d64a71c11b960c9048a242e58d4bcbe7"/>
+    <sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Ratelock">605affb71badc01048a242e58d4bcb76</application>
+        <file_path/>
+        <instance_id>94e8281edbb7470060a6f0e5bf9619f6</instance_id>
+        <instance_name>movementdev</instance_name>
+        <name>sysevent_in_email_action_d64a71c11b960c9048a242e58d4bcbe7</name>
+        <payload>&lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;record_update sys_domain="global" table="sysevent_in_email_action"&gt;&lt;sysevent_in_email_action action="INSERT_OR_UPDATE"&gt;&lt;action&gt;record_action&lt;/action&gt;&lt;active&gt;false&lt;/active&gt;&lt;assignment_operator/&gt;&lt;condition_script/&gt;&lt;description/&gt;&lt;event_name&gt;email.read&lt;/event_name&gt;&lt;filter_condition table="sys_email"&gt;recipientsLIKEratelock@movement.com^ORheadersLIKEReturn-Path:&amp;lt;ratelock@movement.com&amp;gt;^EQ&lt;item endquery="false" field="recipients" goto="false" newquery="false" operator="LIKE" or="false" value="ratelock@movement.com"/&gt;&lt;item endquery="false" field="headers" goto="false" newquery="false" operator="LIKE" or="true" value="Return-Path:&amp;lt;ratelock@movement.com&amp;gt;"/&gt;&lt;item endquery="true" field="" goto="false" newquery="false" operator="=" or="false" value=""/&gt;&lt;/filter_condition&gt;&lt;from/&gt;&lt;name&gt;Reply Ratelock&lt;/name&gt;&lt;order&gt;69&lt;/order&gt;&lt;plus_address/&gt;&lt;reply_email/&gt;&lt;required_roles/&gt;&lt;script&gt;&lt;![CDATA[var VALID_FILE_EXTENSIONS = [
+  '.csv',
+  '.pdf',
+  '.xls',
+  '.docx'
+];
+var __attachments = getAttachments();
+var loan_number;
+var loan_number;
+if (/[\d]{7}|[\d]{10}/gi.test(email.subject)) {
+  loan_number = getLoanNumber(email.subject);
+} else if (/[\d]{7}|[\d]{10}/gi.test(email.body_text)) {
+  loan_number = getLoanNumber(email.body_text);
+}
+
+if (!/[\d]{7}|[\d]{10}/gi.test(loan_number)) {
+  loan_number = null;
+}
+
+
+if (loan_number) {
+  current.description = email.body_text;
+  current.short_description = email.subject;
+  current.caller_id = email.from_sys_id == "5136503cc611227c0183e96598c4f706" ? null : email.from_sys_id;
+  current.priority = 2;
+  current.state = 1;
+  var isTPO;
+  var is911;
+  for (var i = 0; i &lt; email.recipients_array.length; i++) {
+    if (email.reciepients_array[i].toLowerCase() == 'lock911@movement.com') {
+      current.priority = 1;
+      is911 = true;
+    } else if (email.reciepients_array[i].toLowerCase() == 'tporatelock@movement.com') {
+      current.request_type = 2;
+      isTPO = true;
+    }
+  }
+  if (!isTPO) {
+    current.request_type = 1;
+  }
+
+  if (!is911) {
+    current.priority = 2;
+  }
+  current.comments = '[code]' + email.body_html + '[/code]';
+  current.watch_list = getWatchList();
+  current.loan_number = loan_number;
+  current.insert();
+} else {
+  createRateSheet(__attachments);
+  current.description = email.body_text;
+  current.short_description = email.subject;
+  current.caller_id = email.from_sys_id == "5136503cc611227c0183e96598c4f706" ? null : email.from_sys_id;
+  current.priority = 3;
+  current.watch_list = getWatchList();
+  current.state = 1;
+  current.comments = '[code]' + email.body_html + '[/code]';
+  current.request_type = 3;
+  current.insert();
+}
+
+
+
+function getLoanNumber(message) {
+  var regex = /.*(?=([\d]{7}|[\d]{10})).*/gm;
+  var matches = regex.exec(message);
+  if (matches.length &gt; 0) {
+    for (var i = 0; i &lt; matches.length; i++) {
+      if (/^[\d]{7}|[\d]{10}$/gm.test(matches[i])) {
+        return matches[i].trim();
+      }
+    }
+  }
+  return;
+}
+
+
+function getAttachments() {
+  var attachment = new GlideRecord('sys_attachment');
+  attachment.addQuery('table_sys_id', sys_email.sys_id.toString());
+  attachment.addQuery('table_name', 'sys_email');
+  var qc = attachment.addQuery('file_name', 'ENDSWITH', '.xlsx');
+  for (var i in VALID_FILE_EXTENSIONS) {
+    qc.addOrCondition('file_name', 'ENDSWITH', VALID_FILE_EXTENSIONS[i]);
+  }
+  attachment.query();
+  return attachment.next();
+}
+
+function getWatchList() {
+  var excluded = ['ratelock@movement.com', 'lock911@movement.com', 'tporatelock@movement.com'];
+  var groups = new GlideRecord('sys_user_group');
+  groups.addEncodedQuery('active=true^emailIN' + email.recipients);
+  groups.query();
+  while (groups.next()) {
+    excluded.push(groups.getValue('email'));
+  }
+  var recipients_array = email.recipients.split(',');
+  var filtered = recipients_array.filter(function (em) {
+    for (var i = 0; i &lt; excluded.length; i++) {
+      if (excluded[i] == em) {
+        return false;
+      }
+    }
+    return true;
+  });
+
+  if (gs.nil(current.watch_list)) return filtered.join(',');
+
+  if (filtered.length &gt; 0) {
+    return current.watch_list + ',' + filtered.join(',');
+  }
+
+  return filtered.join(',');
+}
+
+function createRateSheet(has_next) {
+  if (!has_next) return;
+  var sheet = new GlideRecord('x_momo_ratelock_ratesheet');
+  sheet.initialize();
+  sheet.insert();
+  var sys_attachment = new GlideSysAttachment();
+  sys_attachment.copy('sys_email', sys_email.sys_id.toString(), 'x_momo_ratelock_ratesheet', sheet.getUniqueValue().toString());
+  var _attachment = new GlideRecord('sys_attachment');
+  _attachment.addQuery('table_sys_id', sheet.getUniqueValue());
+  _attachment.addQuery('table_name', 'x_momo_ratelock_ratesheet');
+  var qc = _attachment.addQuery('file_name', 'ENDSWITH', '.xlsx');
+  for (var i in VALID_FILE_EXTENSIONS) {
+    qc.addOrCondition('file_name', 'ENDSWITH', VALID_FILE_EXTENSIONS[i]);
+  }
+  _attachment.query();
+  while (_attachment.next()) {
+    _attachment.deleteRecord();
+  }
+}]]&gt;&lt;/script&gt;&lt;stop_processing&gt;true&lt;/stop_processing&gt;&lt;sys_class_name&gt;sysevent_in_email_action&lt;/sys_class_name&gt;&lt;sys_created_by&gt;douglas.schamberg&lt;/sys_created_by&gt;&lt;sys_created_on&gt;2020-01-10 18:47:55&lt;/sys_created_on&gt;&lt;sys_customer_update&gt;false&lt;/sys_customer_update&gt;&lt;sys_domain&gt;global&lt;/sys_domain&gt;&lt;sys_domain_path&gt;/&lt;/sys_domain_path&gt;&lt;sys_id&gt;d64a71c11b960c9048a242e58d4bcbe7&lt;/sys_id&gt;&lt;sys_mod_count&gt;7&lt;/sys_mod_count&gt;&lt;sys_name&gt;Reply Ratelock&lt;/sys_name&gt;&lt;sys_overrides/&gt;&lt;sys_package display_value="Ratelock" source="x_momo_ratelock"&gt;605affb71badc01048a242e58d4bcb76&lt;/sys_package&gt;&lt;sys_policy/&gt;&lt;sys_replace_on_upgrade&gt;false&lt;/sys_replace_on_upgrade&gt;&lt;sys_scope display_value="Ratelock"&gt;605affb71badc01048a242e58d4bcb76&lt;/sys_scope&gt;&lt;sys_update_name&gt;sysevent_in_email_action_d64a71c11b960c9048a242e58d4bcbe7&lt;/sys_update_name&gt;&lt;sys_updated_by&gt;douglas.schamberg&lt;/sys_updated_by&gt;&lt;sys_updated_on&gt;2020-01-11 13:36:28&lt;/sys_updated_on&gt;&lt;table&gt;x_momo_ratelock_ticket&lt;/table&gt;&lt;template/&gt;&lt;type&gt;reply&lt;/type&gt;&lt;/sysevent_in_email_action&gt;&lt;sys_translated_text action="delete_multiple" query="documentkey=d64a71c11b960c9048a242e58d4bcbe7"/&gt;&lt;/record_update&gt;</payload>
+        <payload_hash>-1863472294</payload_hash>
+        <record_name>Reply Ratelock</record_name>
+        <reverted_from/>
+        <source>a45affb71badc01048a242e58d4bcb78</source>
+        <source_table>sys_update_set</source_table>
+        <state>previous</state>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-01-11 13:36:28</sys_created_on>
+        <sys_id>a59c7d99db9e80d0f255132968961902</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>16f94d200ad0000001</sys_recorded_at>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-01-11 13:36:28</sys_updated_on>
+        <type>Inbound Email Actions</type>
+        <update_guid>2d9c7d99d99e80d0380c86cf0f275b01</update_guid>
+        <update_guid_history>2d9c7d99d99e80d0380c86cf0f275b01:-1863472294,3df89609001a0c905be4cd642e1540cb:2036817471,89d89609711a0c90ed2bf416c7c5b63d:171718961,35371285571a0c90eed9fa6200ad717d:-2002983759,63e35e01951a0c90754f34b45aa82ff2:-227105986,26ccb98532960c90236c1db2eed03f32:894792756,7f7a3dc1bb960c90802b8539b744afaf:-1722946478,5a4a71c19e960c90a51de9ff27a2e0e8:206475644</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete/>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-01-11 13:41:13</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_db_object display_value="" name="sysevent_in_email_action">sysevent_in_email_action</sys_db_object>
+        <sys_id>0c7a78439ae24fc79b287c07bba94ed9</sys_id>
+        <sys_metadata>d64a71c11b960c9048a242e58d4bcbe7</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>Reply Ratelock</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_parent display_value="">744853641b71c41048a242e58d4bcb29</sys_parent>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_scope_delete display_value="">57712118eaee4a49ae47b2048a14ac31</sys_scope_delete>
+        <sys_update_name>sysevent_in_email_action_d64a71c11b960c9048a242e58d4bcbe7</sys_update_name>
+        <sys_update_version display_value="sysevent_in_email_action_d64a71c11b960c9048a242e58d4bcbe7">a59c7d99db9e80d0f255132968961902</sys_update_version>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-01-11 13:41:13</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>

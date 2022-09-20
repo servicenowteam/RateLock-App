@@ -1,0 +1,651 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_widget">
+    <sp_widget action="DELETE">
+        <category>custom</category>
+        <client_script><![CDATA[function($scope, $rootScope, $window, spModal) {
+  /* widget controller */
+  var c = this;
+	$scope.showTemplatesBar = true;
+	
+	
+	c.$onInit = function() {
+		if ($window.innerWidth <= 1100) {
+			$scope.divisibleBy = 6;
+			$scope.offsetter = 5;
+		} else if ($window.innerWidth <= 800) {
+			$scope.divisibleBy = 3;
+			$scope.offsetter = 2;
+		} else if ($window.innerWidth <= 400) {
+			$scope.divisibleBy = 2;
+			$scope.offsetter = 1;
+		} else {
+			$scope.divisibleBy = 10;
+			$scope.offsetter = 9;
+		}
+
+		$scope.templates = $scope.data.templates.map(function(template, index, arr) {
+			if (index > (arr.length % $scope.divisibleBy === 0 ? $scope.divisibleBy : $scope.offsetter)) {
+				template.showTemplate = false;
+			} else if (index <= (arr.length % $scope.divisibleBy === 0 ? $scope.divisibleBy : $scope.offsetter)) {
+				template.showTemplate = true;
+			}
+			return template;
+		});
+
+		$scope.numOfTemplates = $scope.templates.length;
+		$scope.adder = ($scope.numOfTemplates % $scope.divisibleBy === 0 ? $scope.divisibleBy : $scope.offsetter);
+		$scope.offset = $scope.adder;
+		$scope.start = 0;
+	}
+	
+	$window.addEventListener('resize', c.$onInit);
+	$window.addEventListener('load', c.$onInit);
+	
+	
+	
+	$scope.moveForward = function() {
+		if ($scope.numOfTemplates < ($scope.offset + $scope.adder)) {
+			$scope.offset = $scope.numOfTemplates;
+			$scope.start = $scope.numOfTemplates - $scope.adder;
+		} else {
+			$scope.offset = $scope.offset + $scope.adder;
+			$scope.start =  $scope.start + $scope.adder;
+		}
+		
+
+		$scope.templates = $scope.templates.map(function(template, index) {
+			if (index >= $scope.start && index < $scope.offset) {
+				template.showTemplate = true;
+			} else {
+				template.showTemplate = false;
+			}
+			return template;
+		});
+	};
+	
+	$scope.moveBack = function() {
+		if (($scope.start - $scope.adder) <= 0) {
+			$scope.start = 0;
+			$scope.offset = $scope.adder;
+		} else {
+			$scope.offset = $scope.offset - $scope.adder;
+			$scope.start = $scope.start - $scope.adder;
+		}
+		$scope.templates = $scope.templates.map(function(template, index) {
+			if (index >= $scope.start && index < $scope.offset) {
+				template.showTemplate = true;
+			} else {
+				template.showTemplate = false;
+			}
+			return template;
+		});
+	};
+	
+	$scope.broadcastTemplate = function(text, name) {
+		var date = new Date();
+		var replacements = text.replace("{{VAR_TODAY}}", date.toLocaleDateString("en-US"));
+		var modalOptions = {
+			title: 'Add ' + name,
+			message: 'You are about to insert "'+ name +'" into your reply. This will overwrite your current reply. Would you like to continue?',
+			buttons: [{
+				label: 'Cancel', cancel: true
+			}, {
+				label: 'Continue', primary: true
+			}]
+		}
+		spModal.open(modalOptions).then(function(){
+			$rootScope.$broadcast('template.text.added', replacements);
+		}, function() {
+			
+		})
+		
+	};
+	
+	$rootScope.$on('ratelock.templates.isShowing', function(e, isShowing) {
+		$scope.showTemplatesBar = isShowing;
+	});
+}]]></client_script>
+        <controller_as>c</controller_as>
+        <css>.horizontal-list-container {
+  padding-bottom: 10px;
+  padding-top: 5px;
+  align-items: center;
+}
+
+.templates-header {
+	font-size: 16px;
+  padding: 10px;
+  text-decoration: underline;
+  font-weight: 500;
+  line-height: 2;
+}
+
+.btn.btn-edit {
+	margin: 10px;
+  border-color: #ccc;
+  color: #000;
+	background: #fff;
+  
+  border-style: solid;
+  border-radius: 5px;
+  border-width: 1px;
+  
+  -webkit-transition: all .3s ease-out;
+  -moz-transition: all .3s ease-out;
+  -ms-transition: all .3s ease-out;
+  transition: all .3s ease-out;
+}
+
+.btn.btn-edit:hover {
+  border-color: #ccc;
+  color: #000;
+	background: #ccc;
+  
+  border-style: solid;
+  border-radius: 5px;
+  border-width: 1px;
+  
+  -webkit-transition: all .3s ease-out;
+  -moz-transition: all .3s ease-out;
+  -ms-transition: all .3s ease-out;
+  transition: all .3s ease-out;
+}
+
+.btn.btn-edit:focus {
+	border: 1px solid #ccc;
+  box-shadow: 0px 0px 5px #ccc;
+  outline: none;
+}
+
+.right-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.horizontal-list-inner {
+  overflow: hidden;
+  display: inline-flex;
+  max-width: 1100px;
+  width: 1100px;
+  min-width: 1100px;
+}
+
+.btn-inline {
+  margin-right: 10px;
+  display: inline-block;
+  width: 100px;
+  max-width: 100px;
+  min-width: 100px;
+  height: 55px; 
+  white-space: normal;
+  word-wrap: break-word;
+  transition: all .3s ease-out;
+}
+
+.btn.btn-outline:hover {
+  border-color: $brand-primary;
+  color: #fff;
+	background: $brand-primary;
+  
+  border-style: solid;
+  border-radius: 5px;
+  border-width: 1px;
+  
+  -webkit-transition: all .3s ease-out;
+  -moz-transition: all .3s ease-out;
+  -ms-transition: all .3s ease-out;
+  transition: all .3s ease-out;
+}
+
+.btn.btn-outline:focus {
+	border: 1px solid $brand-primary;
+  box-shadow: 0px 0px 5px $brand-primary;
+  outline: none;
+}
+
+.btn.btn-outline{
+  background: #fff;
+  
+  border-style: solid;
+  border-radius: 5px;
+  border-width: 1px;
+  
+  -webkit-transition: all .3s ease-out;
+  -moz-transition: all .3s ease-out;
+  -ms-transition: all .3s ease-out;
+  transition: all .3s ease-out;
+  border-color: $brand-primary;
+  color: $brand-primary;
+}
+
+.btn-controls {
+  border-radius: 10px;
+}
+
+.btn-controls-left {
+	margin-right: 10px;
+}
+
+@media screen and (max-width: 1100px) {
+  .horizontal-list-inner {
+  	max-width: 660px;
+  	width: 660px;
+  	min-width: 660px;
+  }
+}
+
+@media screen and (max-width: 800px) {
+  .horizontal-list-inner {
+  	max-width: 330px;
+  	width: 330px;
+  	min-width: 330px;
+  }
+}
+
+@media screen and (max-width: 400px) {
+  .horizontal-list-inner {
+  	max-width: 220px;
+  	width: 220px;
+  	min-width: 220px;
+  }
+}
+</css>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description/>
+        <docs/>
+        <field_list/>
+        <has_preview>false</has_preview>
+        <id/>
+        <internal>false</internal>
+        <link><![CDATA[function link(scope, element, attrs, controller) {  }]]></link>
+        <name>Ratelock Templates List</name>
+        <option_schema/>
+        <public>false</public>
+        <roles/>
+        <script><![CDATA[(function() {
+  /* populate the 'data' object */
+  /* e.g., data.table = $sp.getValue('table'); */
+	data.table = (input ? input.table : undefined) || options.table || $sp.getValue('table');
+	data.templates = [];
+	data.filter = 'user=' + gs.getUserID() + '^ORuserISEMPTY';
+	var gr = new GlideRecord(data.table);
+	gr.addEncodedQuery(data.filter);
+	gr.orderBy('name');
+	gr.query();
+	
+	while (gr.next()) {
+		data.templates.push({
+			sys_id: gr.getValue('sys_id'),
+			name: gr.getValue('name'),
+			text: gr.getValue('template')
+		});
+	}
+	
+})();]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-03-10 19:35:17</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>05848f90db6b0890f2551329689619a7</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>Ratelock Templates List</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sp_widget_05848f90db6b0890f2551329689619a7</sys_update_name>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-03-10 19:35:17</sys_updated_on>
+        <template><![CDATA[<div class="horizontal-list-container hidden-xs d-inline-flex row" ng-show="templates.length > 0 && showTemplatesBar">
+  <div class="right-container">
+    <button class="btn btn-primary btn-xs btn-controls btn-controls-left"
+            ng-disabled="start === 0"
+            ng-click="moveBack()">
+      <span class="glyphicon glyphicon-chevron-left"></span>
+    </button>
+    <div class="horizontal-list-inner" id="template-list">
+       <button class="btn btn-inline btn-outline btn-xs" ng-show="template.showTemplate" ng-repeat="template in templates track by $index" ng-click="broadcastTemplate(template.text, template.name)">
+        {{::template.name}}
+      </button>
+    </div>
+    <button class="btn btn-xs btn-primary btn-controls btn-controls-right" 
+            ng-click="moveForward()"
+            ng-disabled="offset >= numOfTemplates">
+      <span class="glyphicon glyphicon-chevron-right"></span>
+    </button>
+  </div>
+</div>]]></template>
+    </sp_widget>
+    <sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Ratelock">605affb71badc01048a242e58d4bcb76</application>
+        <file_path/>
+        <instance_id>94e8281edbb7470060a6f0e5bf9619f6</instance_id>
+        <instance_name>movementdev</instance_name>
+        <name>sp_widget_05848f90db6b0890f2551329689619a7</name>
+        <payload>&lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;record_update table="sp_widget"&gt;&lt;sp_widget action="INSERT_OR_UPDATE"&gt;&lt;category&gt;custom&lt;/category&gt;&lt;client_script&gt;&lt;![CDATA[function($scope, $rootScope, $window, spModal) {
+  /* widget controller */
+  var c = this;
+	$scope.showTemplatesBar = true;
+	
+	
+	c.$onInit = function() {
+		if ($window.innerWidth &lt;= 1100) {
+			$scope.divisibleBy = 6;
+			$scope.offsetter = 5;
+		} else if ($window.innerWidth &lt;= 800) {
+			$scope.divisibleBy = 3;
+			$scope.offsetter = 2;
+		} else if ($window.innerWidth &lt;= 400) {
+			$scope.divisibleBy = 2;
+			$scope.offsetter = 1;
+		} else {
+			$scope.divisibleBy = 10;
+			$scope.offsetter = 9;
+		}
+
+		$scope.templates = $scope.data.templates.map(function(template, index, arr) {
+			if (index &gt; (arr.length % $scope.divisibleBy === 0 ? $scope.divisibleBy : $scope.offsetter)) {
+				template.showTemplate = false;
+			} else if (index &lt;= (arr.length % $scope.divisibleBy === 0 ? $scope.divisibleBy : $scope.offsetter)) {
+				template.showTemplate = true;
+			}
+			return template;
+		});
+
+		$scope.numOfTemplates = $scope.templates.length;
+		$scope.adder = ($scope.numOfTemplates % $scope.divisibleBy === 0 ? $scope.divisibleBy : $scope.offsetter);
+		$scope.offset = $scope.adder;
+		$scope.start = 0;
+	}
+	
+	$window.addEventListener('resize', c.$onInit);
+	$window.addEventListener('load', c.$onInit);
+	
+	
+	
+	$scope.moveForward = function() {
+		if ($scope.numOfTemplates &lt; ($scope.offset + $scope.adder)) {
+			$scope.offset = $scope.numOfTemplates;
+			$scope.start = $scope.numOfTemplates - $scope.adder;
+		} else {
+			$scope.offset = $scope.offset + $scope.adder;
+			$scope.start =  $scope.start + $scope.adder;
+		}
+		
+
+		$scope.templates = $scope.templates.map(function(template, index) {
+			if (index &gt;= $scope.start &amp;&amp; index &lt; $scope.offset) {
+				template.showTemplate = true;
+			} else {
+				template.showTemplate = false;
+			}
+			return template;
+		});
+	};
+	
+	$scope.moveBack = function() {
+		if (($scope.start - $scope.adder) &lt;= 0) {
+			$scope.start = 0;
+			$scope.offset = $scope.adder;
+		} else {
+			$scope.offset = $scope.offset - $scope.adder;
+			$scope.start = $scope.start - $scope.adder;
+		}
+		$scope.templates = $scope.templates.map(function(template, index) {
+			if (index &gt;= $scope.start &amp;&amp; index &lt; $scope.offset) {
+				template.showTemplate = true;
+			} else {
+				template.showTemplate = false;
+			}
+			return template;
+		});
+	};
+	
+	$scope.broadcastTemplate = function(text, name) {
+		var date = new Date();
+		var replacements = text.replace("{{VAR_TODAY}}", date.toLocaleDateString("en-US"));
+		var modalOptions = {
+			title: 'Add ' + name,
+			message: 'You are about to insert "'+ name +'" into your reply. This will overwrite your current reply. Would you like to continue?',
+			buttons: [{
+				label: 'Cancel', cancel: true
+			}, {
+				label: 'Continue', primary: true
+			}]
+		}
+		spModal.open(modalOptions).then(function(){
+			$rootScope.$broadcast('template.text.added', replacements);
+		}, function() {
+			
+		})
+		
+	};
+	
+	$rootScope.$on('ratelock.templates.isShowing', function(e, isShowing) {
+		$scope.showTemplatesBar = isShowing;
+	});
+}]]&gt;&lt;/client_script&gt;&lt;controller_as&gt;c&lt;/controller_as&gt;&lt;css&gt;.horizontal-list-container {
+  padding-bottom: 10px;
+  padding-top: 5px;
+  align-items: center;
+}
+
+.templates-header {
+	font-size: 16px;
+  padding: 10px;
+  text-decoration: underline;
+  font-weight: 500;
+  line-height: 2;
+}
+
+.btn.btn-edit {
+	margin: 10px;
+  border-color: #ccc;
+  color: #000;
+	background: #fff;
+  
+  border-style: solid;
+  border-radius: 5px;
+  border-width: 1px;
+  
+  -webkit-transition: all .3s ease-out;
+  -moz-transition: all .3s ease-out;
+  -ms-transition: all .3s ease-out;
+  transition: all .3s ease-out;
+}
+
+.btn.btn-edit:hover {
+  border-color: #ccc;
+  color: #000;
+	background: #ccc;
+  
+  border-style: solid;
+  border-radius: 5px;
+  border-width: 1px;
+  
+  -webkit-transition: all .3s ease-out;
+  -moz-transition: all .3s ease-out;
+  -ms-transition: all .3s ease-out;
+  transition: all .3s ease-out;
+}
+
+.btn.btn-edit:focus {
+	border: 1px solid #ccc;
+  box-shadow: 0px 0px 5px #ccc;
+  outline: none;
+}
+
+.right-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.horizontal-list-inner {
+  overflow: hidden;
+  display: inline-flex;
+  max-width: 1100px;
+  width: 1100px;
+  min-width: 1100px;
+}
+
+.btn-inline {
+  margin-right: 10px;
+  display: inline-block;
+  width: 100px;
+  max-width: 100px;
+  min-width: 100px;
+  height: 55px; 
+  white-space: normal;
+  word-wrap: break-word;
+  transition: all .3s ease-out;
+}
+
+.btn.btn-outline:hover {
+  border-color: $brand-primary;
+  color: #fff;
+	background: $brand-primary;
+  
+  border-style: solid;
+  border-radius: 5px;
+  border-width: 1px;
+  
+  -webkit-transition: all .3s ease-out;
+  -moz-transition: all .3s ease-out;
+  -ms-transition: all .3s ease-out;
+  transition: all .3s ease-out;
+}
+
+.btn.btn-outline:focus {
+	border: 1px solid $brand-primary;
+  box-shadow: 0px 0px 5px $brand-primary;
+  outline: none;
+}
+
+.btn.btn-outline{
+  background: #fff;
+  
+  border-style: solid;
+  border-radius: 5px;
+  border-width: 1px;
+  
+  -webkit-transition: all .3s ease-out;
+  -moz-transition: all .3s ease-out;
+  -ms-transition: all .3s ease-out;
+  transition: all .3s ease-out;
+  border-color: $brand-primary;
+  color: $brand-primary;
+}
+
+.btn-controls {
+  border-radius: 10px;
+}
+
+.btn-controls-left {
+	margin-right: 10px;
+}
+
+@media screen and (max-width: 1100px) {
+  .horizontal-list-inner {
+  	max-width: 660px;
+  	width: 660px;
+  	min-width: 660px;
+  }
+}
+
+@media screen and (max-width: 800px) {
+  .horizontal-list-inner {
+  	max-width: 330px;
+  	width: 330px;
+  	min-width: 330px;
+  }
+}
+
+@media screen and (max-width: 400px) {
+  .horizontal-list-inner {
+  	max-width: 220px;
+  	width: 220px;
+  	min-width: 220px;
+  }
+}
+&lt;/css&gt;&lt;data_table&gt;sp_instance&lt;/data_table&gt;&lt;demo_data/&gt;&lt;description/&gt;&lt;docs/&gt;&lt;field_list/&gt;&lt;has_preview&gt;false&lt;/has_preview&gt;&lt;id/&gt;&lt;internal&gt;false&lt;/internal&gt;&lt;link&gt;&lt;![CDATA[function link(scope, element, attrs, controller) {  }]]&gt;&lt;/link&gt;&lt;name&gt;Ratelock Templates List&lt;/name&gt;&lt;option_schema/&gt;&lt;public&gt;false&lt;/public&gt;&lt;roles/&gt;&lt;script&gt;&lt;![CDATA[(function() {
+  /* populate the 'data' object */
+  /* e.g., data.table = $sp.getValue('table'); */
+	data.table = (input ? input.table : undefined) || options.table || $sp.getValue('table');
+	data.templates = [];
+	data.filter = 'user=' + gs.getUserID() + '^ORuserISEMPTY';
+	var gr = new GlideRecord(data.table);
+	gr.addEncodedQuery(data.filter);
+	gr.orderBy('name');
+	gr.query();
+	
+	while (gr.next()) {
+		data.templates.push({
+			sys_id: gr.getValue('sys_id'),
+			name: gr.getValue('name'),
+			text: gr.getValue('template')
+		});
+	}
+	
+})();]]&gt;&lt;/script&gt;&lt;servicenow&gt;false&lt;/servicenow&gt;&lt;sys_class_name&gt;sp_widget&lt;/sys_class_name&gt;&lt;sys_created_by&gt;douglas.schamberg&lt;/sys_created_by&gt;&lt;sys_created_on&gt;2020-03-10 19:35:17&lt;/sys_created_on&gt;&lt;sys_customer_update&gt;false&lt;/sys_customer_update&gt;&lt;sys_id&gt;05848f90db6b0890f2551329689619a7&lt;/sys_id&gt;&lt;sys_mod_count&gt;0&lt;/sys_mod_count&gt;&lt;sys_name&gt;Ratelock Templates List&lt;/sys_name&gt;&lt;sys_package display_value="Ratelock" source="x_momo_ratelock"&gt;605affb71badc01048a242e58d4bcb76&lt;/sys_package&gt;&lt;sys_policy/&gt;&lt;sys_replace_on_upgrade&gt;false&lt;/sys_replace_on_upgrade&gt;&lt;sys_scope display_value="Ratelock"&gt;605affb71badc01048a242e58d4bcb76&lt;/sys_scope&gt;&lt;sys_update_name&gt;sp_widget_05848f90db6b0890f2551329689619a7&lt;/sys_update_name&gt;&lt;sys_updated_by&gt;douglas.schamberg&lt;/sys_updated_by&gt;&lt;sys_updated_on&gt;2020-03-10 19:35:17&lt;/sys_updated_on&gt;&lt;template&gt;&lt;![CDATA[&lt;div class="horizontal-list-container hidden-xs d-inline-flex row" ng-show="templates.length &gt; 0 &amp;&amp; showTemplatesBar"&gt;
+  &lt;div class="right-container"&gt;
+    &lt;button class="btn btn-primary btn-xs btn-controls btn-controls-left"
+            ng-disabled="start === 0"
+            ng-click="moveBack()"&gt;
+      &lt;span class="glyphicon glyphicon-chevron-left"&gt;&lt;/span&gt;
+    &lt;/button&gt;
+    &lt;div class="horizontal-list-inner" id="template-list"&gt;
+       &lt;button class="btn btn-inline btn-outline btn-xs" ng-show="template.showTemplate" ng-repeat="template in templates track by $index" ng-click="broadcastTemplate(template.text, template.name)"&gt;
+        {{::template.name}}
+      &lt;/button&gt;
+    &lt;/div&gt;
+    &lt;button class="btn btn-xs btn-primary btn-controls btn-controls-right" 
+            ng-click="moveForward()"
+            ng-disabled="offset &gt;= numOfTemplates"&gt;
+      &lt;span class="glyphicon glyphicon-chevron-right"&gt;&lt;/span&gt;
+    &lt;/button&gt;
+  &lt;/div&gt;
+&lt;/div&gt;]]&gt;&lt;/template&gt;&lt;/sp_widget&gt;&lt;/record_update&gt;</payload>
+        <payload_hash>1803417063</payload_hash>
+        <record_name>Ratelock Templates List</record_name>
+        <reverted_from/>
+        <source>74fc5f651b5a401048a242e58d4bcbbc</source>
+        <source_table>sys_update_set</source_table>
+        <state>previous</state>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-03-10 19:35:18</sys_created_on>
+        <sys_id>11848f90db6b0890f2551329689619a9</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>170c5f1b8f90000001</sys_recorded_at>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-03-10 19:35:18</sys_updated_on>
+        <type>Widget</type>
+        <update_guid>19848f90186b0890949c6b6c9c14e3a8</update_guid>
+        <update_guid_history>19848f90186b0890949c6b6c9c14e3a8:1803417063</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete display_value="">05e44fd0db6b0890f2551329689619df</sys_audit_delete>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-03-10 19:36:55</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_db_object display_value="" name="sp_widget">sp_widget</sys_db_object>
+        <sys_id>a6c52a0f47794c489f8cf9e53cf479d9</sys_id>
+        <sys_metadata>05848f90db6b0890f2551329689619a7</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>Ratelock Templates List</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_parent/>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_scope_delete display_value="">57712118eaee4a49ae47b2048a14ac31</sys_scope_delete>
+        <sys_update_name>sp_widget_05848f90db6b0890f2551329689619a7</sys_update_name>
+        <sys_update_version display_value="sp_widget_05848f90db6b0890f2551329689619a7">11848f90db6b0890f2551329689619a9</sys_update_version>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-03-10 19:36:55</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>

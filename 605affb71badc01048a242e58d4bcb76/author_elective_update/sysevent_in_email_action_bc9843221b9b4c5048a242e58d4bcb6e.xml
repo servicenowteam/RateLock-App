@@ -1,0 +1,543 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update sys_domain="global" table="sysevent_in_email_action">
+    <sysevent_in_email_action action="DELETE">
+        <action>record_action</action>
+        <active>false</active>
+        <assignment_operator/>
+        <condition_script/>
+        <description/>
+        <event_name>email.read</event_name>
+        <filter_condition/>
+        <from/>
+        <name>Ratelock</name>
+        <order>100</order>
+        <plus_address/>
+        <reply_email/>
+        <required_roles/>
+        <script><![CDATA[var VALID_FILE_EXTENSIONS = [
+  '.csv',
+  '.pdf',
+  '.xls',
+  '.docx'
+];
+var __attachments = getAttachments();
+var loan_number;
+
+if (/[\d]{9}/gi.test(email.subject) && /tporatelock@movement\.com/gi.test(email.recipients)) {
+  loan_number = getLoanNumber(email.subject, true);
+} else if (/[\d]{9}/gi.test(email.body_text) && /tporatelock@movement\.com/gi.test(email.recipients)) {
+  loan_number = getLoanNumber(email.body_text, true);
+} else if (/[\d]{7}/gi.test(email.subject)) {
+  loan_number = getLoanNumber(email.subject);
+} else if (/[\d]{7}/gi.test(email.body_text)) {
+  loan_number = getLoanNumber(email.body_text);
+}
+  
+
+if (!/[\d]{7}/gi.test(loan_number) && !/[\d]{9}/gi.test(loan_number)) {
+  loan_number = null;
+}
+
+var recordExists = getRecordFromCurrent(loan_number);
+
+var caller = email.from_sys_id == "5136503cc611227c0183e96598c4f706" ? null : email.from_sys_id;
+
+if (loan_number && !recordExists) {
+  
+  current.description = email.body_text;
+  current.short_description = email.subject;
+  current.caller_id = caller;
+  var recips = email.recipients.split(',');
+  current.priority = getPriorityAndType(recips, 'priority');
+  current.request_type = getPriorityAndType(recips, 'request_type');
+  current.comments = '[code]' + attachEmailPicturesToHTML(email.body_html, current.getUniqueValue()) + '[/code]';
+  current.watch_list = getWatchList(caller);
+  current.loan_number = loan_number;
+  current.insert();
+} else if (recordExists && loan_number) {
+  current = getRecordFromCurrent(loan_number, true);
+  while (current.next()) {
+    
+    current.comments = '[code]' + attachEmailPicturesToHTML(email.body_html, current.sys_id.toString()) + '[/code]';
+    current.watch_list = getWatchList(caller);
+    current.update();
+  }
+} else {
+  createRateSheet(__attachments);
+  current.description = email.body_text;
+  current.short_description = email.subject;
+  current.caller_id = email.from_sys_id == "5136503cc611227c0183e96598c4f706" ? null : email.from_sys_id;
+  current.watch_list = getWatchList(caller);
+  current.comments = '[code]' + attachEmailPicturesToHTML(email.body_html, current.sys_id.toString()) + '[/code]';
+  current.request_type = 3;
+  current.insert();
+}
+
+function getPriorityAndType(arr, field) {
+  for (var i=0;i<arr.length;i++) {
+    if (arr[i].toLowerCase() == 'lock911@movement.com' && field == 'priority') {
+      return "1";
+    } else if (arr[i].toLowerCase() == 'tporatelock@movement.com' && field == 'request_type') {
+      return "2";
+    } else if (arr[i].toLowerCase() == 'bondteam@movementmortgage.com' && field == 'request_type') {
+		return "4";
+	}
+  }
+  
+  if (field == 'priority') {
+    return "2";
+  } else if (field == 'request_type') {
+    return "1";
+  }
+}
+
+function getRecordFromCurrent(loanNumber, returnRecord) {
+  if (!loanNumber) return false;
+
+  var ticket = new GlideRecord('x_momo_ratelock_ticket');
+  ticket.addQuery('active', true);
+  ticket.addQuery('loan_number', loanNumber);
+  ticket.query();
+  if (!returnRecord) return ticket.next();
+  return ticket;
+}
+
+function getLoanNumber(message, useQuantifier10) {
+  var regex;
+  if (useQuantifier10) {
+    regex = /.*(?=([\d]{9})).*/gm;
+  } else {
+    regex = /.*(?=([\d]{7})).*/gm;
+  }
+  
+  var matches = regex.exec(message.trim());
+  if (matches.length > 0) {
+    for (var i = 0; i < matches.length; i++) {
+      if (!useQuantifier10 && /^[\d]{7}$/gm.test(matches[i])) {
+        return matches[i].trim();
+      } else if (useQuantifier10 && /^[\d]{9}$/gm.test(matches[i])) {
+        return matches[i].trim();
+      }
+    }
+  }
+  return;
+}
+
+function attachEmailPicturesToHTML(message, sys_id) {
+  var images_to_delete = [];
+  var attachment = new GlideRecord('sys_attachment');
+  var msg_with_attachments = message;
+  attachment.addQuery('table_sys_id', sys_email.sys_id.toString());
+  attachment.addQuery('table_name', 'sys_email');
+  var qc = attachment.addQuery('file_name', 'ENDSWITH', '.png');
+  qc.addOrCondition('file_name', 'ENDSWITH', '.jpg');
+  qc.addOrCondition('file_name', 'ENDSWITH', '.jpeg');
+  attachment.query();
+  while (attachment.next()) {
+    var regex = new RegExp('\\<img.*src\\=\\"cid:' + attachment.getValue('file_name') + '@.*?\\"\\>', 'gm');
+    var src = '<img src="' + attachment.sys_id.toString() + '.iix" class="img-responsive">';
+    if (regex.test(message)) {
+      msg_with_attachments = msg_with_attachments.replace(regex, src);
+      images_to_delete.push(attachment.getValue('file_name'));
+    }
+  }
+  var sys_attachment = new GlideSysAttachment();
+  sys_attachment.copy('sys_email', sys_email.sys_id.toString(), 'x_momo_ratelock_ticket', sys_id);
+  var _attachment = new GlideRecord('sys_attachment');
+  _attachment.addQuery('table_sys_id', sys_id);
+  _attachment.addQuery('table_name', 'x_momo_ratelock_ticket');
+  _attachment.query();
+
+  while (_attachment.next()) {
+	var file_name = _attachment.getValue('file_name');
+    for (var i=0;i<images_to_delete.length;i++) {
+      if (images_to_delete[i] == file_name) {
+        _attachment.deleteRecord();
+      }
+    }
+  }
+  return msg_with_attachments;
+}
+
+function addBlankTargetToLinks(message) {
+  var message_with_targets = message;
+  return message_with_targets.replace(/<a/gmi, '<a target="_blank"');
+}
+
+
+function getAttachments() {
+  var attachment = new GlideRecord('sys_attachment');
+  attachment.addQuery('table_sys_id', sys_email.sys_id.toString());
+  attachment.addQuery('table_name', 'sys_email');
+  var qc = attachment.addQuery('file_name', 'ENDSWITH', '.xlsx');
+  for (var i in VALID_FILE_EXTENSIONS) {
+    qc.addOrCondition('file_name', 'ENDSWITH', VALID_FILE_EXTENSIONS[i]);
+  }
+  attachment.query();
+  return attachment.next();
+}
+
+function removeDuplicates(array) {
+  var x = {};
+  for (var i=0;i<array.length;i++) {
+    if (!x[array[i]]) {
+      x[array[i]] = true;
+    }
+  }
+  return Object.keys(x);
+}
+
+function getWatchList(sender) {
+  var excluded = [
+    'ratelock@movement.com', 
+    'lock911@movement.com', 
+    'tporatelock@movement.com',
+	'bondteam@movementmortgage.com'
+  ];
+  var groups = new GlideRecord('sys_user_group');
+  groups.addEncodedQuery('active=true^emailIN' + email.recipients);
+  groups.query();
+  while (groups.next()) {
+    excluded.push(groups.getValue('email'));
+  }
+  if (!gs.nil(current.caller_id)) {
+    excluded.push(current.caller_id.email.toLowerCase());
+  }
+
+  var recipients_array = email.recipients.toLowerCase().split(',');
+  var filtered = recipients_array.filter(function (em) {
+    for (var i = 0; i < excluded.length; i++) {
+      if (excluded[i] == em) {
+        return;
+      }
+    }
+    return em;
+  });
+
+  filtered = removeDuplicates(filtered);
+  if (gs.nil(current.watch_list)) return filtered.join(',').replace(/,$/gi, '');
+ 
+  if (filtered.length > 0) {
+    return current.watch_list + ',' + filtered.join(',').replace(/,$/gi, '');
+  }
+
+  return filtered.join(',').replace(/,$/gi, '');
+}
+
+function createRateSheet(has_next) {
+  if (!has_next) return;
+  var sheet = new GlideRecord('x_momo_ratelock_ratesheet');
+  sheet.initialize();
+  sheet.insert();
+  var sys_attachment = new GlideSysAttachment();
+  sys_attachment.copy('sys_email', sys_email.sys_id.toString(), 'x_momo_ratelock_ratesheet', sheet.getUniqueValue().toString());
+  var _attachment = new GlideRecord('sys_attachment');
+  _attachment.addQuery('table_sys_id', sheet.getUniqueValue());
+  _attachment.addQuery('table_name', 'x_momo_ratelock_ratesheet');
+  var qc = _attachment.addQuery('file_name', 'ENDSWITH', '.xlsx');
+  for (var i in VALID_FILE_EXTENSIONS) {
+    qc.addOrCondition('file_name', 'ENDSWITH', VALID_FILE_EXTENSIONS[i]);
+  }
+  _attachment.query();
+  while (_attachment.next()) {
+    _attachment.deleteRecord();
+  }
+}]]></script>
+        <stop_processing>false</stop_processing>
+        <sys_class_name>sysevent_in_email_action</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-03-05 09:23:40</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_domain>global</sys_domain>
+        <sys_domain_path/>
+        <sys_id>bc9843221b9b4c5048a242e58d4bcb6e</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>Ratelock</sys_name>
+        <sys_overrides/>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sysevent_in_email_action_bc9843221b9b4c5048a242e58d4bcb6e</sys_update_name>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-03-05 09:23:40</sys_updated_on>
+        <table/>
+        <template/>
+        <type>new</type>
+    </sysevent_in_email_action>
+    <sys_translated_text action="DELETE" query="documentkey=bc9843221b9b4c5048a242e58d4bcb6e"/>
+    <sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Ratelock">605affb71badc01048a242e58d4bcb76</application>
+        <file_path/>
+        <instance_id>94e8281edbb7470060a6f0e5bf9619f6</instance_id>
+        <instance_name>movementdev</instance_name>
+        <name>sysevent_in_email_action_bc9843221b9b4c5048a242e58d4bcb6e</name>
+        <payload>&lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;record_update sys_domain="global" table="sysevent_in_email_action"&gt;&lt;sysevent_in_email_action action="INSERT_OR_UPDATE"&gt;&lt;action&gt;record_action&lt;/action&gt;&lt;active&gt;false&lt;/active&gt;&lt;assignment_operator/&gt;&lt;condition_script/&gt;&lt;description/&gt;&lt;event_name&gt;email.read&lt;/event_name&gt;&lt;filter_condition/&gt;&lt;from/&gt;&lt;name&gt;Ratelock&lt;/name&gt;&lt;order&gt;100&lt;/order&gt;&lt;plus_address/&gt;&lt;reply_email/&gt;&lt;required_roles/&gt;&lt;script&gt;&lt;![CDATA[var VALID_FILE_EXTENSIONS = [
+  '.csv',
+  '.pdf',
+  '.xls',
+  '.docx'
+];
+var __attachments = getAttachments();
+var loan_number;
+
+if (/[\d]{9}/gi.test(email.subject) &amp;&amp; /tporatelock@movement\.com/gi.test(email.recipients)) {
+  loan_number = getLoanNumber(email.subject, true);
+} else if (/[\d]{9}/gi.test(email.body_text) &amp;&amp; /tporatelock@movement\.com/gi.test(email.recipients)) {
+  loan_number = getLoanNumber(email.body_text, true);
+} else if (/[\d]{7}/gi.test(email.subject)) {
+  loan_number = getLoanNumber(email.subject);
+} else if (/[\d]{7}/gi.test(email.body_text)) {
+  loan_number = getLoanNumber(email.body_text);
+}
+  
+
+if (!/[\d]{7}/gi.test(loan_number) &amp;&amp; !/[\d]{9}/gi.test(loan_number)) {
+  loan_number = null;
+}
+
+var recordExists = getRecordFromCurrent(loan_number);
+
+var caller = email.from_sys_id == "5136503cc611227c0183e96598c4f706" ? null : email.from_sys_id;
+
+if (loan_number &amp;&amp; !recordExists) {
+  
+  current.description = email.body_text;
+  current.short_description = email.subject;
+  current.caller_id = caller;
+  var recips = email.recipients.split(',');
+  current.priority = getPriorityAndType(recips, 'priority');
+  current.request_type = getPriorityAndType(recips, 'request_type');
+  current.comments = '[code]' + attachEmailPicturesToHTML(email.body_html, current.getUniqueValue()) + '[/code]';
+  current.watch_list = getWatchList(caller);
+  current.loan_number = loan_number;
+  current.insert();
+} else if (recordExists &amp;&amp; loan_number) {
+  current = getRecordFromCurrent(loan_number, true);
+  while (current.next()) {
+    
+    current.comments = '[code]' + attachEmailPicturesToHTML(email.body_html, current.sys_id.toString()) + '[/code]';
+    current.watch_list = getWatchList(caller);
+    current.update();
+  }
+} else {
+  createRateSheet(__attachments);
+  current.description = email.body_text;
+  current.short_description = email.subject;
+  current.caller_id = email.from_sys_id == "5136503cc611227c0183e96598c4f706" ? null : email.from_sys_id;
+  current.watch_list = getWatchList(caller);
+  current.comments = '[code]' + attachEmailPicturesToHTML(email.body_html, current.sys_id.toString()) + '[/code]';
+  current.request_type = 3;
+  current.insert();
+}
+
+function getPriorityAndType(arr, field) {
+  for (var i=0;i&lt;arr.length;i++) {
+    if (arr[i].toLowerCase() == 'lock911@movement.com' &amp;&amp; field == 'priority') {
+      return "1";
+    } else if (arr[i].toLowerCase() == 'tporatelock@movement.com' &amp;&amp; field == 'request_type') {
+      return "2";
+    } else if (arr[i].toLowerCase() == 'bondteam@movementmortgage.com' &amp;&amp; field == 'request_type') {
+		return "4";
+	}
+  }
+  
+  if (field == 'priority') {
+    return "2";
+  } else if (field == 'request_type') {
+    return "1";
+  }
+}
+
+function getRecordFromCurrent(loanNumber, returnRecord) {
+  if (!loanNumber) return false;
+
+  var ticket = new GlideRecord('x_momo_ratelock_ticket');
+  ticket.addQuery('active', true);
+  ticket.addQuery('loan_number', loanNumber);
+  ticket.query();
+  if (!returnRecord) return ticket.next();
+  return ticket;
+}
+
+function getLoanNumber(message, useQuantifier10) {
+  var regex;
+  if (useQuantifier10) {
+    regex = /.*(?=([\d]{9})).*/gm;
+  } else {
+    regex = /.*(?=([\d]{7})).*/gm;
+  }
+  
+  var matches = regex.exec(message.trim());
+  if (matches.length &gt; 0) {
+    for (var i = 0; i &lt; matches.length; i++) {
+      if (!useQuantifier10 &amp;&amp; /^[\d]{7}$/gm.test(matches[i])) {
+        return matches[i].trim();
+      } else if (useQuantifier10 &amp;&amp; /^[\d]{9}$/gm.test(matches[i])) {
+        return matches[i].trim();
+      }
+    }
+  }
+  return;
+}
+
+function attachEmailPicturesToHTML(message, sys_id) {
+  var images_to_delete = [];
+  var attachment = new GlideRecord('sys_attachment');
+  var msg_with_attachments = message;
+  attachment.addQuery('table_sys_id', sys_email.sys_id.toString());
+  attachment.addQuery('table_name', 'sys_email');
+  var qc = attachment.addQuery('file_name', 'ENDSWITH', '.png');
+  qc.addOrCondition('file_name', 'ENDSWITH', '.jpg');
+  qc.addOrCondition('file_name', 'ENDSWITH', '.jpeg');
+  attachment.query();
+  while (attachment.next()) {
+    var regex = new RegExp('\\&lt;img.*src\\=\\"cid:' + attachment.getValue('file_name') + '@.*?\\"\\&gt;', 'gm');
+    var src = '&lt;img src="' + attachment.sys_id.toString() + '.iix" class="img-responsive"&gt;';
+    if (regex.test(message)) {
+      msg_with_attachments = msg_with_attachments.replace(regex, src);
+      images_to_delete.push(attachment.getValue('file_name'));
+    }
+  }
+  var sys_attachment = new GlideSysAttachment();
+  sys_attachment.copy('sys_email', sys_email.sys_id.toString(), 'x_momo_ratelock_ticket', sys_id);
+  var _attachment = new GlideRecord('sys_attachment');
+  _attachment.addQuery('table_sys_id', sys_id);
+  _attachment.addQuery('table_name', 'x_momo_ratelock_ticket');
+  _attachment.query();
+
+  while (_attachment.next()) {
+	var file_name = _attachment.getValue('file_name');
+    for (var i=0;i&lt;images_to_delete.length;i++) {
+      if (images_to_delete[i] == file_name) {
+        _attachment.deleteRecord();
+      }
+    }
+  }
+  return msg_with_attachments;
+}
+
+function addBlankTargetToLinks(message) {
+  var message_with_targets = message;
+  return message_with_targets.replace(/&lt;a/gmi, '&lt;a target="_blank"');
+}
+
+
+function getAttachments() {
+  var attachment = new GlideRecord('sys_attachment');
+  attachment.addQuery('table_sys_id', sys_email.sys_id.toString());
+  attachment.addQuery('table_name', 'sys_email');
+  var qc = attachment.addQuery('file_name', 'ENDSWITH', '.xlsx');
+  for (var i in VALID_FILE_EXTENSIONS) {
+    qc.addOrCondition('file_name', 'ENDSWITH', VALID_FILE_EXTENSIONS[i]);
+  }
+  attachment.query();
+  return attachment.next();
+}
+
+function removeDuplicates(array) {
+  var x = {};
+  for (var i=0;i&lt;array.length;i++) {
+    if (!x[array[i]]) {
+      x[array[i]] = true;
+    }
+  }
+  return Object.keys(x);
+}
+
+function getWatchList(sender) {
+  var excluded = [
+    'ratelock@movement.com', 
+    'lock911@movement.com', 
+    'tporatelock@movement.com',
+	'bondteam@movementmortgage.com'
+  ];
+  var groups = new GlideRecord('sys_user_group');
+  groups.addEncodedQuery('active=true^emailIN' + email.recipients);
+  groups.query();
+  while (groups.next()) {
+    excluded.push(groups.getValue('email'));
+  }
+  if (!gs.nil(current.caller_id)) {
+    excluded.push(current.caller_id.email.toLowerCase());
+  }
+
+  var recipients_array = email.recipients.toLowerCase().split(',');
+  var filtered = recipients_array.filter(function (em) {
+    for (var i = 0; i &lt; excluded.length; i++) {
+      if (excluded[i] == em) {
+        return;
+      }
+    }
+    return em;
+  });
+
+  filtered = removeDuplicates(filtered);
+  if (gs.nil(current.watch_list)) return filtered.join(',').replace(/,$/gi, '');
+ 
+  if (filtered.length &gt; 0) {
+    return current.watch_list + ',' + filtered.join(',').replace(/,$/gi, '');
+  }
+
+  return filtered.join(',').replace(/,$/gi, '');
+}
+
+function createRateSheet(has_next) {
+  if (!has_next) return;
+  var sheet = new GlideRecord('x_momo_ratelock_ratesheet');
+  sheet.initialize();
+  sheet.insert();
+  var sys_attachment = new GlideSysAttachment();
+  sys_attachment.copy('sys_email', sys_email.sys_id.toString(), 'x_momo_ratelock_ratesheet', sheet.getUniqueValue().toString());
+  var _attachment = new GlideRecord('sys_attachment');
+  _attachment.addQuery('table_sys_id', sheet.getUniqueValue());
+  _attachment.addQuery('table_name', 'x_momo_ratelock_ratesheet');
+  var qc = _attachment.addQuery('file_name', 'ENDSWITH', '.xlsx');
+  for (var i in VALID_FILE_EXTENSIONS) {
+    qc.addOrCondition('file_name', 'ENDSWITH', VALID_FILE_EXTENSIONS[i]);
+  }
+  _attachment.query();
+  while (_attachment.next()) {
+    _attachment.deleteRecord();
+  }
+}]]&gt;&lt;/script&gt;&lt;stop_processing&gt;false&lt;/stop_processing&gt;&lt;sys_class_name&gt;sysevent_in_email_action&lt;/sys_class_name&gt;&lt;sys_created_by&gt;douglas.schamberg&lt;/sys_created_by&gt;&lt;sys_created_on&gt;2020-03-05 09:23:40&lt;/sys_created_on&gt;&lt;sys_customer_update&gt;false&lt;/sys_customer_update&gt;&lt;sys_domain&gt;global&lt;/sys_domain&gt;&lt;sys_domain_path/&gt;&lt;sys_id&gt;bc9843221b9b4c5048a242e58d4bcb6e&lt;/sys_id&gt;&lt;sys_mod_count&gt;0&lt;/sys_mod_count&gt;&lt;sys_name&gt;Ratelock&lt;/sys_name&gt;&lt;sys_overrides/&gt;&lt;sys_package display_value="Ratelock" source="x_momo_ratelock"&gt;605affb71badc01048a242e58d4bcb76&lt;/sys_package&gt;&lt;sys_policy/&gt;&lt;sys_replace_on_upgrade&gt;false&lt;/sys_replace_on_upgrade&gt;&lt;sys_scope display_value="Ratelock"&gt;605affb71badc01048a242e58d4bcb76&lt;/sys_scope&gt;&lt;sys_update_name&gt;sysevent_in_email_action_bc9843221b9b4c5048a242e58d4bcb6e&lt;/sys_update_name&gt;&lt;sys_updated_by&gt;douglas.schamberg&lt;/sys_updated_by&gt;&lt;sys_updated_on&gt;2020-03-05 09:23:40&lt;/sys_updated_on&gt;&lt;table/&gt;&lt;template/&gt;&lt;type&gt;new&lt;/type&gt;&lt;/sysevent_in_email_action&gt;&lt;sys_translated_text action="delete_multiple" query="documentkey=bc9843221b9b4c5048a242e58d4bcb6e"/&gt;&lt;/record_update&gt;</payload>
+        <payload_hash>243522290</payload_hash>
+        <record_name>Ratelock</record_name>
+        <reverted_from/>
+        <source>74fc5f651b5a401048a242e58d4bcbbc</source>
+        <source_table>sys_update_set</source_table>
+        <state>previous</state>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-03-05 09:23:40</sys_created_on>
+        <sys_id>789843221b9b4c5048a242e58d4bcb71</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>170aa01f62c0000001</sys_recorded_at>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-03-05 09:23:40</sys_updated_on>
+        <type>Inbound Email Actions</type>
+        <update_guid>70984322ee9b4c50314db8c8574e0c71</update_guid>
+        <update_guid_history>70984322ee9b4c50314db8c8574e0c71:243522290</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete/>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-03-09 16:54:02</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_db_object display_value="" name="sysevent_in_email_action">sysevent_in_email_action</sys_db_object>
+        <sys_id>6cb9f04b63164164afd3855ce7c2a2c4</sys_id>
+        <sys_metadata>bc9843221b9b4c5048a242e58d4bcb6e</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>Ratelock</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_parent/>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_scope_delete display_value="">57712118eaee4a49ae47b2048a14ac31</sys_scope_delete>
+        <sys_update_name>sysevent_in_email_action_bc9843221b9b4c5048a242e58d4bcb6e</sys_update_name>
+        <sys_update_version display_value="sysevent_in_email_action_bc9843221b9b4c5048a242e58d4bcb6e">789843221b9b4c5048a242e58d4bcb71</sys_update_version>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-03-09 16:54:02</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>

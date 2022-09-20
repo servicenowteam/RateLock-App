@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_widget">
+    <sp_widget action="INSERT_OR_UPDATE">
+        <category>custom</category>
+        <client_script><![CDATA[function ratelockSearchQueryBuilder($scope, $rootScope) {
+  /* widget controller */
+  var c = this;
+	
+	c.$onInit = function() {
+		c.fields = c.data.fields;
+	};
+	
+	c.onAdvancedSearchSubmit = function() {};
+}]]></client_script>
+        <controller_as>c</controller_as>
+        <css/>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description/>
+        <docs/>
+        <field_list/>
+        <has_preview>false</has_preview>
+        <id>ratelock_search_query_builder</id>
+        <internal>false</internal>
+        <link><![CDATA[function link(scope, element, attrs, controller) {  }]]></link>
+        <name>Ratelock Search Query Builder</name>
+        <option_schema/>
+        <public>false</public>
+        <roles/>
+        <script><![CDATA[(function () {
+  /* populate the 'data' object */
+  /* e.g., data.table = $sp.getValue('table'); */
+  data.table = (input ? input.table : undefined) || options.table || $sp.getParameter('table');
+  var columnNames = [
+    'caller_id',
+    'short_description',
+    'description',
+    'sys_created_on',
+    'sys_created_by',
+    'sys_updated_on',
+    'sys_updated_by',
+    'loan_number',
+    'request_type',
+    'email_recipients',
+    'assigned_to',
+    'state',
+    'follow_up_attempts'
+  ];
+
+  data.fields = getFields(data.table, columnNames);
+
+  function getFields(table, columnNames) {
+    var fields = [];
+
+    var util = new global.ArrayUtil();
+    var gr = new GlideRecord('sys_dictionary');
+
+    gr.addQuery('name', table);
+    gr.addQuery('element', 'IN', columnNames.join(','));
+    gr.query();
+
+    while (gr.next()) {
+      var type = gr.getValue('internal_type');
+      fields.push({
+        column: {
+          name: gr.getValue('column_name'),
+          label: gr.getValue('column_label')
+        },
+        type: type,
+        element: gr.getDisplayValue('element'),
+        reference: {
+          query: gr.getValue('reference_qual_condition'),
+          table: gr.getValue('reference')
+        },
+        ngField: {
+          value: null,
+          displayValue: ''
+        },
+        operator: {
+          value: '=',
+          options: [
+            '=',
+            '!=',
+            'CONTAINS',
+            'DOES NOT CONTAIN',
+            'IN'
+          ]
+        }
+      });
+    }
+    return fields;
+  }
+})();]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-07-05 15:00:42</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>6ba7ac82dbf11090f25513296896193d</sys_id>
+        <sys_mod_count>38</sys_mod_count>
+        <sys_name>Ratelock Search Query Builder</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sp_widget_6ba7ac82dbf11090f25513296896193d</sys_update_name>
+        <sys_updated_by>douglas.schamberg@movement.com</sys_updated_by>
+        <sys_updated_on>2020-09-09 18:39:53</sys_updated_on>
+        <template><![CDATA[<form class="form" ng-submit="c.onAdvancedSearchSubmit()">
+  <div class="row" ng-repeat="field in data.fields track by $index">
+    <div class="col-md-4">
+      <div class="form-group">
+        <label for="{{ field.column.name }}">{{ field.column.label }}</label>
+        <div class="field-input" ng-switch="field.type">
+          <input type="text" ng-switch-when="string" ng-model="field.ngField.value" class="form-control" />
+          <input type="text" ng-switch-when="glide_list" ng-model="field.ngField.value" class="form-control" />
+          <sp-record-picker ng-switch-when="reference"
+                            field="field.ngField"
+                            table="field.reference.table"
+                            multiple="true"
+                            display-field="'email'"
+                            value-field="'sys_id'"
+                            placeholder="Search for {{ field.column.label }}s..."
+                            default-query="field.reference.query"
+                            search-fields="'name'"></sp-record-picker>
+          <input type="number" ng-switch-when="integer" ng-model="field.ngField.value" class="form-control" />
+          <input type="date" ng-switch-when="glide_date_time" ng-model="field.ngField.value" class="form-control" />
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="form-group">
+        <label for="operator_{{ field.column.name }}">Operator</label>
+        <select class="custom-select form-control" ng-model="field.operator.value">
+          <option ng-repeat="option in field.operator.options" value="option" selected="{{ (field.operator.value === 'option' ? 'true' : 'false') }}">{{ option }}</option>
+        </select>
+      </div>
+    </div>
+  </div>
+</form>]]></template>
+    </sp_widget>
+</record_update>

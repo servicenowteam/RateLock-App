@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update sys_domain="global" table="sys_script">
+    <sys_script action="DELETE">
+        <abort_action>false</abort_action>
+        <access>package_private</access>
+        <action_delete>false</action_delete>
+        <action_insert>false</action_insert>
+        <action_query>false</action_query>
+        <action_update>true</action_update>
+        <active>false</active>
+        <add_message>false</add_message>
+        <advanced>true</advanced>
+        <change_fields>false</change_fields>
+        <client_callable>false</client_callable>
+        <collection>x_momo_ratelock_ticket</collection>
+        <condition>gs.hasRole('x_momo_ratelock.ratelock_tech')</condition>
+        <description/>
+        <execute_function>false</execute_function>
+        <filter_condition table="x_momo_ratelock_ticket">assigned_toISEMPTY^commentsVALCHANGES^state!=6^ORstate!=5^EQ<item endquery="false" field="assigned_to" goto="false" newquery="false" operator="ISEMPTY" or="false" value=""/>
+            <item endquery="false" field="comments" goto="false" newquery="false" operator="VALCHANGES" or="false" value=""/>
+            <item display_value="Closed" endquery="false" field="state" goto="false" newquery="false" operator="!=" or="false" value="6"/>
+            <item display_value="Resolved" endquery="false" field="state" goto="false" newquery="false" operator="!=" or="true" value="5"/>
+            <item endquery="true" field="" goto="false" newquery="false" operator="=" or="false" value=""/>
+        </filter_condition>
+        <is_rest>false</is_rest>
+        <message/>
+        <name>Automatically add assigned_to</name>
+        <order>103</order>
+        <priority>100</priority>
+        <rest_method/>
+        <rest_method_text/>
+        <rest_service/>
+        <rest_service_text/>
+        <rest_variables/>
+        <role_conditions>x_momo_ratelock.ratelock_tech</role_conditions>
+        <script><![CDATA[(function executeRule(current, previous /*null when async*/) {
+
+	current.setValue('assigned_to', gs.getUserID(), gs.getUserDisplayName());
+	if (current.getValue("state") == 1) {
+		current.setValue("state", 2);
+	}
+	current.update();
+
+})(current, previous);]]></script>
+        <sys_class_name>sys_script</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-01-05 15:09:00</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_domain>global</sys_domain>
+        <sys_domain_path>/</sys_domain_path>
+        <sys_id>5e17575f1b0e049048a242e58d4bcb0a</sys_id>
+        <sys_mod_count>6</sys_mod_count>
+        <sys_name>Automatically add assigned_to</sys_name>
+        <sys_overrides/>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sys_script_5e17575f1b0e049048a242e58d4bcb0a</sys_update_name>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-05-08 12:45:44</sys_updated_on>
+        <template/>
+        <when>after</when>
+    </sys_script>
+    <sys_translated_text action="DELETE" query="documentkey=5e17575f1b0e049048a242e58d4bcb0a"/>
+    <sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Ratelock">605affb71badc01048a242e58d4bcb76</application>
+        <file_path/>
+        <instance_id>94e8281edbb7470060a6f0e5bf9619f6</instance_id>
+        <instance_name>movementdev</instance_name>
+        <name>sys_script_5e17575f1b0e049048a242e58d4bcb0a</name>
+        <payload>&lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;record_update sys_domain="global" table="sys_script"&gt;&lt;sys_script action="INSERT_OR_UPDATE"&gt;&lt;abort_action&gt;false&lt;/abort_action&gt;&lt;access&gt;package_private&lt;/access&gt;&lt;action_delete&gt;false&lt;/action_delete&gt;&lt;action_insert&gt;false&lt;/action_insert&gt;&lt;action_query&gt;false&lt;/action_query&gt;&lt;action_update&gt;true&lt;/action_update&gt;&lt;active&gt;false&lt;/active&gt;&lt;add_message&gt;false&lt;/add_message&gt;&lt;advanced&gt;true&lt;/advanced&gt;&lt;change_fields&gt;false&lt;/change_fields&gt;&lt;client_callable&gt;false&lt;/client_callable&gt;&lt;collection&gt;x_momo_ratelock_ticket&lt;/collection&gt;&lt;condition&gt;gs.hasRole('x_momo_ratelock.ratelock_tech')&lt;/condition&gt;&lt;description/&gt;&lt;execute_function&gt;false&lt;/execute_function&gt;&lt;filter_condition table="x_momo_ratelock_ticket"&gt;assigned_toISEMPTY^commentsVALCHANGES^state!=6^ORstate!=5^EQ&lt;item endquery="false" field="assigned_to" goto="false" newquery="false" operator="ISEMPTY" or="false" value=""/&gt;&lt;item endquery="false" field="comments" goto="false" newquery="false" operator="VALCHANGES" or="false" value=""/&gt;&lt;item display_value="Closed" endquery="false" field="state" goto="false" newquery="false" operator="!=" or="false" value="6"/&gt;&lt;item display_value="Resolved" endquery="false" field="state" goto="false" newquery="false" operator="!=" or="true" value="5"/&gt;&lt;item endquery="true" field="" goto="false" newquery="false" operator="=" or="false" value=""/&gt;&lt;/filter_condition&gt;&lt;is_rest&gt;false&lt;/is_rest&gt;&lt;message/&gt;&lt;name&gt;Automatically add assigned_to&lt;/name&gt;&lt;order&gt;103&lt;/order&gt;&lt;priority&gt;100&lt;/priority&gt;&lt;rest_method/&gt;&lt;rest_method_text/&gt;&lt;rest_service/&gt;&lt;rest_service_text/&gt;&lt;rest_variables/&gt;&lt;role_conditions&gt;x_momo_ratelock.ratelock_tech&lt;/role_conditions&gt;&lt;script&gt;&lt;![CDATA[(function executeRule(current, previous /*null when async*/) {
+
+	current.setValue('assigned_to', gs.getUserID(), gs.getUserDisplayName());
+	if (current.getValue("state") == 1) {
+		current.setValue("state", 2);
+	}
+	current.update();
+
+})(current, previous);]]&gt;&lt;/script&gt;&lt;sys_class_name&gt;sys_script&lt;/sys_class_name&gt;&lt;sys_created_by&gt;douglas.schamberg&lt;/sys_created_by&gt;&lt;sys_created_on&gt;2020-01-05 15:09:00&lt;/sys_created_on&gt;&lt;sys_customer_update&gt;false&lt;/sys_customer_update&gt;&lt;sys_domain&gt;global&lt;/sys_domain&gt;&lt;sys_domain_path&gt;/&lt;/sys_domain_path&gt;&lt;sys_id&gt;5e17575f1b0e049048a242e58d4bcb0a&lt;/sys_id&gt;&lt;sys_mod_count&gt;6&lt;/sys_mod_count&gt;&lt;sys_name&gt;Automatically add assigned_to&lt;/sys_name&gt;&lt;sys_overrides/&gt;&lt;sys_package display_value="Ratelock" source="x_momo_ratelock"&gt;605affb71badc01048a242e58d4bcb76&lt;/sys_package&gt;&lt;sys_policy/&gt;&lt;sys_replace_on_upgrade&gt;false&lt;/sys_replace_on_upgrade&gt;&lt;sys_scope display_value="Ratelock"&gt;605affb71badc01048a242e58d4bcb76&lt;/sys_scope&gt;&lt;sys_update_name&gt;sys_script_5e17575f1b0e049048a242e58d4bcb0a&lt;/sys_update_name&gt;&lt;sys_updated_by&gt;douglas.schamberg&lt;/sys_updated_by&gt;&lt;sys_updated_on&gt;2020-05-08 12:45:44&lt;/sys_updated_on&gt;&lt;template/&gt;&lt;when&gt;after&lt;/when&gt;&lt;/sys_script&gt;&lt;sys_translated_text action="delete_multiple" query="documentkey=5e17575f1b0e049048a242e58d4bcb0a"/&gt;&lt;/record_update&gt;</payload>
+        <payload_hash>-1661298319</payload_hash>
+        <record_name>Automatically add assigned_to</record_name>
+        <reverted_from/>
+        <source>741a4e651b4cdc1048a242e58d4bcb9f</source>
+        <source_table>sys_update_set</source_table>
+        <state>previous</state>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-05-08 12:45:44</sys_created_on>
+        <sys_id>f89c9d1b1b6c181048a242e58d4bcb1b</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>171f451f6da0000001</sys_recorded_at>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-05-08 12:45:44</sys_updated_on>
+        <type>Business Rule</type>
+        <update_guid>b09c9d1b766c1810a013bcd120509b1b</update_guid>
+        <update_guid_history>b09c9d1b766c1810a013bcd120509b1b:-1661298319,def51f15e3ec1410b69c168a314bc6ae:-447230472,c6d185098f20d010a517d216cb8162c1:-1038836722,7c418dc54a20d010dde17d5f4240d90d:904038107,5d808985b120d01017b143f62b6cc360:-538419607,3dd9fc4d31ec90106969134e2da93c5e:904038107,ee2c1fe1bd5a4010ec3b99664e71f886:0,66481b6df91a40102e1a8ba9a2d42d6e:248364969,bf075f69e31a4010ed455e6d4c914b9b:0,e8461329491a401019a8fe6cf29c4a0c:65130716,8bf4d3e10b1a4010ace1c25d0f1ef6dd:0,1274df61021a40104e7afcaac7223139:1183401247,cd23576dfcd64010bad9b11ffb76f194:0,a842d7e9c1d640103b3aaa18c2f50da1:230210852,2df01b6597d64010053ce57f7edbce45:0,b4e01365d8d640100ee3378beec43fb7:-1326661357,0d109f6184d64010589571dc43b41b63:0,c3ff0761ffd640109fd7c0a47d5b0da7:-1326661357,277d0ba914964010d332d59f2d1a6707:0,5b2d4329c396401014ae9887c94e8c75:-1326661357,62381b5fbd0e04907ab13a7eee29e30a:915070974</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete/>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-05-08 13:43:12</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_db_object display_value="" name="sys_script">sys_script</sys_db_object>
+        <sys_id>12f6f6ad561f43aa8a15f8b93769df64</sys_id>
+        <sys_metadata>5e17575f1b0e049048a242e58d4bcb0a</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>Automatically add assigned_to</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_parent display_value="">a94cdf251b5a401048a242e58d4bcbe4</sys_parent>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_scope_delete display_value="">57712118eaee4a49ae47b2048a14ac31</sys_scope_delete>
+        <sys_update_name>sys_script_5e17575f1b0e049048a242e58d4bcb0a</sys_update_name>
+        <sys_update_version display_value="sys_script_5e17575f1b0e049048a242e58d4bcb0a">f89c9d1b1b6c181048a242e58d4bcb1b</sys_update_version>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-05-08 13:43:12</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>

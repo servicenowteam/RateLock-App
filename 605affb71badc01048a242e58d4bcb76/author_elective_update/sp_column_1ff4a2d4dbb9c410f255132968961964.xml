@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_column">
+    <sp_column action="DELETE">
+        <class_name/>
+        <order>2</order>
+        <size>6</size>
+        <size_lg/>
+        <size_sm/>
+        <size_xs/>
+        <sp_row display_value="1">57f4a2d4dbb9c410f255132968961961</sp_row>
+        <sys_class_name>sp_column</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2019-12-14 17:27:39</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>1ff4a2d4dbb9c410f255132968961964</sys_id>
+        <sys_mod_count>2</sys_mod_count>
+        <sys_name>2</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sp_column_1ff4a2d4dbb9c410f255132968961964</sys_update_name>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2019-12-14 17:31:15</sys_updated_on>
+    </sp_column>
+    <sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Ratelock">605affb71badc01048a242e58d4bcb76</application>
+        <file_path/>
+        <instance_id>94e8281edbb7470060a6f0e5bf9619f6</instance_id>
+        <instance_name>movementdev</instance_name>
+        <name>sp_column_1ff4a2d4dbb9c410f255132968961964</name>
+        <payload><![CDATA[<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_column"><sp_column action="INSERT_OR_UPDATE"><class_name/><order>2</order><size>6</size><size_lg/><size_sm/><size_xs/><sp_row display_value="1">57f4a2d4dbb9c410f255132968961961</sp_row><sys_class_name>sp_column</sys_class_name><sys_created_by>douglas.schamberg</sys_created_by><sys_created_on>2019-12-14 17:27:39</sys_created_on><sys_customer_update>false</sys_customer_update><sys_id>1ff4a2d4dbb9c410f255132968961964</sys_id><sys_mod_count>2</sys_mod_count><sys_name>2</sys_name><sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package><sys_policy/><sys_replace_on_upgrade>false</sys_replace_on_upgrade><sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope><sys_update_name>sp_column_1ff4a2d4dbb9c410f255132968961964</sys_update_name><sys_updated_by>douglas.schamberg</sys_updated_by><sys_updated_on>2019-12-14 17:31:15</sys_updated_on></sp_column></record_update>]]></payload>
+        <payload_hash>-857857004</payload_hash>
+        <record_name>2</record_name>
+        <reverted_from/>
+        <source>a45affb71badc01048a242e58d4bcb78</source>
+        <source_table>sys_update_set</source_table>
+        <state>previous</state>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2019-12-14 17:31:15</sys_created_on>
+        <sys_id>f7c56ed4dbb9c410f25513296896190f</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>16f0576e5560000001</sys_recorded_at>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2019-12-14 17:31:15</sys_updated_on>
+        <type>Column</type>
+        <update_guid>bfc56ed444b9c4109988e0fee99ca70e</update_guid>
+        <update_guid_history>bfc56ed444b9c4109988e0fee99ca70e:-857857004,58b5ead4dab9c410278fdf9f7bd8d3b6:2137035218,9bf4a2d48eb9c41096730794bccc8365:185930965</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete display_value="">202a6e5cdbb9c410f255132968961940</sys_audit_delete>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2019-12-14 17:50:08</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_db_object display_value="" name="sp_column">sp_column</sys_db_object>
+        <sys_id>d226a9e37d3f43a4987a3b240f7eb210</sys_id>
+        <sys_metadata>1ff4a2d4dbb9c410f255132968961964</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>2</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_parent/>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_scope_delete display_value="">57712118eaee4a49ae47b2048a14ac31</sys_scope_delete>
+        <sys_update_name>sp_column_1ff4a2d4dbb9c410f255132968961964</sys_update_name>
+        <sys_update_version display_value="sp_column_1ff4a2d4dbb9c410f255132968961964">f7c56ed4dbb9c410f25513296896190f</sys_update_version>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2019-12-14 17:50:08</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>

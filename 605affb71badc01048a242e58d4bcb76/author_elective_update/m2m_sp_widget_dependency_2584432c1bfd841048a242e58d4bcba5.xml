@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="m2m_sp_widget_dependency">
+    <m2m_sp_widget_dependency action="DELETE">
+        <sp_dependency display_value="detect.js">eb608116df802200ba13a4836bf263de</sp_dependency>
+        <sp_widget display_value="Ratelock List">ea85f8801bb1041048a242e58d4bcb62</sp_widget>
+        <sys_class_name>m2m_sp_widget_dependency</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2019-12-15 14:23:56</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>2584432c1bfd841048a242e58d4bcba5</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>detect.js.Ratelock List</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>m2m_sp_widget_dependency_2584432c1bfd841048a242e58d4bcba5</sys_update_name>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2019-12-15 14:23:56</sys_updated_on>
+    </m2m_sp_widget_dependency>
+    <sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Ratelock">605affb71badc01048a242e58d4bcb76</application>
+        <file_path/>
+        <instance_id>94e8281edbb7470060a6f0e5bf9619f6</instance_id>
+        <instance_name>movementdev</instance_name>
+        <name>m2m_sp_widget_dependency_2584432c1bfd841048a242e58d4bcba5</name>
+        <payload><![CDATA[<?xml version="1.0" encoding="UTF-8"?><record_update table="m2m_sp_widget_dependency"><m2m_sp_widget_dependency action="INSERT_OR_UPDATE"><sp_dependency display_value="detect.js">eb608116df802200ba13a4836bf263de</sp_dependency><sp_widget display_value="Ratelock List">ea85f8801bb1041048a242e58d4bcb62</sp_widget><sys_class_name>m2m_sp_widget_dependency</sys_class_name><sys_created_by>douglas.schamberg</sys_created_by><sys_created_on>2019-12-15 14:23:56</sys_created_on><sys_customer_update>false</sys_customer_update><sys_id>2584432c1bfd841048a242e58d4bcba5</sys_id><sys_mod_count>0</sys_mod_count><sys_name>detect.js.Ratelock List</sys_name><sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package><sys_policy/><sys_replace_on_upgrade>false</sys_replace_on_upgrade><sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope><sys_update_name>m2m_sp_widget_dependency_2584432c1bfd841048a242e58d4bcba5</sys_update_name><sys_updated_by>douglas.schamberg</sys_updated_by><sys_updated_on>2019-12-15 14:23:56</sys_updated_on></m2m_sp_widget_dependency></record_update>]]></payload>
+        <payload_hash>-2022898114</payload_hash>
+        <record_name>detect.js.Ratelock List</record_name>
+        <reverted_from/>
+        <source>a45affb71badc01048a242e58d4bcb78</source>
+        <source_table>sys_update_set</source_table>
+        <state>previous</state>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2019-12-15 14:23:56</sys_created_on>
+        <sys_id>e584836c1bfd841048a242e58d4bcb5e</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>16f09f1c1050000001</sys_recorded_at>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2019-12-15 14:23:56</sys_updated_on>
+        <type>Widget Dependency</type>
+        <update_guid>ed84836cb8fd84109e63125eae873a5d</update_guid>
+        <update_guid_history>ed84836cb8fd84109e63125eae873a5d:-2022898114</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete display_value="">2937e7681bb1c41048a242e58d4bcb23</sys_audit_delete>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2019-12-15 16:55:28</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_db_object display_value="" name="m2m_sp_widget_dependency">m2m_sp_widget_dependency</sys_db_object>
+        <sys_id>8b9c2063b1734cf8b74faa5aa92edb90</sys_id>
+        <sys_metadata>2584432c1bfd841048a242e58d4bcba5</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>detect.js.Ratelock List</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_parent/>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_scope_delete display_value="">57712118eaee4a49ae47b2048a14ac31</sys_scope_delete>
+        <sys_update_name>m2m_sp_widget_dependency_2584432c1bfd841048a242e58d4bcba5</sys_update_name>
+        <sys_update_version display_value="m2m_sp_widget_dependency_2584432c1bfd841048a242e58d4bcba5">e584836c1bfd841048a242e58d4bcb5e</sys_update_version>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2019-12-15 16:55:28</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>

@@ -1,0 +1,343 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_widget">
+    <sp_widget action="INSERT_OR_UPDATE">
+        <category>custom</category>
+        <client_script><![CDATA[function($scope, $rootScope, $window, $timeout, $http, urlTools) {
+  /* widget controller */
+  var c = this;
+	$scope.isLoading = false;
+	$scope.isInitialLoading = true;
+	$scope.isExpanded = false;
+	$scope.field = {
+		value: undefined,
+		name: c.data.journalName || 'additional_comments'
+	};
+	
+	
+	$scope.modelOptions = {
+    debounce: {
+      'default': 0,
+      blur: 0,
+			focus: 0
+    },
+    getterSetter: true
+  };
+	
+	$scope.mentions = [];
+	
+	c.$onInit = function() {
+		c.modules = c.data.editor.modules;
+		if (c.modules.mention) {
+			c.modules.mention.source = c.onMention;
+			c.modules.mention.onSelect = c.onMentionSelection;
+		}
+	};
+	
+	$rootScope.$on('ratelock.editor.is-posting', function(evt) {
+		$scope.field.value = undefined;
+		$scope.editorIsFocused = false;
+		$scope.editorPosting = true;
+		
+		$timeout(function() {
+			$scope.editorPosting = false;
+		}, 1000);
+	});
+	
+	$rootScope.$on('template.text.added', function(evt, text) {
+		$scope.field.value = text.replace(/\[code\]/gmi, '').replace(/\[\/code\]/gmi, '');
+		$scope.editorIsFocused = true;
+	})
+	
+	c.onMention = function(searchTerm, renderList, mentionChar) {
+		var params = {
+      sysparm_query: createQueryParams(searchTerm),
+      sysparm_limit: 5,
+      sysparm_display_value: true
+    };
+		$http.get('/api/now/table/sys_user?' + urlTools.encodeURIParameters(params))
+      .then(function (response) {
+        if (response.data) {
+          if (response.data.result) {
+            renderList(response.data.result.map(resultsMapper.bind(this)));
+          }
+        }
+      });
+	};
+	
+	c.onMentionSelection = function (item, insertItem) {
+    $rootScope.$broadcast('editor.mention.added', {
+			item: item,
+			id: $scope.data.sys_id
+		});
+    $scope.mentions.push(item);
+    insertItem(item);
+  };
+	
+	c.onEditorReady = function (editor) {
+    $scope.isInitialLoading = false;
+		$rootScope.$broadcast('editor.ready');
+  };
+	
+	c.onEditorFocus = function (editor, source) {
+		$scope.editorIsFocused = true;
+		$rootScope.$broadcast('editor.focused');
+		
+  };
+	
+	c.onEditorBlur = function(editor, source) {
+		if (!$scope.field.value) {
+			$scope.editorIsFocused = false;
+		}
+		$rootScope.$broadcast('editor.blurred', $scope.field.value);
+	};
+	
+	c.onEditorContentChange = function(editor, html, text, content, delta, oldDelta, source) {
+		var payload = {
+			id: $scope.data.sys_id
+		}
+		if (html) {
+			var value = html.replace(/<img/gmi, '<img class="img-responsive" ');
+			payload.html = '[code]' + value + '[/code]';
+		} else {
+			payload.html = "";
+		}
+		
+		if (text) {
+			payload.text = text;
+		}
+		
+		$rootScope.$broadcast('editor.typing', payload);
+	};
+	
+	function resultsMapper(item, index, arr) {
+    return {
+      value: item.name,
+      id: item.sys_id
+    };
+  }
+
+  function createQueryParams(value) {
+    if (!value) return;
+    return [
+      'name',
+      'email',
+      'user_name'
+    ].map(function (part) {
+      return part + 'STARTSWITH' + (/_/gi.test(value) ? (value.split('_').join(' ')) : value);
+    }).join('^') + '^active=true'
+  }
+}]]></client_script>
+        <controller_as>c</controller_as>
+        <css>.ql-editor {
+  padding-left: 4px;
+}
+
+.editor-container {
+	display: flex;
+  width: 100%;
+}
+
+pre.ql-container {
+	background: #fff;
+  margin-top: 0px;
+  border-top-left-radius: 0px;
+  border-top-right-radius: 0px;
+  border-bottom-left-radius: 0px;
+  border-bottom-right-radius: 0px;
+  border-bottom: 1px solid #ccc;
+  border-top: none;
+  width: 100%;
+  height: auto;
+  max-height: 200px;
+  transition: all 0.3s ease;
+  &amp; .ql-editor {
+  	padding-top: 12px;
+    padding-bottom: 12px;
+    overflow-y: auto;
+  }
+}
+
+.editor-border {
+  &amp;.disabled {
+    &amp; pre.ql-container {
+    	background-color: #eee;
+      cursor: read-only;
+    }
+  }
+  &amp;.editor-lg {
+    &amp; pre.ql-container {
+      height: auto;
+    	max-height: 300px;
+    }
+  }
+  &amp; pre.ql-container {
+    margin-top: -1px;
+    height: 34px;
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+    padding: 0px;
+    
+    &amp; .ql-editor {
+    	padding-top: 7px;
+      padding-bottom: 12px;
+      overflow-y: hidden;
+    }
+  }
+}
+
+.ql-mention-list-container {
+  border-radius: 6px;
+  box-shadow: 0 8px 20px 0 rgba(30, 30, 30, .08);
+  border: none;
+
+  &amp; .ql-mention-list {
+    border: none;
+  }
+}
+.ql-toolbar {
+ 	opacity: 0;
+  height: 0px !important;
+  padding: 0px;
+  border-top: none;
+  transition: all 0.3s ease-out;
+	&amp;.editor-active {
+    padding: 4px 8px 2px 8px;
+    border-top: 1px solid #ccc;
+    height: auto !important;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+    opacity: 1;
+    transition: all 0.3s ease-in;
+  }
+}
+
+.ql-mention-list-item {
+  border: 1px solid transparent;
+
+  &amp;.selected {
+    background-color: #d9534f;
+    text-decoration: none;
+    color: #fff;
+
+    &amp;:first-child {
+      border-top-left-radius: 6px;
+      border-top-right-radius: 6px;
+    }
+
+    &amp;:last-child {
+      border-bottom-left-radius: 6px;
+      border-bottom-right-radius: 6px;
+    }
+  }
+}</css>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description/>
+        <docs/>
+        <field_list/>
+        <has_preview>false</has_preview>
+        <id>ratelock_quill_editor</id>
+        <internal>false</internal>
+        <link><![CDATA[function link(scope, element, attrs, controller) {  }]]></link>
+        <name>Ratelock Quill Editor</name>
+        <option_schema>[{"name":"size","section":"Presentation","default_value":"md","label":"size","type":"choice","choices":[{"label":"xs","value":"xs"},{"label":"sm","value":"sm"},{"label":"md","value":"md"},{"label":"lg","value":"lg"}]}]</option_schema>
+        <public>false</public>
+        <roles/>
+        <script><![CDATA[(function() {
+  /* populate the 'data' object */
+  /* e.g., data.table = $sp.getValue('table'); */
+	data.sys_id = (input ? input.sys_id : undefined) || options.sys_id || $sp.getParameter('sys_id');
+	data.editor = {};
+	data.editor.theme = options.theme || 'snow';
+	data.editor.container = null;
+	data.editor.modules = options.modules || {
+		toolbar: {
+			controls: [
+				['bold', 'italic', 'underline'],
+				['blockquote', { 'background': [] }],
+				[{ 'list': 'ordered' }, { 'list': 'bullet' }],
+				['link', 'image']
+			]
+		},
+		imageDrop: true,
+		magicUrl: true,
+		mention: {
+			mentionDenotationChars: ["@"],
+			allowedChars: /^[A-Za-z_]*$/gm,
+			fixMentionsToQuill: true,
+			minChars: 3,
+			maxChars: 20,
+			defaultMenuOrientation: 'bottom',
+			offsetLeft: 0,
+			offsetTop: 30
+		},
+		imageResize: {
+			modules: [ 'DisplaySize', 'Resize' ]
+		}
+	};
+	data.journalName = options.journalName || "comments";
+	data.editor.placeholder = options.placeholder || 'Reply...';
+	data.editor.disabled = options.disabled || false;
+	data.alwaysShowToolbar = options.showToolbar || !data.editor.disabled;
+	data.size = options.size;
+})();]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-04-24 11:25:31</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>a9f30dfedb90d050f25513296896191d</sys_id>
+        <sys_mod_count>166</sys_mod_count>
+        <sys_name>Ratelock Quill Editor</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sp_widget_a9f30dfedb90d050f25513296896191d</sys_update_name>
+        <sys_updated_by>douglas.schamberg@movement.com</sys_updated_by>
+        <sys_updated_on>2020-08-06 14:29:17</sys_updated_on>
+        <template><![CDATA[<div class="d-flex" ng-show="!isInitialLoading">
+  <ng-quill-editor ng-model="field.value"
+                 ng-model-options="modelOptions"
+                 placeholder="data.editor.placeholder"
+                 on-blur="c.onEditorBlur(editor, source)"
+                 on-focus="c.onEditorFocus(editor, source)"
+                 preserve-whitespace="true"
+                 read-only="(data.editor.disabled  || editorPosting)"
+                 on-content-changed="c.onEditorContentChange(editor, html, text, content, delta, oldDelta, source)"
+                 track-changes="all"
+                 on-editor-created="c.onEditorReady(editor)"
+                 theme="{{ ::data.editor.theme }}"
+                 format="html"
+                 modules="c.modules"
+                 ng-class="{'editor-border': (!editorIsFocused && !field.value && !data.alwaysShowToolbar), 'disabled': (data.editor.disabled || editorPosting), 'editor-lg': data.size === 'lg'}">
+	<ng-quill-toolbar>
+  	<div id="toolbar" ng-class="{'editor-active': (editorIsFocused || data.alwaysShowToolbar)}">
+      <span class="ql-formats">
+        <button class="ql-bold"></button>
+        <button class="ql-italic"></button>
+        <button class="ql-underline"></button>
+      </span>
+      <span class="ql-formats">
+      	<select class="ql-background">
+        	<option selected value="transparent"></option>
+          <option value="yellow"></option>
+          <option value="red"></option>
+          <option value="blue"></option>
+          <option value="teal"></option>
+          <option value="purple"></option>
+        </select>
+      </span>
+      <span class="ql-formats">
+        <button class="ql-list" value="ordered"></button>
+        <button class="ql-list" value="bullet"></button>
+      </span>
+      <span class="ql-formats">
+        <button class="ql-image"></button>
+      </span>
+    </div>
+  </ng-quill-toolbar>
+</ng-quill-editor>
+</div>
+]]></template>
+    </sp_widget>
+</record_update>

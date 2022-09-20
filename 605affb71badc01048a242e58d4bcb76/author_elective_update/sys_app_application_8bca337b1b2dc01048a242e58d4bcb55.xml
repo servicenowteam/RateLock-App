@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update sys_domain="global" table="sys_app_application">
+    <sys_app_application action="DELETE">
+        <active>true</active>
+        <category display_value="">Custom Applications</category>
+        <description/>
+        <device_type>browser</device_type>
+        <hint/>
+        <mobile_app_menu/>
+        <name/>
+        <order/>
+        <roles>x_momo_ratelock.ratelock_admin,x_momo_ratelock.ratelock_tech</roles>
+        <sys_class_name>sys_app_application</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2019-12-13 10:25:36</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_domain>global</sys_domain>
+        <sys_domain_path>/</sys_domain_path>
+        <sys_id>8bca337b1b2dc01048a242e58d4bcb55</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>Ratelock</sys_name>
+        <sys_overrides/>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sys_app_application_8bca337b1b2dc01048a242e58d4bcb55</sys_update_name>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2019-12-13 10:25:36</sys_updated_on>
+        <title>Ratelock</title>
+        <view_name/>
+        <view_on_mobile>false</view_on_mobile>
+    </sys_app_application>
+<sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Ratelock">605affb71badc01048a242e58d4bcb76</application>
+        <file_path/>
+        <instance_id>94e8281edbb7470060a6f0e5bf9619f6</instance_id>
+        <instance_name>movementdev</instance_name>
+        <name>sys_app_application_8bca337b1b2dc01048a242e58d4bcb55</name>
+        <payload><![CDATA[<?xml version="1.0" encoding="UTF-8"?><record_update sys_domain="global" table="sys_app_application">
+    <sys_app_application action="INSERT_OR_UPDATE">
+        <active>true</active>
+        <category display_value="">Custom Applications</category>
+        <description/>
+        <device_type>browser</device_type>
+        <hint/>
+        <mobile_app_menu/>
+        <name/>
+        <order/>
+        <roles>x_momo_ratelock.ratelock_admin,x_momo_ratelock.ratelock_tech</roles>
+        <sys_class_name>sys_app_application</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2019-12-13 10:25:36</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_domain>global</sys_domain>
+        <sys_domain_path>/</sys_domain_path>
+        <sys_id>8bca337b1b2dc01048a242e58d4bcb55</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>Ratelock</sys_name>
+        <sys_overrides/>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sys_app_application_8bca337b1b2dc01048a242e58d4bcb55</sys_update_name>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2019-12-13 10:25:36</sys_updated_on>
+        <title>Ratelock</title>
+        <view_name/>
+        <view_on_mobile>false</view_on_mobile>
+    </sys_app_application>
+</record_update>]]></payload>
+        <payload_hash>1178080464</payload_hash>
+        <record_name>Ratelock</record_name>
+        <reverted_from/>
+        <source>bf1c1be11b5a401048a242e58d4bcb30</source>
+        <source_table>sys_upgrade_history</source_table>
+        <state>previous</state>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-01-12 15:12:30</sys_created_on>
+        <sys_id>0e2cdbe11b5a401048a242e58d4bcb32</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>16f9a5049ae0000001</sys_recorded_at>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-01-12 15:12:30</sys_updated_on>
+        <type>Application Menu</type>
+        <update_guid>4a2cdbe14b5a40105c793b510b684532</update_guid>
+        <update_guid_history>4a2cdbe14b5a40105c793b510b684532:0,92f893ed5b1a401065e41fbd8d41949b:190053019,a3071f69ce1a40100caa12a98b3f75c6:0,39469329ab1a401026f96cea7abccdbc:2076919316,62f4d3e1db1a40101f6a7641468afb21:0,a37453a1801a4010b5c67857cd4c250e:194110677,6823176d21d6401092a393144c84fcaf:0,35425be912d640100fe324e009dd98eb:-494987664,89f0d7654bd640106df663f1579c0e64:0,fde05365d5d640107d854bb9753394e2:163636880,70105f618cd64010e3bf37ffcc944059:0,14009761e8d640109fbb07a1c73b127b:163636880,c77dc7a965964010f44713c85b038719:0,876d03a9f89640109c48dfa5ec3ed9b4:163636880,83ca337b232dc0108299c1022ca7dd58:263579291</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete display_value="">b958bb691bda401048a242e58d4bcb9c</sys_audit_delete>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-01-12 17:15:39</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_db_object display_value="" name="sys_app_application">sys_app_application</sys_db_object>
+        <sys_id>8541881dd9dc4dac92e9e8902c8e78f9</sys_id>
+        <sys_metadata>8bca337b1b2dc01048a242e58d4bcb55</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>Ratelock</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_parent/>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_scope_delete display_value="">57712118eaee4a49ae47b2048a14ac31</sys_scope_delete>
+        <sys_update_name>sys_app_application_8bca337b1b2dc01048a242e58d4bcb55</sys_update_name>
+        <sys_update_version display_value="sys_app_application_8bca337b1b2dc01048a242e58d4bcb55">0e2cdbe11b5a401048a242e58d4bcb32</sys_update_version>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-01-12 17:15:39</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>

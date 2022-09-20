@@ -1,0 +1,629 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_widget">
+    <sp_widget action="DELETE">
+        <category>custom</category>
+        <client_script><![CDATA[function ($scope) {
+  /* widget controller */
+  var c = this;
+  // Setup Dropdown List events
+  $scope.searcher = undefined;
+  $scope.ignore_watcher = false;
+
+  $scope.modelOptions = {
+    debounce: {
+      default: 500,
+      blur: 0
+    },
+    getterSetter: true
+  };
+
+  $scope.$watch('searcher', function (val) {
+    if (!val) {
+      $scope.show_dropdown = false;
+    } else if (val.length > 2 && !$scope.ignore_watcher) {
+      $scope.data.query = val;
+      $scope.data.limit = 5;
+      $scope.data.orderBy = "priority";
+      $scope.server.update().then(function (results) {
+        $scope.matches = results.matches;
+        $scope.show_dropdown = true;
+      });
+    }
+  });
+
+  $scope.onKeydown = function ($event) {
+    if ($event.keyCode == 8) {
+      $event.stopPropagation();
+      $scope.show_dropdown = false;
+      $scope.matches = [];
+      return;
+    }
+  };
+
+  $scope.toggled = function (open) {
+    $scope.show_dropdown = open;
+  }
+
+  $scope.truncate = function (text) {
+    if (!text) return;
+    var lines = text.split('\n');
+    var truncated = '';
+    if (lines.length > 3) {
+      lines = lines.slice(0, 3);
+      truncated += lines.map(function (line) {
+        return '<span class="text-muted">' + line + '</span>';
+      }).join('<br /><br />') + '<span class="text-muted">&nbsp;...</span>';
+    } else {
+      truncated += lines.join('<br /><br />');
+    }
+
+    return truncated;
+  }
+
+}]]></client_script>
+        <controller_as>c</controller_as>
+        <css>::-webkit-scrollbar {&#13;
+  width: 0.2em;&#13;
+}&#13;
+ &#13;
+::-webkit-scrollbar-track {&#13;
+  box-shadow: inset 0 0 0.5px rgba(0, 0, 0, 0.1);&#13;
+}&#13;
+ &#13;
+::-webkit-scrollbar-thumb {&#13;
+  background-color: $brand-primary;&#13;
+  border-radius: 0.1em;&#13;
+  outline: 0.5px solid #eee;&#13;
+}&#13;
+&#13;
+ul.dropdown-menu {&#13;
+	min-width: 100%;&#13;
+  margin: 0px;&#13;
+  padding: 0px;&#13;
+}&#13;
+&#13;
+ul.dropdown-menu div.ta-item {&#13;
+	line-height: 20px;&#13;
+}&#13;
+&#13;
+ul.dropdown-menu i.ta-icon, i.ta-img {&#13;
+	width: 20px;&#13;
+  height: 20px;&#13;
+  background-size: contain;&#13;
+  display: inline-block;&#13;
+  background-repeat: no-repeat;&#13;
+  background-position: center center;&#13;
+  text-align: center;&#13;
+  line-height: 20px;&#13;
+  vertical-align: bottom;&#13;
+  margin-right: 8px;&#13;
+}&#13;
+&#13;
+.primary-display {&#13;
+	font-size: 17px;&#13;
+}&#13;
+&#13;
+.list-link {&#13;
+	color: black;&#13;
+}&#13;
+&#13;
+.list-link:hover,&#13;
+.list-link:active,&#13;
+.list-link:focus {&#13;
+	color: $brand-primary;&#13;
+}&#13;
+&#13;
+&#13;
+.list-group-item:not(:first-child) {&#13;
+	border-top: 1px solid #ccc;&#13;
+  border-bottom: 1px transparent;&#13;
+  border-left: 1px transparent;&#13;
+  border-right: 1px transparent;&#13;
+}&#13;
+&#13;
+.list-group-item:hover {&#13;
+	background: #FCFCFC;&#13;
+}&#13;
+&#13;
+.list-group-item:first-child {&#13;
+	border: transparent;&#13;
+}&#13;
+&#13;
+.display-block {&#13;
+	display: block;&#13;
+  width: 100%;&#13;
+  &#13;
+}&#13;
+&#13;
+input[name="q"] {&#13;
+	color: black;&#13;
+  &#13;
+}&#13;
+input[name="q"]:focus {&#13;
+	border: 1px solid $brand-primary;&#13;
+  box-shadow: 0px 0px 5px $brand-primary;&#13;
+  outline: none;&#13;
+}&#13;
+&#13;
+.btn-search {&#13;
+	background: #fff;&#13;
+  color: black;&#13;
+  border: 1px solid #ccc;&#13;
+  outline: none;&#13;
+  -webkit-transition: all .1s ease-out;&#13;
+  -moz-transition: all .1s ease-out;&#13;
+  -ms-transition: all .1s ease-out;&#13;
+  transition: all .1s ease-out;&#13;
+}&#13;
+&#13;
+&#13;
+.btn-search:active {&#13;
+  background: $brand-primary;&#13;
+  color: #fff;&#13;
+	outline: none;&#13;
+  border: 1px solid $brand-primary;&#13;
+ 	box-shadow: 0px 0px 5px $brand-primary;&#13;
+  -webkit-transition: all .1s ease-out;&#13;
+  -moz-transition: all .1s ease-out;&#13;
+  -ms-transition: all .1s ease-out;&#13;
+  transition: all .1s ease-out;&#13;
+}&#13;
+&#13;
+.btn-search:focus {&#13;
+	outline: none;&#13;
+  border: 1px solid $brand-primary;&#13;
+ 	box-shadow: 0px 0px 5px $brand-primary;&#13;
+}</css>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description/>
+        <docs/>
+        <field_list/>
+        <has_preview>false</has_preview>
+        <id/>
+        <internal>false</internal>
+        <link><![CDATA[function link(scope, element, attrs, controller) {  }]]></link>
+        <name>Ratelock Search</name>
+        <option_schema/>
+        <public>false</public>
+        <roles/>
+        <script><![CDATA[(function () {
+
+  data.table = options.table || $sp.getParameter('table');
+  data.page_id = options.page_id || $sp.getParameter('id');
+  if (input) {
+    data.page_id = input.page_id || options.page_id || data.page_id || $sp.getParameter('id');
+    var querySchema = input.queries || options.queries || data.queries || [];
+    data.matches = getSearchResults(input.query, input.limit, querySchema, input.orderBy) || [];
+  }
+
+  function createEncodedQueryUrl(query, query_schema) {
+    var queries = query_schema || [];
+    var url = [];
+    for (var i in queries) {
+      var q = queries[i];
+      url.push((q.isOr ? 'OR' : '') + q.column + q.operator + (q.defaultValue ? q.defaultValue : query));
+    }
+
+    return url.join('^').replace(/^OR/, '');
+  }
+
+  function getSearchResults(query, limit, query_schema, orderBy) {
+    var matches = [];
+    var encoded_query_url = createEncodedQueryUrl(query, query_schema);
+    var gr = new GlideRecord(data.table);
+    gr.setLimit(limit || 5);
+    gr.orderBy('priority');
+    gr.orderByDesc('sys_created_on');
+    gr.addQuery('active', true);
+    gr.addEncodedQuery(encoded_query_url);
+    gr.query();
+    while (gr.next()) {
+      matches.push({
+        sys_id: gr.getValue('sys_id'),
+        number: gr.getValue('number'),
+        loan_number: gr.getValue('loan_number'),
+        description: gr.getValue('description'),
+        priority: gr.getDisplayValue('priority'),
+        caller: gr.getDisplayValue('caller_id'),
+        assigned_to: gr.getDisplayValue('assigned_to'),
+        state: gr.getDisplayValue('state'),
+        short_description: gr.getValue('short_description'),
+        url: '?id=' + data.page_id + '&table=' + data.table + '&sys_id=' + gr.getValue('sys_id')
+      });
+    }
+    return matches;
+  }
+})();]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-03-10 19:35:18</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>95848f90db6b0890f25513296896194b</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>Ratelock Search</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sp_widget_95848f90db6b0890f25513296896194b</sys_update_name>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-03-10 19:35:18</sys_updated_on>
+        <template><![CDATA[<form>
+  <div class="form-group m-b-none">
+    <input name="q"
+       class="form-control"
+       type="text"
+       ng-model="searcher"
+       ng-keydown="onKeydown($event)"
+       ng-model-options="modelOptions"
+       autocomplete="off"
+       role="textbox"
+       placeholder="Search" />
+  </div>
+</form>
+<div class="dropdown" ng-show="data.matches" uib-dropdown on-toggle="toggled(open)" is-open="show_dropdown">
+  <ul class="dropdown-menu list-group list-group-flush" 
+      style="margin-bottom:0px;"
+      uib-dropdown-menu 
+      role="menu"
+      id="ratelock-search-list"
+      aria-haspopup="true" aria-expanded="false">
+    <li class="list-group-item dropdown-item row"
+        ng-if="data.matches.length > 0"
+        ng-repeat="match in data.matches track by $index"
+        id="{{match.sys_id}}"
+        data-index="{{match.sys_id}}"
+        role="menuitem">  
+      <div class="col-xs-12">
+        <div class="row padder-l-none main-column">
+          <div class="primary-display">
+            <a href="{{match.url}}" class="list-link row m-r-none m-l-none">
+              <span class="pull-left padder-l-none padder-r-none" 
+                    ng-class="{'col-md-8': match.loan_number, 'col-md-12': !match.loan_number}">
+                {{match.short_description}}
+              </span>
+              <small class="padder-l-none padder-r-none col-md-4 pull-right text-muted hidden-xs"
+                      style="text-align:right;"
+                      ng-if="match.loan_number">
+                Loan: {{match.loan_number}}
+              </small>
+            </a>
+          </div>
+          <small class="text-muted">
+            <div class="secondary-display">
+              <span ng-bind-html="::truncate(match.description)"></span>
+            </div>
+          </small>
+        </div>
+      </div>
+    </li>
+    <li class="list-group-item dropdown-item no-border"
+        ng-if="data.matches.length === 0">
+    	<div class="ta-item">
+        <span>No Records Found</span>
+      </div>
+    </li>
+  </ul>
+</div>]]></template>
+    </sp_widget>
+    <sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Ratelock">605affb71badc01048a242e58d4bcb76</application>
+        <file_path/>
+        <instance_id>94e8281edbb7470060a6f0e5bf9619f6</instance_id>
+        <instance_name>movementdev</instance_name>
+        <name>sp_widget_95848f90db6b0890f25513296896194b</name>
+        <payload>&lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;record_update table="sp_widget"&gt;&lt;sp_widget action="INSERT_OR_UPDATE"&gt;&lt;category&gt;custom&lt;/category&gt;&lt;client_script&gt;&lt;![CDATA[function ($scope) {
+  /* widget controller */
+  var c = this;
+  // Setup Dropdown List events
+  $scope.searcher = undefined;
+  $scope.ignore_watcher = false;
+
+  $scope.modelOptions = {
+    debounce: {
+      default: 500,
+      blur: 0
+    },
+    getterSetter: true
+  };
+
+  $scope.$watch('searcher', function (val) {
+    if (!val) {
+      $scope.show_dropdown = false;
+    } else if (val.length &gt; 2 &amp;&amp; !$scope.ignore_watcher) {
+      $scope.data.query = val;
+      $scope.data.limit = 5;
+      $scope.data.orderBy = "priority";
+      $scope.server.update().then(function (results) {
+        $scope.matches = results.matches;
+        $scope.show_dropdown = true;
+      });
+    }
+  });
+
+  $scope.onKeydown = function ($event) {
+    if ($event.keyCode == 8) {
+      $event.stopPropagation();
+      $scope.show_dropdown = false;
+      $scope.matches = [];
+      return;
+    }
+  };
+
+  $scope.toggled = function (open) {
+    $scope.show_dropdown = open;
+  }
+
+  $scope.truncate = function (text) {
+    if (!text) return;
+    var lines = text.split('\n');
+    var truncated = '';
+    if (lines.length &gt; 3) {
+      lines = lines.slice(0, 3);
+      truncated += lines.map(function (line) {
+        return '&lt;span class="text-muted"&gt;' + line + '&lt;/span&gt;';
+      }).join('&lt;br /&gt;&lt;br /&gt;') + '&lt;span class="text-muted"&gt;&amp;nbsp;...&lt;/span&gt;';
+    } else {
+      truncated += lines.join('&lt;br /&gt;&lt;br /&gt;');
+    }
+
+    return truncated;
+  }
+
+}]]&gt;&lt;/client_script&gt;&lt;controller_as&gt;c&lt;/controller_as&gt;&lt;css&gt;::-webkit-scrollbar {&amp;#13;
+  width: 0.2em;&amp;#13;
+}&amp;#13;
+ &amp;#13;
+::-webkit-scrollbar-track {&amp;#13;
+  box-shadow: inset 0 0 0.5px rgba(0, 0, 0, 0.1);&amp;#13;
+}&amp;#13;
+ &amp;#13;
+::-webkit-scrollbar-thumb {&amp;#13;
+  background-color: $brand-primary;&amp;#13;
+  border-radius: 0.1em;&amp;#13;
+  outline: 0.5px solid #eee;&amp;#13;
+}&amp;#13;
+&amp;#13;
+ul.dropdown-menu {&amp;#13;
+	min-width: 100%;&amp;#13;
+  margin: 0px;&amp;#13;
+  padding: 0px;&amp;#13;
+}&amp;#13;
+&amp;#13;
+ul.dropdown-menu div.ta-item {&amp;#13;
+	line-height: 20px;&amp;#13;
+}&amp;#13;
+&amp;#13;
+ul.dropdown-menu i.ta-icon, i.ta-img {&amp;#13;
+	width: 20px;&amp;#13;
+  height: 20px;&amp;#13;
+  background-size: contain;&amp;#13;
+  display: inline-block;&amp;#13;
+  background-repeat: no-repeat;&amp;#13;
+  background-position: center center;&amp;#13;
+  text-align: center;&amp;#13;
+  line-height: 20px;&amp;#13;
+  vertical-align: bottom;&amp;#13;
+  margin-right: 8px;&amp;#13;
+}&amp;#13;
+&amp;#13;
+.primary-display {&amp;#13;
+	font-size: 17px;&amp;#13;
+}&amp;#13;
+&amp;#13;
+.list-link {&amp;#13;
+	color: black;&amp;#13;
+}&amp;#13;
+&amp;#13;
+.list-link:hover,&amp;#13;
+.list-link:active,&amp;#13;
+.list-link:focus {&amp;#13;
+	color: $brand-primary;&amp;#13;
+}&amp;#13;
+&amp;#13;
+&amp;#13;
+.list-group-item:not(:first-child) {&amp;#13;
+	border-top: 1px solid #ccc;&amp;#13;
+  border-bottom: 1px transparent;&amp;#13;
+  border-left: 1px transparent;&amp;#13;
+  border-right: 1px transparent;&amp;#13;
+}&amp;#13;
+&amp;#13;
+.list-group-item:hover {&amp;#13;
+	background: #FCFCFC;&amp;#13;
+}&amp;#13;
+&amp;#13;
+.list-group-item:first-child {&amp;#13;
+	border: transparent;&amp;#13;
+}&amp;#13;
+&amp;#13;
+.display-block {&amp;#13;
+	display: block;&amp;#13;
+  width: 100%;&amp;#13;
+  &amp;#13;
+}&amp;#13;
+&amp;#13;
+input[name="q"] {&amp;#13;
+	color: black;&amp;#13;
+  &amp;#13;
+}&amp;#13;
+input[name="q"]:focus {&amp;#13;
+	border: 1px solid $brand-primary;&amp;#13;
+  box-shadow: 0px 0px 5px $brand-primary;&amp;#13;
+  outline: none;&amp;#13;
+}&amp;#13;
+&amp;#13;
+.btn-search {&amp;#13;
+	background: #fff;&amp;#13;
+  color: black;&amp;#13;
+  border: 1px solid #ccc;&amp;#13;
+  outline: none;&amp;#13;
+  -webkit-transition: all .1s ease-out;&amp;#13;
+  -moz-transition: all .1s ease-out;&amp;#13;
+  -ms-transition: all .1s ease-out;&amp;#13;
+  transition: all .1s ease-out;&amp;#13;
+}&amp;#13;
+&amp;#13;
+&amp;#13;
+.btn-search:active {&amp;#13;
+  background: $brand-primary;&amp;#13;
+  color: #fff;&amp;#13;
+	outline: none;&amp;#13;
+  border: 1px solid $brand-primary;&amp;#13;
+ 	box-shadow: 0px 0px 5px $brand-primary;&amp;#13;
+  -webkit-transition: all .1s ease-out;&amp;#13;
+  -moz-transition: all .1s ease-out;&amp;#13;
+  -ms-transition: all .1s ease-out;&amp;#13;
+  transition: all .1s ease-out;&amp;#13;
+}&amp;#13;
+&amp;#13;
+.btn-search:focus {&amp;#13;
+	outline: none;&amp;#13;
+  border: 1px solid $brand-primary;&amp;#13;
+ 	box-shadow: 0px 0px 5px $brand-primary;&amp;#13;
+}&lt;/css&gt;&lt;data_table&gt;sp_instance&lt;/data_table&gt;&lt;demo_data/&gt;&lt;description/&gt;&lt;docs/&gt;&lt;field_list/&gt;&lt;has_preview&gt;false&lt;/has_preview&gt;&lt;id/&gt;&lt;internal&gt;false&lt;/internal&gt;&lt;link&gt;&lt;![CDATA[function link(scope, element, attrs, controller) {  }]]&gt;&lt;/link&gt;&lt;name&gt;Ratelock Search&lt;/name&gt;&lt;option_schema/&gt;&lt;public&gt;false&lt;/public&gt;&lt;roles/&gt;&lt;script&gt;&lt;![CDATA[(function () {
+
+  data.table = options.table || $sp.getParameter('table');
+  data.page_id = options.page_id || $sp.getParameter('id');
+  if (input) {
+    data.page_id = input.page_id || options.page_id || data.page_id || $sp.getParameter('id');
+    var querySchema = input.queries || options.queries || data.queries || [];
+    data.matches = getSearchResults(input.query, input.limit, querySchema, input.orderBy) || [];
+  }
+
+  function createEncodedQueryUrl(query, query_schema) {
+    var queries = query_schema || [];
+    var url = [];
+    for (var i in queries) {
+      var q = queries[i];
+      url.push((q.isOr ? 'OR' : '') + q.column + q.operator + (q.defaultValue ? q.defaultValue : query));
+    }
+
+    return url.join('^').replace(/^OR/, '');
+  }
+
+  function getSearchResults(query, limit, query_schema, orderBy) {
+    var matches = [];
+    var encoded_query_url = createEncodedQueryUrl(query, query_schema);
+    var gr = new GlideRecord(data.table);
+    gr.setLimit(limit || 5);
+    gr.orderBy('priority');
+    gr.orderByDesc('sys_created_on');
+    gr.addQuery('active', true);
+    gr.addEncodedQuery(encoded_query_url);
+    gr.query();
+    while (gr.next()) {
+      matches.push({
+        sys_id: gr.getValue('sys_id'),
+        number: gr.getValue('number'),
+        loan_number: gr.getValue('loan_number'),
+        description: gr.getValue('description'),
+        priority: gr.getDisplayValue('priority'),
+        caller: gr.getDisplayValue('caller_id'),
+        assigned_to: gr.getDisplayValue('assigned_to'),
+        state: gr.getDisplayValue('state'),
+        short_description: gr.getValue('short_description'),
+        url: '?id=' + data.page_id + '&amp;table=' + data.table + '&amp;sys_id=' + gr.getValue('sys_id')
+      });
+    }
+    return matches;
+  }
+})();]]&gt;&lt;/script&gt;&lt;servicenow&gt;false&lt;/servicenow&gt;&lt;sys_class_name&gt;sp_widget&lt;/sys_class_name&gt;&lt;sys_created_by&gt;douglas.schamberg&lt;/sys_created_by&gt;&lt;sys_created_on&gt;2020-03-10 19:35:18&lt;/sys_created_on&gt;&lt;sys_customer_update&gt;false&lt;/sys_customer_update&gt;&lt;sys_id&gt;95848f90db6b0890f25513296896194b&lt;/sys_id&gt;&lt;sys_mod_count&gt;0&lt;/sys_mod_count&gt;&lt;sys_name&gt;Ratelock Search&lt;/sys_name&gt;&lt;sys_package display_value="Ratelock" source="x_momo_ratelock"&gt;605affb71badc01048a242e58d4bcb76&lt;/sys_package&gt;&lt;sys_policy/&gt;&lt;sys_replace_on_upgrade&gt;false&lt;/sys_replace_on_upgrade&gt;&lt;sys_scope display_value="Ratelock"&gt;605affb71badc01048a242e58d4bcb76&lt;/sys_scope&gt;&lt;sys_update_name&gt;sp_widget_95848f90db6b0890f25513296896194b&lt;/sys_update_name&gt;&lt;sys_updated_by&gt;douglas.schamberg&lt;/sys_updated_by&gt;&lt;sys_updated_on&gt;2020-03-10 19:35:18&lt;/sys_updated_on&gt;&lt;template&gt;&lt;![CDATA[&lt;form&gt;
+  &lt;div class="form-group m-b-none"&gt;
+    &lt;input name="q"
+       class="form-control"
+       type="text"
+       ng-model="searcher"
+       ng-keydown="onKeydown($event)"
+       ng-model-options="modelOptions"
+       autocomplete="off"
+       role="textbox"
+       placeholder="Search" /&gt;
+  &lt;/div&gt;
+&lt;/form&gt;
+&lt;div class="dropdown" ng-show="data.matches" uib-dropdown on-toggle="toggled(open)" is-open="show_dropdown"&gt;
+  &lt;ul class="dropdown-menu list-group list-group-flush" 
+      style="margin-bottom:0px;"
+      uib-dropdown-menu 
+      role="menu"
+      id="ratelock-search-list"
+      aria-haspopup="true" aria-expanded="false"&gt;
+    &lt;li class="list-group-item dropdown-item row"
+        ng-if="data.matches.length &gt; 0"
+        ng-repeat="match in data.matches track by $index"
+        id="{{match.sys_id}}"
+        data-index="{{match.sys_id}}"
+        role="menuitem"&gt;  
+      &lt;div class="col-xs-12"&gt;
+        &lt;div class="row padder-l-none main-column"&gt;
+          &lt;div class="primary-display"&gt;
+            &lt;a href="{{match.url}}" class="list-link row m-r-none m-l-none"&gt;
+              &lt;span class="pull-left padder-l-none padder-r-none" 
+                    ng-class="{'col-md-8': match.loan_number, 'col-md-12': !match.loan_number}"&gt;
+                {{match.short_description}}
+              &lt;/span&gt;
+              &lt;small class="padder-l-none padder-r-none col-md-4 pull-right text-muted hidden-xs"
+                      style="text-align:right;"
+                      ng-if="match.loan_number"&gt;
+                Loan: {{match.loan_number}}
+              &lt;/small&gt;
+            &lt;/a&gt;
+          &lt;/div&gt;
+          &lt;small class="text-muted"&gt;
+            &lt;div class="secondary-display"&gt;
+              &lt;span ng-bind-html="::truncate(match.description)"&gt;&lt;/span&gt;
+            &lt;/div&gt;
+          &lt;/small&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/li&gt;
+    &lt;li class="list-group-item dropdown-item no-border"
+        ng-if="data.matches.length === 0"&gt;
+    	&lt;div class="ta-item"&gt;
+        &lt;span&gt;No Records Found&lt;/span&gt;
+      &lt;/div&gt;
+    &lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/div&gt;]]&gt;&lt;/template&gt;&lt;/sp_widget&gt;&lt;/record_update&gt;</payload>
+        <payload_hash>-229707855</payload_hash>
+        <record_name>Ratelock Search</record_name>
+        <reverted_from/>
+        <source>74fc5f651b5a401048a242e58d4bcbbc</source>
+        <source_table>sys_update_set</source_table>
+        <state>previous</state>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-03-10 19:35:18</sys_created_on>
+        <sys_id>91848f90db6b0890f25513296896194d</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>170c5f1bcc80000001</sys_recorded_at>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-03-10 19:35:18</sys_updated_on>
+        <type>Widget</type>
+        <update_guid>99848f90c06b08904f3eb19ecafa844c</update_guid>
+        <update_guid_history>99848f90c06b08904f3eb19ecafa844c:-229707855</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete display_value="">85e48fd0db6b0890f25513296896191f</sys_audit_delete>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-03-10 19:36:56</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_db_object display_value="" name="sp_widget">sp_widget</sys_db_object>
+        <sys_id>00dab464ba0746a08037f69ba82be640</sys_id>
+        <sys_metadata>95848f90db6b0890f25513296896194b</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>Ratelock Search</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_parent/>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_scope_delete display_value="">57712118eaee4a49ae47b2048a14ac31</sys_scope_delete>
+        <sys_update_name>sp_widget_95848f90db6b0890f25513296896194b</sys_update_name>
+        <sys_update_version display_value="sp_widget_95848f90db6b0890f25513296896194b">91848f90db6b0890f25513296896194d</sys_update_version>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-03-10 19:36:56</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>

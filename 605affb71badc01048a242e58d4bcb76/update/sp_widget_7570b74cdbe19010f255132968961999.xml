@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_widget">
+    <sp_widget action="INSERT_OR_UPDATE">
+        <category>custom</category>
+        <client_script><![CDATA[function ratelockListItem($scope, spUtil) {
+  /* widget controller */
+  var c = this;
+	
+	$scope.ticket = c.data.ticket;
+	
+	$scope.$watch('isVisible', function(value) {
+		if (value) {
+			if (!c.relatedWidget) {
+				spUtil.get(c.data.relatedWidget, {
+					sys_id: c.data.sys_id,
+					table: c.data.table,
+					loan_number: c.data.loan_number
+				}).then(function(response) {
+					c.relatedWidget = response;
+				});
+			}
+		}
+	});
+	
+	c.getPriorityIcon = function (value) {
+    if (value == 1) {
+      return 'fa fa-exclamation';
+    }
+    return 'display-none';
+  };
+
+  c.getPriorityColor = function (value) {
+    if (value == 1) {
+      return 'danger priority';
+    } else if (value == 2) {
+      return 'normal priority';
+    } else {
+      return 'success priority';
+    }
+  };
+
+  c.getStateColor = function (value) {
+    if (value == 1) {
+      return 'success';
+    } else if (value == 2) {
+      return 'normal';
+    } else if (value == 3) {
+      return 'normal';
+    }
+  };
+
+  c.getTypeColor = function (value) {
+    if (value == 1) {
+      return 'general';
+    } else if (value == 2) {
+      return 'tpo';
+    } else if (value == 4) {
+      return 'bond';
+    } else {
+      return 'normal';
+    }
+  };
+	
+	c.toggleRelatedOpen = function (id) {
+    if ($scope.isRelatedOpen === id) {
+      $scope.isRelatedOpen = undefined;
+    } else {
+      $scope.isRelatedOpen = id;
+    }
+  };
+}]]></client_script>
+        <controller_as>c</controller_as>
+        <css>.primary-display {
+  font-size: 1.7rem;
+}
+
+
+.details-small {
+	font-size: 1.3rem;
+  &amp; div {
+    &amp; span {
+      &amp; b {
+      	font-weight: 600;
+      }
+    }
+  }
+}
+
+.state-text {
+  font-weight: 700;
+}
+
+.accordion-clicker {
+  color: rgba(0, 0, 0, 0.8);
+  &amp;.glyphicon {
+    font-size: 12px;
+    padding-left: 5px;
+  }
+}
+
+.no-attachments-text {
+  &amp;:hover {
+    text-decoration: underline;
+  }
+}
+
+.detail-title {
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.accordion-link {
+  width: 100%;
+  display: block;
+
+  &amp;:focus,
+  &amp;:active {
+    outline: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+  }
+
+  &amp;:hover {
+    &amp; .accordion-clicker {
+      color: $brand-primary;
+    }
+  }
+}</css>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description/>
+        <docs/>
+        <field_list/>
+        <has_preview>false</has_preview>
+        <id>ratelock_list_item</id>
+        <internal>false</internal>
+        <link><![CDATA[function link(scope, elem, attrs, controller) { 
+	scope.isVisible = isInViewport(elem[0]);
+	
+	document.addEventListener('wheel', function(e) {
+		scope.isVisible = isInViewport(elem[0]);
+		scope.$apply();
+	}, { passive: true, capture: false });
+	
+	window.addEventListener('scroll', function(e) {
+		
+		scope.isVisible = isInViewport(elem[0]);
+		scope.$apply();
+	}, true);
+	
+	function isInViewport(element) {
+		var bounding = element.getBoundingClientRect();
+		return (
+        bounding.top >= 0 &&
+        bounding.left >= 0 &&
+        bounding.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+        bounding.right <= (window.innerWidth || document.documentElement.clientWidth)
+    );
+	}
+}]]></link>
+        <name>Ratelock List Item</name>
+        <option_schema/>
+        <public>false</public>
+        <roles/>
+        <script><![CDATA[(function() {
+  /* populate the 'data' object */
+  /* e.g., data.table = $sp.getValue('table'); */
+	data.ticket = (input ? input.ticket : undefined) || options.ticket || {};
+	
+	data.table = (input ? input.table : undefined) || options.table || $sp.getParameter('table');
+	
+	data.sys_id = (input ? input.sys_id : undefined) || options.sys_id || $sp.getParameter('sys_id');
+	
+	data.loan_number = (input ? input.loan_number : undefined) || options.loan_number || $sp.getParameter('loan_number');
+
+	data.relatedWidget = "ratelock_related_list";
+	data.sessionsWidget = "ratelock_list_sessions";
+})();]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-06-17 14:14:25</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>7570b74cdbe19010f255132968961999</sys_id>
+        <sys_mod_count>26</sys_mod_count>
+        <sys_name>Ratelock List Item</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sp_widget_7570b74cdbe19010f255132968961999</sys_update_name>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-06-17 17:10:41</sys_updated_on>
+        <template><![CDATA[<div class="row padder">
+  <div class="row m-b-sm">
+    <div class="col-md-12">
+      <a class="list-link primary-display" ng-href="{{ ticket.link }}" href>
+        <span>{{ ticket.summary }}</span>
+      </a>
+    </div>
+  </div>
+  <div class="row padding-l-sm">
+    <div class="col-md-12">
+      <div class="text-muted details-small">
+        <div>
+          <span>
+            <span ng-class="c.getPriorityColor(ticket.priority.value)">{{ ticket.priority.display }}</span>
+          </span>
+        </div>
+        <div ng-if="ticket.loan">
+          <span>
+            <b>Loan number</b>: <span>{{ ticket.loan }}</span>
+          </span>
+        </div>
+        <div>
+          <span>
+            <b>Opened on</b>: <span>{{ ticket.openedAt }}</span>
+          </span>
+        </div>
+
+        <div>
+          <span>
+            <b>Queue</b>: <span
+              ng-class="c.getTypeColor(ticket.requestType.value)">{{ ticket.requestType.display }}</span>
+          </span>
+        </div>
+        <div>
+          <span>
+            <b>State</b>: <span ng-class="c.getStateColor(ticket.state.value)">{{ ticket.state.display }}</span>
+          </span>
+        </div>
+        <div ng-if="ticket.caller">
+          <span>
+            <b>Requested by</b>: <span>{{ ticket.caller }}</span>
+          </span>
+        </div>
+        <div ng-if="ticket.assignedTo">
+          <span>
+            <b>Assigned to</b>: <span>{{ ticket.assignedTo }}</span>
+          </span>
+        </div>
+        <div>
+          <span>
+            <b>Last updated</b>:
+            <span ng-if="c.updatedTimeClicked != ticket.id" class="updated-time"
+              ng-click="c.updatedTimeClicked = ticket.id;">
+              <time>
+                <sn-time-ago timestamp="ticket.updatedAt.value"></sn-time-ago>
+              </time>
+            </span>
+            <span ng-if="c.updatedTimeClicked == ticket.id" class="updated-time"
+              ng-click="c.updatedTimeClicked = undefined;">{{ ticket.updatedAt.display }}</span>
+          </span>
+        </div>
+        <div>
+          <span>
+            <b>Updated by</b>: <span>{{ ticket.updatedBy }}</span>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row m-t-sm" ng-if="ticket.loan">
+    <div class="col-md-12">
+      <div class="padder-l">
+        <a href tabindex="0" ng-click="c.toggleRelatedOpen(ticket.id)" uib-accordian-transclude="heading"
+          class="accordion-link">
+          <span class="accordion-clicker">Related Ticket's</span>
+          <span uib-accordion-header class="glyphicon accordion-clicker"
+            ng-class="{'glyphicon-chevron-right': ticket.id != isRelatedOpen, 'glyphicon-chevron-down': ticket.id == isRelatedOpen}"></span>
+        </a>
+        <div class="panel-collapse collapse m-t" uib-collapse="isRelatedOpen != ticket.id">
+          <sp-widget widget="c.relatedWidget" ng-if="c.relatedWidget"></sp-widget>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>]]></template>
+    </sp_widget>
+</record_update>

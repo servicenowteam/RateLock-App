@@ -1,0 +1,411 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_widget">
+    <sp_widget action="INSERT_OR_UPDATE">
+        <category>custom</category>
+        <client_script><![CDATA[function($scope, $rootScope, $window, spModal) {
+  /* widget controller */
+  var c = this;
+	c.templates = c.data.templates;
+	$scope.showTemplatesBar = true;
+	$scope.searchTerm = undefined;
+	$scope.searchEnabled = false;
+	$scope.modelOptions = {
+		'default': 500,
+		blur: 0
+	};
+	c.onSearch = function() {
+		if (!$scope.searchTerm) {
+			c.templates = c.data.templates;
+			return;
+		}
+		var templates = $scope.data.templates.filter(function(item) {
+			var regex = new RegExp('(^[' + $scope.searchTerm + '](.*?))', 'gi');
+			console.log(item.name);
+			console.log(regex)
+			return regex.test(item.name);
+		});
+		
+		if (templates.length > 0) {
+			c.templates = templates;
+		}
+		return;
+	};
+	
+	c.onMouseover = function($event) {
+		$event.preventDefault();
+		$scope.showScrollArrows = true;
+	};
+	
+	c.onMouseleave = function($event) {
+		$event.preventDefault();
+		$scope.showScrollArrows = false;
+	};
+	
+	
+	$scope.broadcastTemplate = function($event, text, name) {
+		$event.preventDefault();
+		$event.stopPropagation();
+		var date = new Date();
+		var replacements = text.replace("{{VAR_TODAY}}", date.toLocaleDateString("en-US"));
+		var modalOptions = {
+			title: 'Add ' + name,
+			message: 'You are about to insert "'+ name +'" into your reply. This will overwrite your current reply. Would you like to continue?',
+			buttons: [{
+				label: 'Cancel', cancel: true
+			}, {
+				label: 'Continue', primary: true
+			}]
+		}
+		spModal.open(modalOptions).then(function(){
+			$rootScope.$broadcast('template.text.added', replacements);
+		}, function() {
+			
+		})
+		
+	};
+	
+	$rootScope.$on('ratelock.templates.isShowing', function(e, isShowing) {
+		$scope.showTemplatesBar = isShowing;
+	});
+	
+	c.getListContainerClass = function() {
+		var cls = 'list-outer-';
+		var VALID_OPTIONS = [
+			'xs',
+			'sm',
+			'md',
+			'lg',
+			'xl'
+		];
+		
+		if (VALID_OPTIONS.includes(c.data.size)) return cls + c.data.size;
+		return cls + 'md';
+	};
+}]]></client_script>
+        <controller_as>c</controller_as>
+        <css>::-webkit-scrollbar {
+  height: 4px;
+}
+
+::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 0.5px rgba(0, 0, 0, 0.01);
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 0.1em;
+  outline: 0.5px solid #eee;
+}
+
+.horizontal-list {
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow: hidden;
+  display: inline-flex;
+  vertical-align: middle;
+}
+
+.list-container {
+  display: inline-flex;
+  overflow-y: hidden;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  padding-bottom: 10px;
+  padding-top: 10px;
+}
+
+.scroll-arrow-back,
+.scroll-arrow-forward {
+  height: 100%;
+}
+
+.btn-rounded {
+	height: 10vh;
+  &amp;:focus {
+  	outline: none;
+    box-shadow: none;
+    border: none;
+  }
+  
+  &amp;:active {
+  	outline: none;
+    box-shadow: none;
+    border: none;
+  }
+}
+
+.arrow-container {
+	display: inline-flex;
+  width: 3vw;
+  justify-content: center;
+  vertical-align: middle;
+  align-items: center;
+}
+
+.list-outer {
+	display: inline-flex;
+  overflow: hidden;
+}
+
+
+
+.templates-header {
+	font-size: 16px;
+  padding: 10px;
+  text-decoration: underline;
+  font-weight: 500;
+  line-height: 2;
+}
+
+.btn.btn-edit {
+	margin: 10px;
+  border-color: #ccc;
+  color: #000;
+	background: #fff;
+  
+  border-style: solid;
+  border-radius: 5px;
+  border-width: 1px;
+  
+  -webkit-transition: all .3s ease-out;
+  -moz-transition: all .3s ease-out;
+  -ms-transition: all .3s ease-out;
+  transition: all .3s ease-out;
+}
+
+.btn.btn-edit:hover {
+  border-color: #ccc;
+  color: #000;
+	background: #ccc;
+  
+  border-style: solid;
+  border-radius: 5px;
+  border-width: 1px;
+  
+  -webkit-transition: all .3s ease-out;
+  -moz-transition: all .3s ease-out;
+  -ms-transition: all .3s ease-out;
+  transition: all .3s ease-out;
+}
+
+.btn.btn-edit:focus {
+	border: 1px solid #ccc;
+  box-shadow: 0px 0px 5px #ccc;
+  outline: none;
+}
+
+.right-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.horizontal-list-inner {
+  overflow: hidden;
+  display: inline-flex;
+  max-width: 1100px;
+  width: 1100px;
+  min-width: 1100px;
+}
+
+.btn-inline {
+  margin-right: 10px;
+  display: inline-block;
+  min-width: 100px;
+  height: 55px; 
+  white-space: normal;
+  word-wrap: break-word;
+  overflow-y: hidden;
+  transition: all .3s ease-out;
+}
+
+.btn.btn-outline:hover {
+  border-color: $brand-primary;
+  color: #fff;
+	background: $brand-primary;
+  
+  border-style: solid;
+  border-radius: 5px;
+  border-width: 1px;
+  
+  -webkit-transition: all .3s ease-out;
+  -moz-transition: all .3s ease-out;
+  -ms-transition: all .3s ease-out;
+  transition: all .3s ease-out;
+}
+
+.btn.btn-outline:focus {
+	border: 1px solid $brand-primary;
+  box-shadow: 0px 0px 5px $brand-primary;
+  outline: none;
+}
+
+.btn.btn-outline{
+  background: #fff;
+  
+  border-style: solid;
+  border-radius: 5px;
+  border-width: 1px;
+  
+  -webkit-transition: all .3s ease-out;
+  -moz-transition: all .3s ease-out;
+  -ms-transition: all .3s ease-out;
+  transition: all .3s ease-out;
+  border-color: $brand-primary;
+  color: $brand-primary;
+}
+
+.btn-controls {
+  border-radius: 10px;
+}
+
+.btn-controls-left {
+	margin-right: 10px;
+}
+
+@media screen and (max-width: 767px) {
+  .list-outer {
+    width: 295px;
+  }
+}
+
+@media screen and (min-width: 768px) {
+  .list-outer {
+    &amp;.list-outer-xs {
+    	width: 54vw;
+    }
+    &amp;.list-outer-sm {
+    	width: 64vw;
+    }
+    &amp;.list-outer-md {
+    	width: 74vw;
+    }
+    &amp;.list-outer-lg {
+    	width: 90vw;
+    }
+    &amp;.list-outer-xl {
+    	width: 100vw;
+    }
+  }
+}
+</css>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description/>
+        <docs/>
+        <field_list/>
+        <has_preview>false</has_preview>
+        <id>ratelock_templates_list</id>
+        <internal>false</internal>
+        <link><![CDATA[function link(scope, element, attrs, controller) { 
+	scope.canScrollForward = true;
+	scope.canScrollBack = false;
+	angular.element(element.find('.list-container')[0]).on('scroll', function(evt) {
+		var elem = element.find('.list-container')[0];
+		var limit = Math.ceil((elem.scrollWidth - elem.offsetWidth)) - 1;
+		if (elem.scrollLeft < limit) {
+			scope.canScrollForward = true;
+		} else {
+			scope.canScrollForward = false;
+		}
+		if (elem.scrollLeft > 0) {
+			scope.canScrollBack = true;
+		} else {
+			scope.canScrollBack = false;
+		}
+		scope.$apply();
+	});
+	scope.scrollBack = function($event) {
+		element.find('.list-container')[0].scrollLeft = element.find('.list-container')[0].scrollLeft - 1000;
+	};
+	
+	scope.scrollForward = function($event) {
+		element.find('.list-container')[0].scrollLeft += 1000;
+	};
+}]]></link>
+        <name>Ratelock Templates List</name>
+        <option_schema/>
+        <public>false</public>
+        <roles/>
+        <script><![CDATA[(function() {
+  /* populate the 'data' object */
+  /* e.g., data.table = $sp.getValue('table'); */
+	data.table = (input ? input.table : undefined) || options.table || $sp.getValue('table');
+	data.filter = 'user=' + gs.getUserID() + '^ORuserISEMPTY';
+	data.templates = options.canWrite ? getTemplates(data.table, data.filter) : [];
+	data.size = options.size ? options.size : 'md';
+	function getTemplates(table, filter) {
+		var templates = [];
+		var gr = new GlideRecord(data.table);
+		gr.addEncodedQuery(data.filter);
+		gr.orderBy('name');
+		gr.query();
+
+		while (gr.next()) {
+			templates.push({
+				sys_id: gr.getValue('sys_id'),
+				name: gr.getValue('name'),
+				text: gr.getValue('template')
+			});
+		}
+		return templates;
+	}
+	
+	
+})();]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-01-16 20:28:32</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>22dacd87db560810f25513296896190c</sys_id>
+        <sys_mod_count>469</sys_mod_count>
+        <sys_name>Ratelock Templates List</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sp_widget_22dacd87db560810f25513296896190c</sys_update_name>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-05-03 11:45:19</sys_updated_on>
+        <template><![CDATA[<div class="row m-b-sm" ng-if="searchEnabled">
+  <div class="col-md-8"></div>
+	<div class="col-md-4">
+    <input class="form-control pull-right" 
+           ng-model="searchTerm"
+           ng-model-options="modelOptions"
+           placeholder="Search for a template"
+           ng-change="c.onSearch()"
+           />
+  </div>
+</div>
+<div class="horizontal-list d-inline-flex row"
+     ng-mouseover="c.onMouseover($event)"
+     ng-mouseleave="c.onMouseleave($event)"
+     ng-show="c.templates.length > 0 && showTemplatesBar">
+  <div class="arrow-container back hidden-xs">
+    <div class="scroll-arrow-back">
+      <button class="btn btn-rounded btn-default" ng-disabled="!canScrollBack" ng-click="scrollBack($event)">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+      </button>
+    </div>
+  </div>
+  <div class="list-outer" ng-class="c.getListContainerClass()">
+    <div class="list-container" sp-drag-scroll axis="x">
+      <button class="btn btn-inline btn-outline btn-xs" 
+              ng-repeat="template in c.templates track by $index" 
+              ng-click="broadcastTemplate($event, template.text, template.name)">
+        {{::template.name}}
+      </button>
+    </div>
+  </div>
+  <div class="arrow-container forward hidden-xs">
+    <div class="scroll-arrow-forward pull-right">
+      <button class="btn btn-rounded btn-default" ng-disabled="!canScrollForward" ng-click="scrollForward($event)">
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </button>
+    </div>
+  </div>
+</div>]]></template>
+    </sp_widget>
+</record_update>

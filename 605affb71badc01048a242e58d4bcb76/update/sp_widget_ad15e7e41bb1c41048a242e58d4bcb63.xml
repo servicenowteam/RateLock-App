@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_widget">
+    <sp_widget action="INSERT_OR_UPDATE">
+        <category>standard</category>
+        <client_script><![CDATA[function ratelockBreadcrumbs($scope, $rootScope, spUtil) {
+  var c = this;
+  c.canNavigate = true;
+  c.expanded = !spUtil.isMobile();
+  c.expand = function () {
+    c.expanded = true;
+  };
+
+  var deregister = $rootScope.$on("sp.update.breadcrumbs", function (e, list) {
+    c.breadcrumbs = list;
+  });
+
+  $rootScope.$on('ratelock.sidebar.changes', function (e, hasChanges) {
+    c.canNavigate = !hasChanges;
+  });
+
+  c.getBreadcrumbUrl = function (url) {
+    if (c.canNavigate) return url;
+  };
+
+  c.getBreadcrumbHomePage = function () {
+    if (c.canNavigate) return '?id=' + $scope.portal.homepage_dv;
+  };
+
+  $scope.$on('$destroy', function () {
+    deregister();
+  });
+
+}]]></client_script>
+        <controller_as>c</controller_as>
+        <css>.nav {&#13;
+  li {&#13;
+    padding: 10px 7px;&#13;
+&#13;
+    &gt; span {&#13;
+      &gt; a:not(.a-disabled) {&#13;
+          display: inline;&#13;
+        	color: $brand-primary;&#13;
+          &#13;
+      }&#13;
+&#13;
+      &gt; i {&#13;
+          padding-left: 15px;&#13;
+      }&#13;
+    }&#13;
+  }&#13;
+}&#13;
+&#13;
+.a-disabled {&#13;
+  display: inline;&#13;
+  cursor: default;&#13;
+  color: $sp-disabled-breadcrumb;&#13;
+}</css>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description/>
+        <docs/>
+        <field_list/>
+        <has_preview>false</has_preview>
+        <id>ratelock-breadcrumbs</id>
+        <internal>false</internal>
+        <link><![CDATA[function link(scope, element, attrs, controller) {}]]></link>
+        <name>ratelock breadcrumbs</name>
+        <option_schema/>
+        <public>false</public>
+        <roles/>
+        <script><![CDATA[(function() {  /* populate the 'data' object */  /* e.g., data.table = $sp.getValue('table'); */})();]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2019-12-15 16:46:11</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>ad15e7e41bb1c41048a242e58d4bcb63</sys_id>
+        <sys_mod_count>9</sys_mod_count>
+        <sys_name>ratelock breadcrumbs</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sp_widget_ad15e7e41bb1c41048a242e58d4bcb63</sys_update_name>
+        <sys_updated_by>douglas.schamberg@movement.com</sys_updated_by>
+        <sys_updated_on>2020-09-06 13:49:37</sys_updated_on>
+        <template><![CDATA[<div aria-label="${Page breadcrumbs}" role="navigation">
+  <ul class="nav nav-pills nav-sm">
+    <li>
+      <span><a ng-class="{'a-disabled': !c.canNavigate}" ng-href="{{ c.getBreadcrumbHomePage() }}">${Home}</a>
+        <i aria-hidden="true" class="fa fa-chevron-right"></i></span>
+    </li>
+    <li ng-if="!c.expanded && c.breadcrumbs && c.breadcrumbs.length > 2">
+      <span><a ng-click="c.expand()"><i class="fa fa-ellipsis-h" aria-hidden="true"></i></a>
+        <i aria-hidden="true" class="fa fa-chevron-right"></i></span>
+    </li>
+    <li ng-if="!c.breadcrumbs"><span>
+        <a style="display: inline;" class="a-disabled" aria-current="page" href>{{page.title}}</a></span></li>
+    <li
+      ng-if="c.expanded || ((c.breadcrumbs.length > 2  && $index > c.breadcrumbs.length-3) || (c.breadcrumbs.length <= 2))"
+      ng-repeat="item in c.breadcrumbs track by $index">
+      <span>
+        <a ng-if="!$last" ng-href="{{ c.getBreadcrumbUrl(item.url) }}"
+          ng-class="{'a-disabled': !c.canNavigate}">{{item.label}}</a>
+        <a class="a-disabled" ng-if="$last" aria-current="page" href>{{item.label}}</a>
+        <i aria-hidden="true" ng-if="!$last" class="fa fa-chevron-right"></i>
+      </span>
+    </li>
+  </ul>
+</div>]]></template>
+    </sp_widget>
+</record_update>

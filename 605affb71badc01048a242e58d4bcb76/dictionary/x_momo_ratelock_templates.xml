@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?><database>
+    <element label="Templates" max_length="40" name="x_momo_ratelock_templates" sizeclass="50" type="collection">
+        <element label="Name" max_length="100" name="name" type="string"/>
+        <element attributes="ignore_filter_on_new=true" default="javascript:global.getNextObjNumberPadded();" label="Number" max_length="40" name="number" type="string"/>
+        <element label="Template" max_length="4000" name="template" type="string"/>
+        <element label="User" max_length="32" name="user" reference="sys_user" reference_qual="roles=x_momo_ratelock.ratelock_tech^active=true^EQ" reference_qual_condition="roles=x_momo_ratelock.ratelock_tech^active=true^EQ" type="reference"/>
+        <index name="index">
+            <element name="user"/>
+        </index>
+    </element>
+</database>

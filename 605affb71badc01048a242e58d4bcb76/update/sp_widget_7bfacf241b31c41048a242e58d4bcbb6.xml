@@ -1,0 +1,1462 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_widget">
+    <sp_widget action="INSERT_OR_UPDATE">
+        <category>standard</category>
+        <client_script><![CDATA[function spTicketConversation($scope, nowAttachmentHandler, mmSessions, $animate, $rootScope, cabrillo, $timeout, snRecordWatcher, spUtil, spAriaUtil, $http, $window, snAttachmentHandler, i18n, $sce) {
+  $scope.showLocationIcon = false;
+  $scope.msg = "";
+  $scope.isNative = cabrillo.isNative();
+  $scope.errorMessages = [];
+  $scope.isRelatedOpen = false;
+  $scope.isHistoryReady = false;
+
+  var existingEntries = {};
+  var c = this;
+  var skipNextRecordWatchUpdate = false;
+  $scope.typing = [];
+
+
+  if (!$scope.data.hasReadableJournalField && !$scope.data.isNewRecord)
+    console.warn("No readable journal field (comments, work notes, etc.) available in the stream for this record");
+  if ($scope.page && $scope.page.g_form)
+    hideParentJournalFields();
+
+  c.toggleRelatedOpen = function () {
+    $scope.isRelatedOpen = !$scope.isRelatedOpen;
+  };
+
+  $rootScope.$on('ratelock.history.ready', function () {
+    $scope.isHistoryReady = true;
+  });
+
+
+  $rootScope.$on('editor.typing', function (evt, payload) {
+    if (payload.id === c.data.sys_id) {
+      $scope.userTyping(payload.html);
+      $scope.editorEntry = payload.html;
+    }
+  });
+
+
+
+  $rootScope.$on('editor.blurred', function (evt, payload) {
+    if (!payload) {
+      return reset();
+    }
+  });
+  $scope.editor = $scope.data.editorWidget;
+  $scope.recipientsWidget = $scope.data.recipientsWidget;
+  $scope.relatedList = $scope.data.relatedList;
+  c.$onInit = function () {
+    mmSessions.setChannel($scope.data.table, $scope.data.sys_id);
+    var isShowing = (c.data.canWrite && c.data.canRead && c.data.isActiveTicket);
+    $rootScope.$broadcast('ratelock.templates.isShowing', isShowing);
+    $scope.isShowingTemplates = isShowing;
+    c.feed = 'activity';
+  };
+
+  c.$onDestroy = function () {
+    if ($scope.isAmbConnected) {
+      mmSessions.exiting($scope.data.sys_id);
+    }
+  };
+
+  $rootScope.$on('sessions.' + $scope.data.sys_id + '.connected', function (evt) {
+    $scope.isAmbConnected = true;
+  });
+
+  c.getHTMLValue = function (value) {
+    return $sce.trustAsHtml(value);
+  };
+
+  c.toggleOpenEmailDetails = function (id, body) {
+    if (id) {
+      if ($scope.emailLinkOpen && $scope.emailLinkOpen === id) {
+        $scope.emailLinkOpen = undefined;
+        $timeout(function () {
+          $scope.renderedEmailBody = '';
+        }, 100);
+
+      } else {
+
+        $timeout(function () {
+          $scope.emailLinkOpen = id;
+        }, 200);
+
+      }
+    }
+  };
+
+  c.enableAdvanceEmailSearch = function () {
+    $scope.emails = undefined;
+    $scope.data.enable_advanced_search = true;
+    $scope.isAdvancedSearchEnabled = true;
+    $rootScope.$broadcast('ratelock.templates.isShowing', false);
+    $scope.isShowingTemplates = false;
+    $scope.isHistoryReady = false;
+    $scope.data.feed = c.feed;
+    $scope.server.update().then(function (data) {
+      if (data.emailEntries && angular.isArray(data.emailEntries)) {
+        $scope.emails = data.emailEntries;
+        $scope.data.enable_advanced_search = false;
+      }
+    });
+  };
+
+  c.isOpen = function (id) {
+    if (!id || !$scope.emailLinkOpen) return false;
+    return $scope.emailLinkOpen === id;
+  };
+
+  c.getEmailLinkHeadingText = function (id) {
+    var msg = 'Show email details';
+    if (!id || !$scope.emailLinkOpen) return msg;
+    if ($scope.emailLinkOpen === id) {
+      return 'Hide email details';
+    }
+    return msg;
+  };
+
+
+  $scope.getEmailSrc = function (id) {
+    return '/email_display.do?email_id=' + id;
+  };
+
+  c.onActivityChange = function () {
+    if (c.feed === 'emails' || c.feed === 'history') {
+      $scope.emails = undefined;
+      $rootScope.$broadcast('ratelock.templates.isShowing', false);
+      $scope.isShowingTemplates = false;
+      $scope.isHistoryReady = false;
+      $scope.isAdvancedSearchEnabled = false;
+      $scope.data.feed = c.feed;
+      $scope.server.update().then(function (data) {
+        if (data.emailEntries && angular.isArray(data.emailEntries)) {
+          $scope.emails = data.emailEntries;
+        }
+        if (data.ticketHistoryEntries) {
+          $scope.historyWidget = data.ticketHistoryEntries;
+          $rootScope.$broadcast('ratelock.history.request');
+        }
+      });
+    } else {
+      var isShowing = (c.data.canWrite && c.data.canRead && c.data.isActiveTicket);
+      $rootScope.$broadcast('ratelock.templates.isShowing', isShowing);
+      $scope.isShowingTemplates = isShowing;
+      $scope.emails = null;
+    }
+  };
+
+
+  $scope.templateButtonTitle = "Hide Templates Bar";
+
+  $scope.showTemplatesBar = function () {
+    $scope.isShowingTemplates = !$scope.isShowingTemplates;
+    if ($scope.isShowingTemplates) {
+      $scope.templateButtonTitle = "Hide Templates Bar";
+    } else {
+      $scope.templateButtonTitle = "Show Templates Bar";
+    }
+    $rootScope.$broadcast('ratelock.templates.isShowing', $scope.isShowingTemplates);
+  };
+
+  function hideParentJournalFields() {
+    if (!$scope.data.stream)
+      return;
+
+    var fields = $scope.data.stream.journal_fields;
+    var g_form = $scope.page.g_form;
+    for (var f in fields)
+      g_form.setDisplay(fields[f].name, false);
+  }
+  var liveProfiles = {};
+  liveProfiles[$scope.user.sys_id] = {
+    userID: $scope.user.sys_id,
+    name: $scope.user.name,
+    initials: $window.NOW.user_initials
+  };
+  if ($window.NOW.user_avatar) {
+    liveProfiles[$scope.user.sys_id].userImage = $window.NOW.user_avatar;
+  }
+
+  $scope.getLiveProfileByUserId = function (userId) {
+    return liveProfiles[userId];
+  };
+
+  var pending = {};
+
+  //Little caching implementation to make sure we only get a given user's profile once.
+  $scope.hasLiveProfile = function hasLiveProfile(userId) {
+    if (!userId)
+      return false;
+
+    if (liveProfiles[userId])
+      return true;
+
+    if (pending[userId])
+      return false;
+
+    pending[userId] = $http.get('/api/now/live/profiles/sys_user.' + userId).then(function (response) {
+      liveProfiles[userId] = {
+        userID: userId,
+        name: response.data.result.name,
+        initials: buildInitials(response.data.result.name),
+        avatar: response.data.result.avatar
+      };
+    });
+    return false;
+  };
+
+  function buildInitials(name) {
+    if (!name)
+      return "--";
+
+    var initials = name.split(" ").map(function (word) {
+      return word.toUpperCase();
+    }).filter(function (word) {
+      return word.match(/^[A-Z]/);
+    }).map(function (word) {
+      return word.substring(0, 1);
+    }).join("");
+
+    return (initials.length > 3) ? initials.substr(0, 3) : initials;
+  }
+
+
+  function setupAttachmentHandler() {
+    $scope.attachmentHandler = new nowAttachmentHandler(attachSuccess, appendError);
+
+    function attachSuccess() {
+      $rootScope.$broadcast("sp.attachments.update", $scope.data.sys_id);
+      spAriaUtil.sendLiveMessage($scope.data.attachAddedMsg);
+    }
+
+    function appendError(error) {
+      spUtil.addErrorMessage(error.msg + error.fileName);
+      $scope.errorMessages.push(error);
+      spAriaUtil.sendLiveMessage($scope.data.attachFailMsg);
+    }
+
+    $timeout(function () {
+      $scope.attachmentHandler.setParams($scope.data.table, $scope.data.sys_id, 1024 * 1024 * $scope.data.maxAttachmentSize);
+    });
+  }
+  setupAttachmentHandler();
+
+  var recordWatcherTimer;
+  $scope.$on('record.updated', function (name, data) {
+    // Use record watcher update if:
+    //	This record was updated AND This widget didn't trigger the update.
+    if (data.table_name == $scope.data.table && data.sys_id == $scope.data.sys_id) {
+      $timeout.cancel(recordWatcherTimer);
+      recordWatcherTimer = $timeout(function () {
+        if (skipNextRecordWatchUpdate)
+          skipNextRecordWatchUpdate = false;
+        else
+          spUtil.update($scope).then(function (r) {
+            $scope.data.stream = r.stream;
+            $scope.recipientsWidget = r.recipientsWidget;
+          });
+      }, 250);
+    }
+  });
+
+  $scope.$on('sp.show_location_icon', function (evt) {
+    $scope.data.showLocationIcon = true;
+  });
+
+  $scope.$on('attachment.updated', function (evt, options) {
+    if ($scope.data.sys_id != -1 && options.sys_id == $scope.data.sys_id)
+      updateAttachmentState($scope.data.table, $scope.data.sys_id);
+  });
+
+
+  function updateAttachmentState(table, sys_id) {
+    c.server.update().then(function (data) {
+      if (!data.stream || !data.stream.entries)
+        return;
+      var newEntries = data.stream.entries;
+      var currEntries = $scope.data.mergedEntries;
+      var oldSize = currEntries ? currEntries.length : 0;
+      var newSize = newEntries.length;
+      for (var i = 0; i < oldSize; i++) {
+        if (!currEntries[i].attachment)
+          continue;
+        for (var j = 0; j < newSize; j++) {
+          if (currEntries[i].sys_id == newEntries[j].sys_id && newEntries[j].attachment) {
+            currEntries[i].attachment.state = newEntries[j].attachment.state;
+            break;
+          }
+        }
+      }
+    });
+  }
+
+  $scope.scanAttachment = function (attachment) {
+    snAttachmentHandler.scanAttachment(attachment);
+  };
+
+  $rootScope.$on('sp.sessions', function (evt, sessions) {
+    $scope.typing = [];
+    Object.keys(sessions).forEach(function (session) {
+      var journalFields = $scope.data.stream.journal_fields;
+      var canUserReadJournalField = false;
+      session = sessions[session];
+
+      for (var j = 0; j < journalFields.length; j++) {
+        if (journalFields[j].name === session.field_type) {
+          canUserReadJournalField = journalFields[j].can_read;
+          break;
+        }
+      }
+
+      if (session.status === 'typing' && canUserReadJournalField) {
+        $scope.typing.push(session);
+      } else
+        return;
+
+    });
+  });
+
+  $scope.$on('sp.conversation_title.changed', function (evt, text) {
+    $scope.data.ticketTitle = text;
+  });
+
+  $scope.$watch("data.canWrite", function () {
+    $rootScope.$broadcast("sp.record.can_write", $scope.data.canWrite);
+  });
+
+  var streamUpdateTimer;
+  $scope.$watch("data.stream", function () {
+    $timeout.cancel(streamUpdateTimer);
+    streamUpdateTimer = $timeout(function () {
+      mergeStreamEntries();
+    }, 50);
+  });
+
+  function mergeStreamEntries() {
+    $scope.placeholder = $scope.data.placeholderNoEntries;
+    if (!$scope.data.stream || !$scope.data.stream.entries)
+      return;
+
+    $scope.placeholder = $scope.data.placeholder;
+    var entries = $scope.data.stream.entries;
+    if (!$scope.data.mergedEntries) {
+      $scope.data.mergedEntries = $scope.data.stream.entries.slice();
+      for (var i = 0; i < entries.length; i++) {
+        if (entries[i].element !== 'ticket_history') {
+          existingEntries[entries[i].sys_id] = true;
+        }
+
+      }
+
+      return;
+    }
+
+    var mergedEntries = $scope.data.mergedEntries;
+    for (var a = entries.length - 1; a >= 0; a--) {
+      var curEntry = entries[a];
+      if (isNewEntry(mergedEntries, curEntry)) {
+        if (curEntry.element !== 'ticket_history') {
+          mergedEntries.unshift(curEntry);
+          existingEntries[curEntry.sys_id] = true;
+        }
+      }
+    }
+  }
+
+  function isNewEntry(mergedEntries, item) {
+    for (var i = 0; i < mergedEntries.length; i++) {
+      if (mergedEntries[i].sys_id === item.sys_id) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  $scope.getPlaceholder = function (isUseLabel) {
+    if ($scope.data.use_dynamic_placeholder && $scope.data.useSecondaryJournalField)
+      return $scope.data.secondaryJournalField.label;
+    if (isUseLabel && $scope.data.use_dynamic_placeholder && !$scope.data.useSecondaryJournalField)
+      return $scope.data.primaryJournalField.label;
+    return $scope.placeholder;
+  };
+
+  var colorCache;
+  $scope.getFieldColor = function (fieldName) {
+    var defaultColor = "transparent";
+    if (colorCache) {
+      if (fieldName in colorCache)
+        return colorCache[fieldName];
+      else
+        return defaultColor;
+    }
+
+    colorCache = {};
+    var jf = $scope.data.stream.journal_fields;
+    for (var i = 0; i < jf.length; i++) {
+      colorCache[jf[i].name] = jf[i].color || defaultColor;
+    }
+    return $scope.getFieldColor(fieldName);
+  };
+
+  $scope.checkInLocation = function () {
+    $rootScope.$broadcast("check_in_location");
+    $rootScope.$broadcast("location.sharing.start");
+  };
+
+  $scope.$on("location.sharing.end", function () {
+    $timeout(function () {
+      $scope.msg = "";
+    }, 500);
+  });
+
+  $scope.$on("location.sharing.start", function () {
+    $scope.msg = $scope.data.sharingLocMsg;
+  });
+
+  $scope.scanBarcode = function () {
+    $rootScope.$broadcast("scan_barcode");
+  };
+
+  $scope.$on("attachment.upload.start", function () {
+    $scope.data.isPosting = true;
+    $scope.msg = $scope.data.uploadingAttachmentMsg;
+  });
+
+  $scope.$on("attachment.upload.stop", function () {
+    $scope.data.isPosting = false;
+    $scope.msg = "";
+    //update the stream so we get the new attachment
+    spUtil.update($scope).then(function (r) {
+      $scope.data.stream = r.stream;
+    });
+  });
+
+  $scope.data.isPosting = false;
+
+  $scope.postEntry = function (input) {
+    post(input);
+  };
+
+  function post(input) {
+    if ($scope.data.isPosting)
+      return;
+
+    if (!input)
+      return;
+
+    input = input.trim();
+    $scope.data.journalEntry = input;
+
+    if ($scope.data.useSecondaryJournalField)
+      $scope.data.journalEntryField = $scope.data.secondaryJournalField.name;
+    else
+      $scope.data.journalEntryField = $scope.data.primaryJournalField.name;
+    $scope.data.isPosting = true;
+    $rootScope.$broadcast('ratelock.editor.is-posting');
+    spUtil.update($scope).then(function () {
+      $scope.data.isPosting = false;
+      reset();
+      spAriaUtil.sendLiveMessage($scope.data.messagePostedMsg);
+    });
+    skipNextRecordWatchUpdate = true;
+  }
+
+  var reset = function () {
+    $scope.userTyping("");
+    $scope.data.journalEntry = "";
+    $scope.updateFormWithJournalFields();
+    $scope.data.useSecondaryJournalField = false;
+    $scope.data.journalEntryField = "";
+
+  };
+
+  $scope.keyPress = function (event) {
+    if ($scope.data.isPosting) {
+      event.preventDefault();
+      return;
+    }
+  };
+
+  $scope.userTyping = function (input) {
+    if (input.length && $scope.isAmbConnected) {
+      mmSessions.typing($scope.data.sys_id);
+    } else if ($scope.isAmbConnected) {
+      mmSessions.viewing($scope.data.sys_id);
+    }
+
+
+    $scope.$emit("record.typing", {
+      status: status,
+      value: input,
+      table: $scope.data.table,
+      sys_id: $scope.data.sys_id
+    });
+    $scope.updateFormWithJournalFields();
+  };
+
+  $scope.updateFormWithJournalFields = function () {
+    var fieldName, fieldToClear = "";
+    if ($scope.data.useSecondaryJournalField) {
+      fieldName = $scope.data.secondaryJournalField.name;
+      fieldToClear = $scope.data.primaryJournalField.name;
+    } else {
+      fieldName = $scope.data.primaryJournalField.name;
+      fieldToClear = "";
+    }
+    $scope.$emit("activity_stream_is_changed", {
+      "fieldName": fieldName,
+      "fieldToClear": fieldToClear,
+      "input": $scope.data.journalEntry
+    });
+  };
+}]]></client_script>
+        <controller_as>c</controller_as>
+        <css>.list-header {&#13;
+  margin-bottom: 10px;&#13;
+  display: block;&#13;
+  margin-top: 0px;&#13;
+}&#13;
+&#13;
+.timeline .avatar-container {&#13;
+  border: none;&#13;
+}&#13;
+&#13;
+.no-email-records {&#13;
+  padding: 60px;&#13;
+  align-items: center;&#13;
+  vertical-align: middle;&#13;
+  justify-content: center;&#13;
+  text-align: center;&#13;
+&#13;
+  &amp;:hover {&#13;
+    &amp; span {&#13;
+      text-decoration: underline;&#13;
+    }&#13;
+  }&#13;
+}&#13;
+&#13;
+.accordion-link {&#13;
+&#13;
+  &amp;:active,&#13;
+  &amp;:focus {&#13;
+    outline: none;&#13;
+    border: none;&#13;
+    box-shadow: none;&#13;
+  }&#13;
+}&#13;
+&#13;
+.panel-footer {&#13;
+  &amp;.panel-sticky {&#13;
+    position: sticky;&#13;
+    bottom: 0;&#13;
+    left: 0;&#13;
+    z-index: 1001;&#13;
+  }&#13;
+}&#13;
+&#13;
+.form-group {&#13;
+  &amp; div {&#13;
+    &amp; .select2-container-multi {&#13;
+      &amp; .select2-choices {&#13;
+        border: none;&#13;
+        border-bottom: 1px solid #bdc0c4;&#13;
+        border-radius: 0px;&#13;
+&#13;
+        &amp;:focus,&#13;
+        &amp;:active {&#13;
+          outline: none;&#13;
+          box-shadow: none;&#13;
+        }&#13;
+      }&#13;
+    }&#13;
+&#13;
+    &amp; .select2-container-active,&#13;
+    .select2-container-active .select2-choice,&#13;
+    .select2-container-active .select2-choices {&#13;
+      border: none;&#13;
+    }&#13;
+  }&#13;
+}&#13;
+&#13;
+.recipients-label {&#13;
+  padding-left: 5px;&#13;
+}&#13;
+&#13;
+.panel-title {&#13;
+  display: inline;&#13;
+}&#13;
+&#13;
+.panel-body {&#13;
+  background-color: #fff;&#13;
+}&#13;
+&#13;
+.btn.btn-link.active {&#13;
+  color: $brand-primary;&#13;
+}&#13;
+&#13;
+.panel {&#13;
+  background-color: transparent !important;&#13;
+}&#13;
+&#13;
+.btn-primary:focus {&#13;
+  border: 1px solid $brand-primary;&#13;
+  box-shadow: 0px 0px 5px $brand-primary;&#13;
+}&#13;
+&#13;
+.form-control:focus {&#13;
+  border-color: $brand-primary;&#13;
+  outline: 4px solid transparent;&#13;
+  outline: 5px auto transparent;&#13;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(224, 58, 58, 0.6);&#13;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(224, 58, 58, 0.6);&#13;
+}&#13;
+&#13;
+.secondary-journal-field {&#13;
+  border: 1px solid gold;&#13;
+}&#13;
+&#13;
+.primary-journal-field {&#13;
+  border: 1px solid #ccc;&#13;
+}&#13;
+&#13;
+.panel-title-container {&#13;
+  display: flex;&#13;
+  justify-content: space-between;&#13;
+  align-items: center;&#13;
+}&#13;
+&#13;
+.panel-title-icons {&#13;
+&#13;
+  ul {&#13;
+    display: flex;&#13;
+    align-items: center;&#13;
+    padding: 0;&#13;
+    margin: 0;&#13;
+  }&#13;
+&#13;
+  li {&#13;
+    padding: 0;&#13;
+    margin: 0;&#13;
+&#13;
+    .panel-button {&#13;
+      display: flex;&#13;
+      align-items: center;&#13;
+      margin: 0 0 0 15px;&#13;
+      line-height: initial;&#13;
+&#13;
+      &amp;:hover,&#13;
+      &amp;:focus {&#13;
+        border-color: transparent;&#13;
+        outline: none;&#13;
+        -webkit-box-shadow: inset 0 0px 0px rgba(0, 0, 0, .075), 0 0 0px rgba(224, 58, 58, 0.6);&#13;
+        box-shadow: inset 0 0px 0px rgba(0, 0, 0, .075), 0 0 0px rgba(224, 58, 58, 0.6);&#13;
+        text-decoration: none;&#13;
+      }&#13;
+&#13;
+      &amp;:not(.active):focus {&#13;
+        color: #000;&#13;
+      }&#13;
+&#13;
+      &amp;:not(.btn-templates):hover {&#13;
+        color: $brand-primary;&#13;
+      }&#13;
+    }&#13;
+  }&#13;
+}&#13;
+&#13;
+&#13;
+.timeline-heading test {&#13;
+  float: right;&#13;
+}&#13;
+&#13;
+.timeline-body&gt;p {&#13;
+  white-space: pre-wrap;&#13;
+  overflow-x: hidden;&#13;
+}&#13;
+&#13;
+.timeline-body ul&gt;li {&#13;
+  float: none;&#13;
+}&#13;
+&#13;
+.input-group {&#13;
+  .select2-choices {&#13;
+    border-top-left-radius: 4px;&#13;
+    border-top-right-radius: 0px;&#13;
+    border-bottom-left-radius: 4px;&#13;
+    border-bottom-right-radius: 0px;&#13;
+  }&#13;
+}&#13;
+&#13;
+.no-resize {&#13;
+  resize: none;&#13;
+}&#13;
+&#13;
+.journal-field-indicator {&#13;
+  width: 5px;&#13;
+  position: absolute;&#13;
+  left: 5px;&#13;
+  top: 5px;&#13;
+  bottom: 5px;&#13;
+  z-index: 3;&#13;
+}&#13;
+&#13;
+.panel-heading {&#13;
+  word-wrap: break-word;&#13;
+}&#13;
+&#13;
+.avatar-container {&#13;
+  cursor: default;&#13;
+}&#13;
+&#13;
+ul {&#13;
+  list-style: none;&#13;
+}&#13;
+&#13;
+.overflow-hidden {&#13;
+  overflow: hidden;&#13;
+}&#13;
+&#13;
+&#13;
+.timeline-badge-wrap {&#13;
+  margin: auto;&#13;
+  max-width: 115px;&#13;
+}&#13;
+&#13;
+.timeline-badge.success {&#13;
+  background-color: $success;&#13;
+}&#13;
+&#13;
+.timeline-badge {&#13;
+  position: relative;&#13;
+  left: 25%;&#13;
+  width: 50%;&#13;
+  padding-bottom: 50%;&#13;
+  border-radius: 50%;&#13;
+}&#13;
+&#13;
+.timeline-badge span {&#13;
+  position: absolute;&#13;
+  top: 50%;&#13;
+  left: 50%;&#13;
+  transform: translate(-50%, -50%);&#13;
+  font-size: 13px;&#13;
+  color: #fff;&#13;
+}&#13;
+&#13;
+.journal-type {&#13;
+  display: inline-flex;&#13;
+  display: -ms-inline-flexbox;&#13;
+  flex-wrap: wrap;&#13;
+  -webkit-justify-content: flex-end;&#13;
+}&#13;
+&#13;
+.fa-circle {&#13;
+  font-size: 4px;&#13;
+  padding: 7px;&#13;
+}&#13;
+&#13;
+@media (max-width: 768px) {&#13;
+  .timeline-badge-wrap {&#13;
+    margin: 0;&#13;
+  }&#13;
+&#13;
+  .timeline-badge {&#13;
+    left: 10%;&#13;
+  }&#13;
+}&#13;
+&#13;
+.list-group-clear {&#13;
+  border: 1px solid transparent;&#13;
+  border-radius: 0px;&#13;
+}&#13;
+&#13;
+.email-frame {&#13;
+  overflow-y: hidden;&#13;
+&#13;
+  &amp; .panel-body {&#13;
+    overflow-y: hidden;&#13;
+&#13;
+    &amp; .email-details-inner {&#13;
+      overflow-y: hidden;&#13;
+    }&#13;
+  }&#13;
+}&#13;
+&#13;
+.email-panel-body {&#13;
+  padding-bottom: 5px;&#13;
+}&#13;
+&#13;
+.email-title,&#13;
+.email-details {&#13;
+  color: rgb(69, 84, 100);&#13;
+  font-size: 12px;&#13;
+}&#13;
+&#13;
+.email-title {&#13;
+  padding: 0px 0px 15px 0px;&#13;
+}&#13;
+&#13;
+.email-display-name {&#13;
+  margin-left: 5px;&#13;
+}&#13;
+&#13;
+.message-created {&#13;
+  display: inline-flex;&#13;
+}&#13;
+&#13;
+.email-dot {&#13;
+  background: rgba(69, 84, 100, 0.85);&#13;
+  display: inline-block;&#13;
+  height: 5px;&#13;
+  width: 5px;&#13;
+  border-radius: 50%;&#13;
+  vertical-align: middle;&#13;
+  margin: 6px 4px;&#13;
+}&#13;
+&#13;
+.text-align-right {&#13;
+  text-align: right;&#13;
+}&#13;
+&#13;
+.email-details {&#13;
+  display: -webkit-box;&#13;
+  display: -moz-box;&#13;
+  display: -ms-flexbox;&#13;
+  display: -webkit-flex;&#13;
+  align-items: center;&#13;
+  vertical-align: middle;&#13;
+  justify-content: center;&#13;
+  padding-bottom: 5px;&#13;
+&#13;
+  &amp; .email-details-container {&#13;
+    display: flex;&#13;
+    width: 100%;&#13;
+    align-items: center;&#13;
+    justify-content: center;&#13;
+    vertical-align: middle;&#13;
+    overflow-y: hidden;&#13;
+  }&#13;
+}&#13;
+&#13;
+.email-panel {&#13;
+  border-radius: 0px;&#13;
+}&#13;
+&#13;
+iframe.card {&#13;
+  border: none !important;&#13;
+  overflow-y: hidden !important;&#13;
+&#13;
+  &amp; html {&#13;
+    padding: 15px;&#13;
+    overflow-y: hidden;&#13;
+  }&#13;
+}&#13;
+&#13;
+.emails-details-list-group {&#13;
+  margin-bottom: 0px;&#13;
+  max-width: 500px;&#13;
+  width: 100%;&#13;
+&#13;
+  &amp; .emails-details-list-group-item {&#13;
+    padding: 5px;&#13;
+&#13;
+    &amp; .email-details-link {&#13;
+      color: $brand-primary;&#13;
+&#13;
+      &amp;:hover {&#13;
+        text-decoration: underline;&#13;
+      }&#13;
+    }&#13;
+&#13;
+    &amp; .email-details-col:nth-child(1) {&#13;
+      font-weight: 700;&#13;
+    }&#13;
+&#13;
+    &amp; .email-details-col:nth-child(2) {&#13;
+      word-break: break-all;&#13;
+    }&#13;
+&#13;
+    &amp; .email-details-col.importance {&#13;
+      color: $danger;&#13;
+    }&#13;
+  }&#13;
+}&#13;
+&#13;
+.panel-clear {&#13;
+  &amp; .email-details-inner {&#13;
+    justify-content: center;&#13;
+    display: flex;&#13;
+&#13;
+    &amp;:first-child {&#13;
+      border: 1px solid #ccc;&#13;
+    }&#13;
+  }&#13;
+}&#13;
+&#13;
+.select2-container-active .select2-choice,&#13;
+.select2-container-active .select2-choices {&#13;
+  border: 1px solid $brand-primary;&#13;
+}&#13;
+&#13;
+.select2-choice {&#13;
+  &amp;:focus {&#13;
+    border: 1px solid $brand-primary;&#13;
+    box-shadow: 0px 0px 5px $brand-primary;&#13;
+  }&#13;
+}&#13;
+&#13;
+.loading {&#13;
+  min-height: 400px;&#13;
+  display: flex;&#13;
+  width: 100%;&#13;
+  vertical-align: middle;&#13;
+  align-items: center;&#13;
+  justify-content: center;&#13;
+&#13;
+  &amp;.absolute-loader {&#13;
+    height: 100%;&#13;
+    position: absolute;&#13;
+    top: 0;&#13;
+    left: 0;&#13;
+    background: #fff;&#13;
+    z-index: 1049;&#13;
+  }&#13;
+&#13;
+  &amp; span.loading-inline {&#13;
+    font-size: 3rem;&#13;
+    font-weight: 700;&#13;
+    color: $brand-primary;&#13;
+  }&#13;
+}&#13;
+&#13;
+.btn-absolute-group {&#13;
+  position: absolute;&#13;
+  top: 50px;&#13;
+  left: 15px;&#13;
+}</css>
+        <data_table>sp_instance</data_table>
+        <demo_data>{"options": {&#13;
+	"sys_id": -1,&#13;
+		"table": "incident"&#13;
+	}&#13;
+}</demo_data>
+        <description/>
+        <docs/>
+        <field_list/>
+        <has_preview>false</has_preview>
+        <id>ratelock-ticket-conversations</id>
+        <internal>false</internal>
+        <link><![CDATA[function ratelockTicketLink(scope, elm) {
+
+}]]></link>
+        <name>Ratelock Ticket Conversations</name>
+        <option_schema>[{"hint":"Placeholder text shows selected journal field","name":"use_dynamic_placeholder","section":"Behavior","label":"Use dynamic placeholder","type":"boolean"},{"hint":"Message to show when record has no readable journal field","name":"no_readable_journal_field_message","default_value":"","section":"Presentation","label":"No readable journal field message","type":"string"}]</option_schema>
+        <public>false</public>
+        <roles/>
+        <script><![CDATA[(function (data, input) {
+  data.maxAttachmentSize = parseInt(gs.getProperty("com.glide.attachment.max_size", 1024));
+  if (isNaN(data.maxAttachmentSize)) {
+    data.maxAttachmentSize = 24;
+  }
+  data.uploadingAttachmentMsg = gs.getMessage("Uploading attachment...");
+  data.sharingLocMsg = gs.getMessage("Sharing location...");
+  data.scanBarcodeMsg = gs.getMessage("Scan barcode");
+  data.checkInLocMsg = gs.getMessage("Check in location");
+  data.messagePostedMsg = gs.getMessage("Message has been sent");
+  data.viewMsg = gs.getMessage("View");
+  data.attachAddedMsg = gs.getMessage("Attachment added");
+  data.attachFailMsg = gs.getMessage("Failed to add attachment");
+  data.scanFailedMsg = gs.getMessage("File failed security scan");
+  data.sys_id = (input ? input.sys_id : undefined) || options.sys_id || $sp.getParameter("sys_id");
+  data.table = (input ? input.table : undefined) || options.table || $sp.getParameter("table");
+  // don't use options.title unless sys_id and table also come from options
+  if (options && options.sys_id && options.table) {
+    data.ticketTitle = options.title;
+  }
+  data.placeholder = options.placeholder || gs.getMessage("Type your message here...");
+  data.placeholderNoEntries = options.placeholderNoEntries || gs.getMessage("Type your message here...");
+  data.btnLabel = options.btnLabel || gs.getMessage("Send");
+  data.includeExtended = options.includeExtended || false;
+  data.use_dynamic_placeholder = options.use_dynamic_placeholder;
+  data.hideAttachmentBtn = options.hideAttachmentBtn;
+  options.no_readable_journal_field_message = options.no_readable_journal_field_message || gs.getMessage("No readable comment field");
+
+  var gr = new GlideRecord(data.table);
+
+  gr.get(data.sys_id);
+
+  if (!gr.isValidRecord()) {
+    return;
+  }
+
+  if (!gr.canRead()) {
+    return;
+  }
+
+  data.email_filter = 'instance=' + gr.getUniqueValue();
+  data.hasLoanNumber = !gr.loan_number.nil();
+  data.isActiveTicket = gr.getValue('state') != '6';
+  data.number = gr.getDisplayValue('number');
+  data.created_on = gr.getValue('sys_created_on');
+  data.canWrite = gr.canWrite();
+  data.canAttach = gs.hasRole(gs.getProperty("glide.attachment.role"));
+  data.canRead = gr.canRead();
+  data.hasWritableJournalField = false;
+  data.hasReadableJournalField = false;
+
+  if (!input) {
+    data.relatedList = $sp.getWidget('ratelock_related_list', {
+      table: data.table,
+      sys_id: data.sys_id,
+      loan_number: data.hasLoanNumber ? gr.getValue('loan_number') : null
+    });
+    data.editorWidget = $sp.getWidget('ratelock_quill_editor', {
+      placeholder: data.placeholder,
+      disabled: (!data.canWrite || !data.isActiveTicket),
+      sys_id: data.sys_id
+    });
+    data.recipientsWidget = $sp.getWidget('ratelock-recipients-input', {
+      sys_id: data.sys_id
+    });
+    if (!data.ticketTitle) {
+      if (!gr.short_description.nil() && gr.short_description.canRead()) {
+        data.ticketTitle = gr.getDisplayValue("short_description");
+      } else {
+        data.ticketTitle = data.number;
+      }
+    }
+  } else {
+    if (input.journalEntry && input.journalEntryField) {
+      data.canWriteToEntryField = gr.canWrite(input.journalEntryField);
+      if (data.canWriteToEntryField) {
+        gr[input.journalEntryField] = input.journalEntry;
+        gr.update();
+      }
+    }
+    data.ticketTitle = input.ticketTitle;
+    data.placeholder = input.placeholder;
+    data.btnLabel = input.btnLabel;
+    data.includeExtended = input.includeExtended;
+
+    if (input.feed === 'emails') {
+      data.emailEntries = getEmailRecords(data.table, data.sys_id, (input ? input.enable_advanced_search : false));
+    }
+
+    if (input.feed === 'history') {
+      data.ticketHistoryEntries = $sp.getWidget('ratelock_ticket_history_list', {
+        table: data.table,
+        sys_id: data.sys_id
+      });
+    }
+  }
+
+  if (data.canRead) {
+    data.stream = $sp.getStream(data.table, data.sys_id);
+    if ('journal_fields' in data.stream) {
+      var jf = data.stream.journal_fields;
+      for (var i = 0; i < jf.length; i++) {
+        if (jf[i].can_read === true) {
+          data.hasReadableJournalField = true;
+        }
+        if (jf[i].can_write === true) {
+          data.hasWritableJournalField = true;
+          if (!data.primaryJournalField) {
+            data.primaryJournalField = jf[i];
+          } else if (data.includeExtended && !data.secondaryJournalField) {
+            data.secondaryJournalField = jf[i];
+          } else {
+            break;
+          }
+        }
+      }
+    }
+  }
+
+
+
+
+  function getEmailRecords(table, sysId, runAdvancedSearch) {
+    var _entries = [];
+    var rec = new GlideRecord('sys_email');
+    if (runAdvancedSearch) {
+      rec.addQuery('instance', sysId).addOrCondition('body', 'CONTAINS', 'Loan Ref:' + sysId);
+    } else {
+      rec.addQuery('instance', sysId)
+    }
+
+    rec.orderByDesc('sys_created_on');
+    rec.query();
+
+    while (rec.next()) {
+
+      _entries.push({
+        element: 'emails',
+        field_label: 'Email',
+        sys_created_on: formatDateTime(rec.sys_created_on),
+        from: getCreatedBy(rec.user, rec.user_id),
+        sys_id: rec.getUniqueValue(),
+        type: getEmailType(rec.getValue('type')),
+        to: rec.getValue('direct'),
+        cc: rec.getValue('copied'),
+        body: rec.getValue('body'),
+        importance: rec.importance.nil() ? null : rec.getValue('importance'),
+        subject: rec.getValue('subject')
+      });
+    }
+    return _entries;
+  }
+
+  function getEmailType(type) {
+    switch (type) {
+      case 'sent':
+        return 'Email Sent';
+      case 'send-ready':
+        return 'Processing';
+      default:
+        return 'Email Received';
+    }
+  }
+
+  function getCreatedBy(from, user) {
+    if (!user.nil()) {
+      return user.getDisplayValue();
+    } else if (from.nil()) {
+      return 'System';
+    } else {
+      return from.getDisplayValue();
+    }
+  }
+
+  function formatDateTime(gtDate, excludeTime) {
+    if (gtDate.nil()) return;
+    var gdt = new GlideDateTime();
+    gdt.setDisplayValue(gtDate.getDisplayValue());
+    var gDate = gdt.getLocalDate();
+    var gt = gdt.getLocalTime();
+    var lDate = gDate.getByFormat('MMMM dd, YYYY');
+    if (excludeTime) {
+      return lDate;
+    }
+    return lDate + ' at ' + gt.getByFormat('hh:mm a');
+  }
+
+})(data, input);]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2019-12-15 14:52:12</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>7bfacf241b31c41048a242e58d4bcbb6</sys_id>
+        <sys_mod_count>492</sys_mod_count>
+        <sys_name>Ratelock Ticket Conversations</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sp_widget_7bfacf241b31c41048a242e58d4bcbb6</sys_update_name>
+        <sys_updated_by>douglas.schamberg@movement.com</sys_updated_by>
+        <sys_updated_on>2020-08-20 11:01:26</sys_updated_on>
+        <template><![CDATA[<div>
+  <div ng-if="!data.canRead && !data.isNewRecord">
+    ${Requested record not found}
+  </div>
+  <div ng-if="data.canRead && !data.isNewRecord" class="panel panel-{{options.color}} b ticket_conversation">
+    <div class="panel-heading">
+
+      <div class="h2 panel-title panel-title-container">
+        <h2 class="h4 panel-title" aria-label="{{::data.ticketTitle}} ${Ticket history}">{{::data.ticketTitle}}</h2>
+
+        <div class="pull-right panel-title-icons">
+          <ul>
+            <li>
+              <button class="panel-button btn btn-link hidden-xs btn-templates"
+                ng-class="{'active': isShowingTemplates}" ng-click="showTemplatesBar()"
+                ng-disabled="!(data.canWrite && data.canRead && data.isActiveTicket && c.feed === 'activity')"
+                title="{{ templateButtonTitle }}">
+                <span class="glyphicon glyphicon-folder-close" ng-if="!isShowingTemplates"></span>
+                <span class="glyphicon glyphicon-folder-open" ng-if="isShowingTemplates"></span>
+              </button>
+            </li>
+            <li>
+              <button href ng-show="data.showLocationIcon && data.canWrite && data.isActiveTicket"
+                class="panel-button btn btn-link" ng-click="checkInLocation()" title="{{data.checkInLocMsg}}">
+                <span class="glyphicon glyphicon-globe"></span>
+              </button>
+            </li>
+            <li>
+              <button href class="panel-button btn btn-link" ng-show="isNative" ng-click="scanBarcode()"
+                title="{{data.scanBarcodeMsg}}">
+                <span class="glyphicon glyphicon-barcode"></span>
+              </button>
+            </li>
+            <li ng-if="::(!data.hideAttachmentBtn && data.isActiveTicket)">
+              <sp-attachment-button ng-if="::data.canWrite && data.canAttach"></sp-attachment-button>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="panel-body">
+      <div ng-if="data.hasReadableJournalField">
+        <div class="row m-b-sm">
+          <div ng-class="{'col-md-6': !isRelatedOpen, 'col-md-12': isRelatedOpen}" ng-if="data.hasLoanNumber">
+            <div class="padder-l">
+              <a href tabindex="0" ng-click="c.toggleRelatedOpen()" uib-accordian-transclude="heading"
+                class="accordion-link">
+                <span class="accordion-clicker">Related Ticket's</span>
+                <span uib-accordion-header class="glyphicon accordion-clicker"
+                  ng-class="{'glyphicon-chevron-right': !isRelatedOpen, 'glyphicon-chevron-down': isRelatedOpen}"></span>
+              </a>
+              <div class="panel-collapse collapse m-t" uib-collapse="!isRelatedOpen">
+                <sp-widget widget="relatedList"></sp-widget>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6" ng-if="!data.hasLoanNumber"></div>
+          <div class="col-md-6" ng-if="!isRelatedOpen">
+            <select class="sc-basic-select" ng-model="c.feed" ng-change="c.onActivityChange()">
+              <option value="activity" selected>Comments and Notes</option>
+              <option value="emails">Email History</option>
+              <option value="history" class="hidden-xs">Ticket Logs</option>
+            </select>
+          </div>
+        </div>
+        <div class="row" ng-if="!isRelatedOpen && c.feed === 'emails'">
+          <div class="col-md-10 hidden-xs"></div>
+          <div class="col-md-2 col-xs-12">
+            <button ng-click="c.enableAdvanceEmailSearch()" class="btn btn-default btn-sm pull-right"
+              ng-disabled="isAdvancedSearchEnabled">
+              Run Advanced Search
+            </button>
+          </div>
+          <div class="col-md-10 hidden-xs" ng-if="!isAdvancedSearchEnabled"></div>
+          <div class="col-md-2 hidden-xs" style="text-align: right;" ng-if="!isAdvancedSearchEnabled">
+            <small class="text-muted" style="text-align: right;"><b>Note: This takes a while to complete</b></small>
+          </div>
+        </div>
+        <form id="sand">
+          <div class="form-group" ng-show="c.feed === 'activity'">
+            <label for="recipients-input" class="recipients-label">Email Recipients</label>
+            <sp-widget widget="data.recipientsWidget" id="recipients-input"></sp-widget>
+          </div>
+          <div ng-show="data.hasWritableJournalField" class="input-group" ng-show="c.feed === 'activity'">
+            <span class="input-group-btn hidden-xs" style="vertical-align: top"
+              ng-if="::(data.secondaryJournalField && data.secondaryJournalField.can_write)">
+              <button uib-btn-checkbox class="btn btn-primary" btn-checkbox-false
+                ng-model="::data.useSecondaryJournalField" ng-change="updateFormWithJournalFields()"
+                ng-bind-html="getPlaceholder(true)">
+              </button>
+            </span>
+            <sp-widget widget="data.editorWidget"></sp-widget>
+            <span class="input-group-btn" style="vertical-align: top">
+              <button class="btn btn-primary" ng-click="postEntry(editorEntry)"
+                ng-disabled="data.isPosting || !data.isActiveTicket">{{ ::data.btnLabel }}</button>
+            </span>
+          </div>
+        </form>
+        <ul class="list-group m-b-none" ng-if="typing.length > 0">
+          <li class="list-group-item user-typing m-t" ng-repeat="u in typing">${{{::u.user_display_name}} is typing}
+          </li>
+        </ul>
+        <ul class="list-group m-b-none m-t" ng-if="msg">
+          <li class="list-group-item user-typing">{{msg}}</li>
+        </ul>
+        <div class="history-container padder" ng-show="c.feed === 'history'">
+          <div class="loading absolute-loader" ng-if="!isHistoryReady">
+            <span class="loading-inline">
+              <i class="fa fa-spinner fa-spin" aria-hidden="true"></i>
+            </span>
+          </div>
+          <sp-widget widget="historyWidget"></sp-widget>
+        </div>
+        <div class="email-container padder" ng-show="c.feed === 'emails'">
+          <div class="loading" ng-if="!emails">
+            <span class="loading-inline">
+              <i class="fa fa-spinner fa-spin" aria-hidden="true"></i>
+            </span>
+          </div>
+          <ul class="list-group" ng-if="emails">
+            <li class="list-group-item list-group-clear" ng-if="emails.length === 0">
+              <div class="no-email-records">
+                <span>${No email records found}</span>
+              </div>
+            </li>
+            <li class="list-group-item list-group-clear" ng-repeat="record in emails" ng-if="emails.length > 0">
+              <div class="panel panel-default m-b-none email-panel">
+                <div class="panel-body email-panel-body">
+                  <div class="row email-title">
+                    <div class="col-md-6">
+                      <div class="email-title-avatar">
+                        <span class="email-display-name">{{ record.from }}</span>
+                      </div>
+                    </div>
+                    <div class="col-md-6 text-align-right">
+                      <span class="text-muted message-created" ng-bind="record.sys_created_on"></span>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-12">
+                      <div class="email-details">
+                        <div class="email-details-container">
+                          <ul class="list-group emails-details-list-group m-b-none">
+                            <li class="list-group-item list-group-clear emails-details-list-group-item">
+                              <span class="email-details-col importance" ng-if="record.importance === 'high'"><i
+                                  class="fa fa-exclamation" aria-hidden="true"></i></span>
+                              <span class="email-details-col" ng-if="!record.importance"><i class="icon-mail"></i>
+                              </span>
+                              <span class="email-details-col m-l-xs">{{ record.type }}</span>
+
+                            </li>
+                            <li class="list-group-item list-group-clear emails-details-list-group-item">
+                              <span class="email-details-col">Subject: </span>
+                              <span class="email-details-col">{{ record.subject }}</span>
+                            </li>
+                            <li class="list-group-item list-group-clear emails-details-list-group-item">
+                              <span class="email-details-col">From: </span>
+                              <span class="email-details-col" ng-if="record.user">{{ record.user }}</span>
+                              <span class="email-details-col" ng-if="!record.user">{{ record.from }}</span>
+                            </li>
+                            <li class="list-group-item list-group-clear emails-details-list-group-item"
+                              ng-if="(record.to && record.to !== '')">
+                              <span class="email-details-col">To: </span>
+                              <span class="email-details-col break-to">{{ record.to }}</span>
+                            </li>
+                            <li class="list-group-item list-group-clear emails-details-list-group-item"
+                              ng-if="(record.cc && record.cc !== '')">
+                              <span class="email-details-col">CC: </span>
+                              <span class="email-details-col">{{ record.cc }}</span>
+                            </li>
+                            <li class="list-group-item list-group-clear emails-details-list-group-item">
+                              <a href class="email-details-link accordion-toggle"
+                                ng-click="c.toggleOpenEmailDetails(record.sys_id, record.body)">
+                                <span class="email-details-link-text"
+                                  ng-bind="c.getEmailLinkHeadingText(record.sys_id)"></span>
+                              </a>
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="panel-collapse collapse panel-clear email-frame" uib-collapse="!c.isOpen(record.sys_id)">
+                    <div class="panel-body">
+                      <div class="email-details-inner">
+                        <iframe loading="lazy" style="width:100%;overflow-y:hidden;" sp-frame-resize
+                          is-showing="c.isOpen(record.sys_id)" allowfullscreen="false" allowpaymentrequest="false"
+                          frameborder="0" ng-src="{{ getEmailSrc(record.sys_id) }}"></iframe>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <div class="timeline-container" ng-show="c.feed === 'activity'">
+          <ul role="list" class="timeline" aria-label="${Ticket history}">
+            <li class="timeline-item" ng-class="::{'timeline-inverted': e.user_sys_id == data.stream.user_sys_id} "
+              ng-repeat="e in data.mergedEntries">
+              <div class="timeline-badge">
+                <sn-avatar-once ng-if="hasLiveProfile(e.user_sys_id)" primary="getLiveProfileByUserId(e.user_sys_id)"
+                  class="avatar-large" show-presence="false" enable-context-menu="false">
+                </sn-avatar-once>
+              </div>
+              <div class="timeline-panel">
+                <div class="timeline-panel-inner" ng-style="::{'border-color': getFieldColor(e.element)}">
+                  <div class="timeline-heading">
+                    <div class="timeline-title h4">{{::e.name}}</div>
+                    <p class="time-text">
+                      <small class="text-muted">
+                        <span class="glyphicon glyphicon-time" aria-hidden="true" tabindex="-1" />
+                        <sn-time-ago timestamp="::e.sys_created_on" />
+                      </small>
+                      <i ng-if="::e.field_label" class="fa fa-circle text-muted" aria-hidden="true"></i>
+                      <small class="text-muted journal-type">{{::e.field_label}}</small>
+                    </p>
+                  </div>
+                  <div class="timeline-body">
+                    <p ng-if="::(e.element != 'attachment')" ng-bind-html="::c.getHTMLValue(e.value)"></p>
+                    <div ng-if="::(e.element == 'attachment')">
+                      <a ng-if="(e.attachment.state == 'available')" target="_blank"
+                        href="/sys_attachment.do?view=true&sys_id={{::e.attachment.sys_id}}" title="${View}">
+                        <img ng-if="e.attachment.thumbnail_path" alt="" ng-src="/{{::e.attachment.path}}?t=medium"
+                          class="img-responsive" />
+                      </a>
+                      <a ng-if="(e.attachment.state == '' || e.attachment.state == 'pending' || e.attachment.state == 'available_conditionally')"
+                        ng-click="scanAttachment(e.attachment)" href="javascript:void(0)" title="${View}">
+                        <img ng-if="e.attachment.thumbnail_path" alt="" ng-src="/{{::e.attachment.path}}?t=medium"
+                          class="img-responsive" />
+                      </a>
+                      <div>
+                        <div ng-if="(e.attachment.state == 'available')">
+                          <a href="/sys_attachment.do?sys_id={{::e.attachment.sys_id}}" target="_blank"
+                            title="{{dataViewMsg}}"><strong>{{e.attachment.file_name}}</strong></a><br />
+                          {{::e.attachment.size}}
+                        </div>
+                        <div ng-if="(e.attachment.state == 'not_available')">
+                          <span title="{{dataViewMsg}}" class="not_available">{{e.attachment.file_name}}</span><br />
+                          <span class="error">{{::data.scanFailedMsg}}</span>
+                        </div>
+                        <div
+                          ng-if="(e.attachment.state == '' || e.attachment.state == 'pending' || e.attachment.state == 'available_conditionally')">
+                          <a href="javascript:void(0)" ng-click="scanAttachment(e.attachment)"
+                            title="{{dataViewMsg}}"><strong>{{e.attachment.file_name}}</strong></a><br />
+                          {{::e.attachment.size}}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+            </li>
+            <li role="listitem" class="timeline-item timeline-inverted" aria-label="{{data.stream.user_full_name}}">
+              <div class="timeline-badge">
+                <sn-avatar-once ng-if="hasLiveProfile(data.stream.user_sys_id)"
+                  primary="getLiveProfileByUserId(data.stream.user_sys_id)" class="avatar-large" show-presence="false"
+                  enable-context-menu="false">
+                </sn-avatar-once>
+              </div>
+              <div class="timeline-panel timeline-panel-first-item">
+                <div class="timeline-heading">
+                  <div class="timeline-title h4">{{data.stream.user_full_name}}</div>
+                  <p>
+                    <small class="text-muted">
+                      <span class="glyphicon glyphicon-time" aria-hidden="true" tabindex="-1" />
+                      <sn-time-ago timestamp="data.created_on" />
+                    </small>
+                  </p>
+                </div>
+                <div class="timeline-body">
+                  <p>{{data.number}} ${Created}</p>
+                </div>
+              </div>
+            </li>
+            <li role="presentation" aria-hidden="true">
+              <div class="timeline-badge-wrap">
+                <div class="timeline-badge success">
+                  <span>${Start}</span>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div ng-if="!data.hasReadableJournalField">
+        {{options.no_readable_journal_field_message}}
+      </div>
+    </div>
+    <div class="panel-footer panel-sticky" ng-show="isShowingTemplates">
+      <div class="row">
+        <div class="col-md-12">
+          <widget id="ratelock_templates_list"
+            options="{'table': 'x_momo_ratelock_templates', 'canWrite': (data.isActiveTicket && data.canWrite)}">
+          </widget>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>]]></template>
+    </sp_widget>
+</record_update>

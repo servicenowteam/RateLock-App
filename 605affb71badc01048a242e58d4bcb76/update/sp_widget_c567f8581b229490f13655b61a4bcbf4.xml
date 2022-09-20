@@ -1,0 +1,496 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_widget">
+    <sp_widget action="INSERT_OR_UPDATE">
+        <category>custom</category>
+        <client_script><![CDATA[function sidebarForm($rootScope, $scope, $element, spUtil, $window, $timeout, spModal) {
+  /* widget controller */
+  var c = this;
+
+  $scope.form = {};
+
+  $scope.isValidLoanNumber = true;
+  $scope.showSaveButton = false;
+  $scope.loading = false;
+
+
+  $scope.$on('$destroy', function () {
+    if ($scope.showSaveButton) {
+      if ($window.confirm("You have unsaved changes. Do you want to discard those changes?")) {
+        c.save();
+      }
+
+    }
+    $scope.showSaveButton = false;
+    $rootScope.$broadcast('ratelock.sidebar.changes', false);
+  });
+
+  $scope.$on('form.changes', function (e, form) {
+    console.log(form);
+    if (Object.keys(form).length > 0 && !$scope.loading && $scope.isValidLoanNumber) {
+      $scope.showSaveButton = true;
+      $rootScope.$broadcast('ratelock.sidebar.changes', true);
+    } else {
+      $scope.showSaveButton = false;
+      $rootScope.$broadcast('ratelock.sidebar.changes', false);
+    }
+  });
+
+  $scope.$on('form.submitted', function (e, data) {
+    if (typeof data === 'object') {
+      if (data.resolved) {
+        spUtil.addInfoMessage(data.resolutionMsg);
+        $scope.form = {};
+        $scope.showSaveButton = false;
+        $rootScope.$broadcast('ratelock.sidebar.changes', false);
+        $timeout(function () {
+          $window.location.href = "/ratelock";
+        }, 3000);
+        return;
+      }
+    }
+    $scope.form = {};
+    $scope.showSaveButton = false;
+    $rootScope.$broadcast('ratelock.sidebar.changes', false);
+  });
+
+  c.onChangeField = function (field) {
+    if (field.name === 'loan_number') {
+      $scope.isValidLoanNumber = validateLoanNumber(field.value);
+    }
+
+    if (field.name === 'request_type') {
+      console.log(validateLoanNumberByRequestType(field.value));
+      $scope.isValidLoanNumber = validateLoanNumberByRequestType(field.value);
+    }
+    if ($scope.isValidLoanNumber) {
+      $scope.invalidLoanNumberMessage = undefined;
+    }
+
+    $scope.form[field.name] = field;
+    $scope.$emit('form.changes', $scope.form);
+  };
+
+  $scope.$on('field.change', function (e, args) {
+    var field = args.field;
+    field.type = 'record-picker';
+    $scope.form[field.name] = field;
+    $scope.$emit('form.changes', $scope.form);
+  });
+
+  c.save = function ($event) {
+
+    if (!$scope.showSaveButton) return;
+
+    if ($event) {
+      $event.preventDefault();
+      $event.stopPropagation();
+    }
+
+    $scope.loading = true;
+
+    $scope.data.fields = $scope.form;
+
+    $scope.server.update().then(function (data) {
+      if (data.updated) {
+        $scope.$emit('form.submitted', data.updated);
+      }
+      $scope.loading = false;
+    });
+  };
+
+  c.calculateLoaderHeight = function () {
+    var elem = $element.find('div.panel-body')[0];
+    return elem.offsetHeight + 'px';
+  };
+
+  function validateLoanNumber(loan) {
+    var type;
+    if ($scope.form.hasOwnProperty('request_type')) {
+      type = $scope.form.request_type.value;
+    }
+    var requestType = $scope.data.form.filter(function (item) {
+      return item.name === 'request_type';
+    }).map(function (v) {
+      return v.value;
+    });
+
+    if (requestType.length > 0) {
+      type = requestType[0];
+    }
+
+    if (type != "3") {
+      var reg = type == "2" ? /^[0-9]{9}$/g : /^(3[0-9]{9}|[0-9]{7})$/g;
+      reg = type == "6" ? /^[0-9]{9}$/g : reg;
+      $scope.invalidLoanNumberMessage = "You must have at least " +
+        ((type == "2" || type == "6") ? "9 digits" : "7 digits or 10 digits starting with 3") +
+        " in your loan number";
+      return reg.test(loan);
+    }
+    return true;
+  }
+
+  function validateLoanNumberByRequestType(type) {
+    var loan;
+    if (type != "3") {
+      var reg = type == "2" ? /^[0-9]{9}$/g : /^(3[0-9]{9}|[0-9]{7})$/g;
+      reg = type == "6" ? /^[0-9]{9}$/g : reg;
+      $scope.invalidLoanNumberMessage = "You must have at least " +
+        ((type == "2" || type == "6") ? "9 digits" : "7 digits or 10 digits starting with 3") +
+        " in your loan number";
+      if ($scope.form.hasOwnProperty('loan_number')) {
+        loan = $scope.form.loan_number.value;
+      } else {
+        loan = $scope.data.form.filter(function (item) {
+          return item.name === 'loan_number';
+        }).map(function (v) {
+          return v.value;
+        });
+
+        if (loan.length > 0) {
+          loan = loan[0];
+        }
+      }
+      return reg.test(loan);
+    }
+    return true;
+  }
+}]]></client_script>
+        <controller_as>c</controller_as>
+        <css>legend.h4.ng-binding {
+  display: none !important;
+}
+
+.panel-body {
+  background-color: #fff;
+}
+
+.btn-save {
+  padding: 4px 10px;
+}
+
+.panel {
+  background-color: transparent !important;
+}
+
+.panel.panel-primary {
+  border: none !important;
+}
+
+.form-control:focus {
+  border-color: $brand-primary;
+  outline: 4px solid transparent;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(224, 58, 58, 0.6);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(224, 58, 58, 0.6);
+}
+
+.select2-container-active .select2-choice,
+.select2-container-active .select2-choices {
+  border-color: $brand-primary;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(224, 58, 58, 0.6);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(224, 58, 58, 0.6);
+}
+
+.ref-picker-container .reference .select2-container-active,
+.type-choice .select2-container-active {
+  outline: none;
+  border-color: $brand-primary;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(224, 58, 58, 0.6);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(224, 58, 58, 0.6);
+  outline-offset: -2px;
+}
+
+.form-error {
+	color: $brand-primary;
+  text-align: justify;
+}
+
+.loader {
+  width: 100%;
+  height: 501px;
+  background: transparent;
+  padding: 0px 5px;
+  position: absolute;
+  top: 46.5px;
+  left: 0;
+  z-index: 5000;
+
+  &amp; .inner-loading {
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.5);
+    transition: all 0.4s ease;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    vertical-align: middle;
+    display: flex;
+
+    &amp; .loading-icon {
+      font-size: 2rem;
+      color: $brand-primary;
+    }
+  }
+}</css>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description/>
+        <docs/>
+        <field_list/>
+        <has_preview>false</has_preview>
+        <id>ratelock_sidebar_form</id>
+        <internal>false</internal>
+        <link><![CDATA[function link(scope, element, attrs, controller) {
+  document.addEventListener("keydown", function (e) {
+    if ((window.navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey) && e.keyCode == 83) {
+      e.preventDefault();
+      controller.save();
+    }
+  }, false);
+
+  window.addEventListener('beforeunload', function (e) {
+    e.preventDefault();
+    if (scope.showSaveButton) {
+
+      e.returnValue = '';
+    } else {
+      delete e['returnValue'];
+    }
+  });
+}]]></link>
+        <name>Ratelock Sidebar Form</name>
+        <option_schema/>
+        <public>false</public>
+        <roles/>
+        <script><![CDATA[(function () {
+  /* populate the 'data' object */
+  /* e.g., data.table = $sp.getValue('table'); */
+
+  gs.include('RatelockDateUtils');
+
+  var sysId = options.sys_id || $sp.getParameter('sys_id');
+  var table = options.table || $sp.getParameter('table');
+
+  data.table = table;
+  data.sys_id = sysId;
+  data.updated = false;
+
+  if (!table || !sysId) {
+    return;
+  }
+
+  data.canWrite = canWriteRecord(table, sysId);
+
+  if (input) {
+    if (input.fields) {
+      data.updated = updateRecord(table, sysId, input.fields);
+    }
+  }
+
+  data.form = createForm(table, sysId);
+
+  function createForm(table, sys_id) {
+    var gr = new GlideRecord(table);
+    gr.get(sys_id);
+
+    if (!gr.isValidRecord()) return [];
+
+    var isReadOnly = gr.getValue('state') == '6' || !gr.canWrite();
+
+    return [{
+      name: 'loan_number',
+      type: 'text',
+      label: 'Loan Number',
+      readOnly: isReadOnly,
+      value: gr.getValue('loan_number')
+    }, {
+      name: 'caller_id',
+      readOnly: isReadOnly,
+      type: 'record-picker',
+      label: 'Loan Officer',
+      field: {
+        name: 'caller_id',
+        value: gr.caller_id.nil() ? null : gr.getValue('caller_id'),
+        displayValue: gr.getDisplayValue('caller_id')
+      },
+      table: gr.caller_id.getReferenceTable(),
+      displayField: 'name',
+      valueField: 'sys_id',
+      defaultQuery: 'active=true^emailISNOTEMPTY',
+      searchFields: "email,name",
+      multiple: false,
+      placeholder: 'Search for a loan officer...'
+
+    }, {
+      name: 'assigned_to',
+      type: 'record-picker',
+      label: 'Assigned To',
+      field: {
+        name: 'assigned_to',
+        value: gr.assigned_to.nil() ? null : gr.getValue('assigned_to'),
+        displayValue: gr.getDisplayValue('assigned_to')
+      },
+      readOnly: isReadOnly,
+      table: gr.assigned_to.getReferenceTable(),
+      displayField: 'name',
+      searchFields: "name",
+      valueField: 'sys_id',
+      defaultQuery: 'active=true^roles=x_momo_ratelock.ratelock_tech',
+      multiple: false,
+      placeholder: 'Assign a analyst...'
+
+    }, {
+      name: 'priority',
+      type: 'select',
+      label: 'Priority',
+      readOnly: isReadOnly,
+      options: createChoiceArray(table, 'priority'),
+      value: gr.getValue('priority')
+    }, {
+      name: 'request_type',
+      type: 'select',
+      label: 'Request Type',
+      readOnly: isReadOnly,
+      options: createChoiceArray(table, 'request_type'),
+      value: gr.getValue('request_type')
+    }, {
+      name: 'state',
+      type: 'select',
+      label: 'State',
+      readOnly: isReadOnly,
+      options: createChoiceArray(table, 'state'),
+      value: gr.getValue('state')
+    }, {
+      name: 'sys_created_on',
+      type: 'text',
+      label: 'Created On',
+      readOnly: true,
+      value: RatelockDateUtils.formatDateTime(gr.sys_created_on, false)
+    }];
+  }
+
+  function createChoiceArray(table, element) {
+    var choices = [];
+
+    var gr = new GlideRecord('sys_choice');
+    gr.addQuery('name', table);
+    gr.addQuery('element', element);
+    gr.addQuery('inactive', false);
+    if (element === 'state' && !gs.hasRole('x_momo_ratelock.ratelock_admin')) {
+      gr.addQuery('value', '!=', '6');
+    }
+    gr.orderBy('sequence');
+    gr.query();
+
+    while (gr.next()) {
+      choices.push({
+        display: gr.getValue('label'),
+        value: gr.getValue('value')
+      });
+    }
+    return choices;
+  }
+
+  function updateRecord(table, sysId, changes) {
+    var gr = new GlideRecord(table);
+    gr.get(sysId);
+
+    if (!gr.isValidRecord()) {
+      gs.addErrorMessage('Error updating record. Please try again later');
+      return;
+    }
+
+    var keys = Object.keys(changes);
+
+    if (keys.length === 0) return false;
+
+    for (var k in keys) {
+      var key = keys[k];
+      var field = changes[key];
+      if (field.type === 'record-picker') {
+        gr.setValue(field.name, field.value, field.displayValue);
+      } else {
+        gr.setValue(field.name, field.value);
+      }
+    }
+    try {
+      gr.update();
+      if (gr.getValue("state") == "5" || gr.getValue("state") == "6") {
+        return {
+          resolved: true,
+          resolutionMsg: "Request " + gr.getValue("number") + " has been successfully " + gr.getDisplayValue("state").toLocaleLowerCase() + "."
+        };
+      }
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function canWriteRecord(table, sysId) {
+    var gr = new GlideRecord(table);
+
+    gr.get(sysId);
+
+    if (!gr.isValidRecord()) return false;
+
+    return gr.getValue('state') != '6' && gr.canWrite();
+  }
+})();]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>douglas.schamberg@movement.com</sys_created_by>
+        <sys_created_on>2020-08-06 12:27:05</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>c567f8581b229490f13655b61a4bcbf4</sys_id>
+        <sys_mod_count>147</sys_mod_count>
+        <sys_name>Ratelock Sidebar Form</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sp_widget_c567f8581b229490f13655b61a4bcbf4</sys_update_name>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2021-03-17 12:33:19</sys_updated_on>
+        <template><![CDATA[<div class="panel panel-default">
+  <div class="panel-heading">
+    <div class="panel-title">
+      ${Details}
+      <span class="pull-right" ng-if="data.canWrite">
+        <button class="btn btn-primary btn-sm btn-save" ng-disabled="!showSaveButton"
+          ng-click="c.save($event)">Save</button>
+      </span>
+    </div>
+  </div>
+  <div class="panel-body">
+    <div class="loader" ng-show="loading" ng-style="{'height': c.calculateLoaderHeight()}">
+      <div class="inner-loading">
+        <div class="loading-icon">
+          <i class="fa fa-spinner fa-spin fa-3x"></i>
+        </div>
+      </div>
+    </div>
+    <form class="form">
+      <div class="form-group" ng-repeat="field in data.form track by $index">
+        <label for="{{ field.name }}">{{ ::field.label }}</label>
+        <div class="input-switch" ng-switch="field.type"
+          ng-class="{'m-b-sm': (!isValidLoanNumber && field.name === 'loan_number')}">
+          <input ng-switch-when="text" ng-change="c.onChangeField(field)" class="form-control" id="{{ ::field.name }}"
+            type="text" ng-model="field.value" ng-disabled="field.readOnly" />
+          <select class="sc-basic-select" ng-change="c.onChangeField(field)" ng-model="field.value"
+            ng-switch-when="select" ng-disabled="field.readOnly">
+            <option ng-repeat="option in field.options" value="{{ option.value }}">
+              {{ option.display }}
+            </option>
+          </select>
+          <sn-record-picker ng-switch-when="record-picker" field="field.field" sn-disabled="field.readOnly"
+            table="field.table" display-field="field.displayField" search-fields="field.searchFields"
+            value-field="field.valueField" default-query="field.defaultQuery" multiple="field.multiple"
+            placeholder="{{ field.placeholder }}"></sn-record-picker>
+        </div>
+        <small ng-if="!isValidLoanNumber && field.name === 'loan_number'"
+          class="form-error">{{ invalidLoanNumberMessage }}</small>
+      </div>
+    </form>
+  </div>
+</div>]]></template>
+    </sp_widget>
+</record_update>

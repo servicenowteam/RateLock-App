@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_number">
+    <sys_number action="DELETE">
+        <category display_value="" name="x_momo_ratelock_ratesheet">x_momo_ratelock_ratesheet</category>
+        <maximum_digits>7</maximum_digits>
+        <number>1000</number>
+        <prefix>RATTACH</prefix>
+        <sys_class_name>sys_number</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2019-12-14 21:57:54</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>fdd2e7d0dbfdc410f255132968961919</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>RATTACH</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sys_number_fdd2e7d0dbfdc410f255132968961919</sys_update_name>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2019-12-14 21:57:54</sys_updated_on>
+    </sys_number>
+    <sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Ratelock">605affb71badc01048a242e58d4bcb76</application>
+        <file_path/>
+        <instance_id>94e8281edbb7470060a6f0e5bf9619f6</instance_id>
+        <instance_name>movementdev</instance_name>
+        <name>sys_number_fdd2e7d0dbfdc410f255132968961919</name>
+        <payload><![CDATA[<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_number"><sys_number action="INSERT_OR_UPDATE"><category display_value="" name="x_momo_ratelock_ratesheet">x_momo_ratelock_ratesheet</category><maximum_digits>7</maximum_digits><number>1000</number><prefix>RATTACH</prefix><sys_class_name>sys_number</sys_class_name><sys_created_by>douglas.schamberg</sys_created_by><sys_created_on>2019-12-14 21:57:54</sys_created_on><sys_customer_update>false</sys_customer_update><sys_id>fdd2e7d0dbfdc410f255132968961919</sys_id><sys_mod_count>0</sys_mod_count><sys_name>RATTACH</sys_name><sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package><sys_policy/><sys_replace_on_upgrade>false</sys_replace_on_upgrade><sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope><sys_update_name>sys_number_fdd2e7d0dbfdc410f255132968961919</sys_update_name><sys_updated_by>douglas.schamberg</sys_updated_by><sys_updated_on>2019-12-14 21:57:54</sys_updated_on></sys_number></record_update>]]></payload>
+        <payload_hash>-169572635</payload_hash>
+        <record_name>RATTACH</record_name>
+        <reverted_from/>
+        <source>a45affb71badc01048a242e58d4bcb78</source>
+        <source_table>sys_update_set</source_table>
+        <state>previous</state>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2019-12-14 21:57:54</sys_created_on>
+        <sys_id>8ad2e7d0dbfdc410f255132968961920</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>16f066b05ff0000001</sys_recorded_at>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2019-12-14 21:57:54</sys_updated_on>
+        <type>Number</type>
+        <update_guid>82d2e7d079fdc4106c8f94fdcf2d1920</update_guid>
+        <update_guid_history>82d2e7d079fdc4106c8f94fdcf2d1920:-169572635</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete/>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-01-01 12:30:59</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_db_object display_value="" name="sys_number">sys_number</sys_db_object>
+        <sys_id>551dd8f5eb81419a92d74cf019fa17c4</sys_id>
+        <sys_metadata>fdd2e7d0dbfdc410f255132968961919</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>RATTACH</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_parent display_value="">908223d0dbfdc410f25513296896193c</sys_parent>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_scope_delete display_value="">57712118eaee4a49ae47b2048a14ac31</sys_scope_delete>
+        <sys_update_name>sys_number_fdd2e7d0dbfdc410f255132968961919</sys_update_name>
+        <sys_update_version display_value="sys_number_fdd2e7d0dbfdc410f255132968961919">8ad2e7d0dbfdc410f255132968961920</sys_update_version>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-01-01 12:30:59</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>

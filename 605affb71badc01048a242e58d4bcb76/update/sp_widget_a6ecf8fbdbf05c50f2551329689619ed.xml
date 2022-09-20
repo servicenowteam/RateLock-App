@@ -1,0 +1,820 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_widget">
+    <sp_widget action="INSERT_OR_UPDATE">
+        <category>custom</category>
+        <client_script><![CDATA[function ($scope, $interval) {
+  /* widget controller */
+  var c = this;
+
+  c.loading = false;
+
+  c.$onInit = function () {
+    c.searchQuery = c.data.term;
+    c.results = createResultsArr(c.searchQuery);
+    c.total = c.results.length > 0 ? (c.results.length === 1 ? 1 : c.results.length - 1) : 0;
+  	c.advancedSearchOpen = false;
+	};
+
+  c.submit = function () {
+    c.loading = true;
+    $scope.data.term = c.searchQuery;
+    $scope.data.q = null;
+    c.loadingTime = 0;
+    c.loadingTimer = $interval(function () {
+      c.loadingTime += 1000;
+			if (c.loadingTime > 10000) {
+				c.loadingMsg = 'Looks like we have a lot of records with this request. Try narrowing your results.';
+			} else if (c.loadingTime > 5000) {
+        c.loadingMsg = 'We are still working through this request. Please give it some more time.';
+      }
+    }, 1000);
+    $scope.server.update().then(function (data) {
+      c.results = createResultsArr(c.searchQuery, data.results);
+      c.loading = false;
+      c.total = c.results.length > 0 ? (c.results.length === 1 ? 1 : c.results.length) : 0;
+      c.loadingMsg = null;
+      c.loadingTime = 0;
+      $interval.cancel(c.loadingTimer);
+    });
+  };
+
+  c.getPriorityColor = function (value) {
+    if (value == 1) {
+      return 'danger priority';
+    } else if (value == 2) {
+      return 'normal priority';
+    } else {
+      return 'success priority';
+    }
+  };
+
+  c.getStateColor = function (value) {
+    if (value == 1) {
+      return 'success';
+    } else if (value == 2) {
+      return 'normal';
+    } else if (value == 3) {
+      return 'normal';
+    }
+  };
+
+  c.getTypeColor = function (value) {
+    if (value == 1) {
+      return 'general';
+    } else if (value == 2) {
+      return 'tpo';
+    } else if (value == 4) {
+      return 'bond';
+    } else {
+      return 'normal';
+    }
+  };
+	
+	c.toggleAdvancedSearchOpen = function() {
+		c.advancedSearchOpen = !c.advancedSearchOpen;
+	}
+
+  function createResultsArr(term, arr) {
+    var results = arr ? arr : c.data.results;
+
+    if (results.length === 0) return results;
+
+    return results.map(function (result) {
+      result.contains = [];
+      var reg = new RegExp('(' + term + ')', 'gmi');
+      if (reg.test(result.loanNumber) && result.loanNumber) {
+        result.contains.push('loan number');
+      }
+
+      if (reg.test(result.shortDescription)) {
+        result.contains.push('short description');
+      }
+
+      if (reg.test(result.loanOfficer) && result.loanOfficer) {
+        result.contains.push('loan officer');
+      }
+
+      if (reg.test(result.comments)) {
+        result.contains.push('comments');
+      }
+
+      if (reg.test(result.emailRecipients) && result.emailRecipients) {
+        result.contains.push('email recipients');
+      }
+			if (reg.test(result.updatedBy)) {
+				result.contains.push('updated by');
+			}
+			
+			if (reg.test(result.assignedTo.toLowerCase()) && result.assignedTo) {
+				result.contains.push('assigned to');
+			}
+      return result;
+    }).filter(function (item) {
+      return item.contains.length > 0;
+    });
+  }
+}]]></client_script>
+        <controller_as>c</controller_as>
+        <css>$warn: rgb(255, 204, 0);
+$tpo: rgb(66, 135, 245);
+$general: rgba(0, 0, 0, 0.4);
+$paginator-boundary-link-color: rgba(0, 0, 0, 0.8);
+$bond: purple;
+
+
+
+::-webkit-scrollbar {
+  width: 0.2em;
+}
+ 
+::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 0.5px rgba(0, 0, 0, 0.1);
+}
+ 
+::-webkit-scrollbar-thumb {
+  background-color: $brand-primary;
+  border-radius: 0.1em;
+  outline: 0.5px solid #eee;
+}
+
+i, span {
+  &amp;.priority {
+  	text-decoration: underline;
+  }
+  &amp;.danger {
+  	color: $danger;
+    font-weight: 700;
+  }
+  
+  &amp;.warn {
+  	color: $warn;
+    font-weight: 600;
+  }
+  
+  &amp;.success {
+  	color: $success;
+    font-weight: 600;
+  }
+  
+  &amp;.normal {
+  	color: inherit;
+    &amp;.priority {
+      font-weight: 600;
+      color: rgba(0, 0, 0, 0.6);
+      
+    }
+  }
+  
+  &amp;.tpo {
+  	color: $tpo;
+    font-weight: 600;
+  }
+  
+  &amp;.general {
+  	color: $general;
+    font-weight: 600;
+  }
+  
+  &amp;.bond {
+  	color: $bond;
+  }
+}
+
+.loading {
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  padding: 5px;
+  display: block;
+  z-index: 5000;
+  &amp; .loading-inner {
+    width: 100%;
+    height: 420px;
+  	background: rgba(255, 255, 255, 0.5);
+    transition: all 0.4s ease;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    vertical-align: middle;
+    display: flex;
+    &amp; i {
+    	font-size: 3rem;
+      color: $brand-primary;
+    }
+    
+    &amp; .block {
+    	width: 100%;
+      display: flex;
+      justify-content: center;
+      text-align: center;
+      flex-direction: row;
+    }
+    
+    &amp; span {
+    	color: $brand-primary;
+    }
+  }
+}
+
+.pager .next:not(.disabled) &gt; a,
+.pager .previous:not(.disabled) &gt; a {
+  color: $brand-primary;
+}
+
+.list-group {
+	margin-bottom: 0px;
+}
+
+.line-h-2 {
+	line-height: 2;
+}
+
+.text-center {
+	text-align: center;
+}
+
+.font-xs {
+	font-size: 12px;
+}
+
+.panel-container {
+	border: none;
+}
+
+.panel-scroll {
+	overflow-x: hidden !important;
+  overflow-y: auto !important;
+  max-height: 450px;
+  scroll-behavior: smooth;
+}
+
+.panel-body.pad-14 {
+	padding: 0px 14px 0px 14px;
+}
+
+.panel-secondary {
+  &amp; .panel-heading {
+  	border-bottom: 1px solid #ccc;
+  }
+}
+
+.panel-body {
+	padding: 0px;
+}
+
+.pad-bottom {
+	padding: 0px 0px 30px 0px;
+}
+.pad-14 {
+	padding: 14px 14px 10px 14px;
+}
+
+.description {
+	font-size: 14px;
+  padding: 15px;
+  font-weight: 500;
+  width: 100%;
+  white-space: pre-wrap;
+}
+
+.list-group-no-records {
+  border: none;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  vertical-align: middle;
+  padding: 40px 0px;
+  background: transparent;
+}
+
+.primary-display {
+  font-size: 1.7rem;
+}
+
+
+.details-small {
+	font-size: 1.3rem;
+  &amp; div {
+    &amp; span {
+      &amp; b {
+      	font-weight: 600;
+      }
+    }
+  }
+}
+
+.state-text {
+  font-weight: 700;
+}
+
+.accordion-clicker {
+  color: rgba(0, 0, 0, 0.8);
+
+  &amp;.glyphicon {
+    font-size: 12px;
+    padding-left: 5px;
+  }
+}
+
+.no-attachments-text {
+  &amp;:hover {
+    text-decoration: underline;
+  }
+}
+
+.detail-title {
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.accordion-link {
+  width: 100%;
+  display: block;
+
+  &amp;:focus {
+    outline: none !important;
+  }
+
+  &amp;:hover {
+    &amp; .accordion-clicker {
+      color: $brand-primary;
+    }
+  }
+}
+
+
+.list-group-no-records:hover {
+  text-decoration: underline;
+
+  -webkit-transition: all .3s ease-out;
+  -moz-transition: all .3s ease-out;
+  -ms-transition: all .3s ease-out;
+  transition: all .3s ease-out;
+}
+
+.list-link {
+  color: rgba(0, 0, 0, 0.8);
+}
+
+.list-link:hover,
+.list-link:active,
+.list-link:focus {
+  color: $brand-primary;
+}
+
+.list-group-item:not(.primary-list:first-child) {
+  border-top: 1px solid #ccc;
+  border-bottom: 1px transparent;
+  border-left: 1px transparent;
+  border-right: 1px transparent;
+}
+
+.list-group-item.primary-list {
+	border-left: none;
+  border-right: none;
+}
+
+.list-group-item.primary-list:hover {
+  border-radius: 0px;
+}
+
+.list-group-item.primary-list:first-child {
+  border: transparent;
+}
+
+.list-group-item.primary-list:last-child {
+  border-top: 1px solid #ccc;
+  border-bottom: 1px transparent;
+  border-left: 1px transparent;
+  border-right: 1px transparent;
+}
+
+.contains-list {
+	list-style: none;
+  &amp; li {
+    &amp; span {
+    	font-weight: 700;
+    }
+  }
+}
+
+.display-none {
+	display: none;
+}
+
+.avatar-container {
+  cursor: default;
+}
+
+.padding-l-sm {
+	padding-left: 15px;
+}
+
+.paginator-sm {
+	margin: 0px;
+}
+
+.pagination-page {
+  &amp;:not(.active),
+  &amp;:not(.disabled) {
+    &amp; a {
+    	color: $brand-primary;
+    }
+  }
+  &amp;.active {
+    &amp; a {
+    	color: #fff;
+    }
+  }
+}
+
+.pagination-next,
+.pagination-prev,
+.pagination-last,
+.pagination-first {
+  &amp;:not(.disabled) {
+  	&amp; a {
+      color: $brand-primary;
+    }
+  }
+}
+
+.paginator-label {
+  &amp; small {
+    &amp; span:last-child {
+      display: inline-block;
+    	color: $brand-primary;
+    }
+  }
+}
+
+.small-input {
+  display: inline-block;
+  &amp; input {
+  	height: 24px;
+    width: 35px;
+    padding: 6px;
+    transition: width 0.3s ease-out;
+   	&amp;::-webkit-outer-spin-button,
+    &amp;::-webkit-inner-spin-button {
+  		-webkit-appearance: none;
+  		margin: 0;
+		}
+    &amp;[type=number] {
+    	-moz-appearance: textfield;
+    }
+    &amp;:focus {
+      width: 40px;
+    	border-color: $brand-primary;
+      outline: none;
+      box-shadow: none;
+      transition: width 0.3s ease-in;
+    }
+  }
+}
+
+.form-control,
+.input-group-btn button {
+  &amp;:focus,
+  &amp;:active {
+  	outline: none;
+    border: 1px solid $brand-primary;
+    box-shadow: none;
+  }
+}
+
+.updated-time {
+  &amp;:hover {
+  	text-decoration: underline;
+  }
+}
+
+
+@media screen and (max-height: 600px) {
+  .panel-scroll {
+  	max-height: 350px;
+  }
+}
+
+@media screen and (max-width: 400px) {
+  .request-at-text {
+    margin-bottom: 10px;
+    color: rgba(0, 0, 0, 0.8);
+  }
+}
+
+@media screen and (min-width: 401px) {
+  .request-at-text {
+    color: transparent;
+    -webkit-transition: all .1s ease-out;
+    -moz-transition: all .1s ease-out;
+    -ms-transition: all .1s ease-out;
+    transition: all .1s ease-out;
+
+    &amp;.hover {
+      color: rgba(0, 0, 0, 0.8);
+      -webkit-transition: all .1s ease-in;
+      -moz-transition: all .1s ease-in;
+      -ms-transition: all .1s ease-in;
+      transition: all .1s ease-in;
+    }
+  }
+}
+
+</css>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description/>
+        <docs/>
+        <field_list/>
+        <has_preview>false</has_preview>
+        <id>ratelock_search_results</id>
+        <internal>false</internal>
+        <link><![CDATA[function link(scope, element, attrs, controller) {  }]]></link>
+        <name>Ratelock Search Results</name>
+        <option_schema/>
+        <public>false</public>
+        <roles/>
+        <script><![CDATA[(function() {
+  /* populate the 'data' object */
+  /* e.g., data.table = $sp.getValue('table'); */
+	gs.include('RatelockDateUtils');
+	data.q = (input ? input.q : undefined) || options.q || $sp.getParameter('q');
+	data.term = (input ? input.term : undefined) || data.q;
+	data.table = options.table || 'x_momo_ratelock_ticket';
+	data.dateFilter = (input ? input.dateFilter : undefined) || options.dateFilter || $sp.getParameter('date');
+	
+	data.results = getResults(data.table, {
+		text: data.term || data.q,
+		date: data.dateFilter
+	});
+	
+	data.advancedSearchWidget = $sp.getWidget('ratelock_search_query_builder', {
+		table: data.table
+	});
+	
+	function getResults(table, term) {
+		var results = [];
+		
+		var encodedQuery = createEncodedQuery(term);
+		var gr = new GlideRecord(table);
+		gr.addEncodedQuery(encodedQuery);
+		gr.setLimit(200);
+		gr.orderByDesc('active');
+		gr.orderBy('priority');
+		gr.orderBy('sys_created_on');
+		gr.query();
+		
+		while (gr.next()) {
+			results.push({
+				id: gr.getUniqueValue(),
+				createdAt: RatelockDateUtils.formatDateTime(gr.sys_created_on),
+				loanOfficer: gr.caller_id.nil() ? null : gr.getDisplayValue('caller_id'),
+				loanNumber: gr.loan_number.nil() ? null : gr.getValue('loan_number'),
+				comments: gr.comments.getHTMLValue(),
+				shortDescription: gr.getValue('short_description'),
+				priority: {
+					value: gr.getValue('priority'),
+					display: gr.getDisplayValue('priority')
+				},
+				requestType: {
+					value: gr.getValue('request_type'),
+					display: gr.getDisplayValue('request_type')
+				},
+				state: {
+					value: gr.getValue('state'),
+					display: gr.getDisplayValue('state')
+				},
+				updatedAt: {
+					value: gr.getValue('sys_updated_on'),
+					display: RatelockDateUtils.formatDateTime(gr.sys_updated_on)
+				},
+				assignedTo: gr.getDisplayValue('assigned_to'),
+				updatedBy: getUserFromUsername(gr.getValue('sys_updated_by')),
+				emailRecipients: gr.email_recipients.nil() ? null : gr.getDisplayValue('email_recipients'),
+				link: '?id=ratelock_ticket_form&table=' + gr.getTableName() + '&sys_id=' + gr.getUniqueValue()
+			});
+		}
+		
+		return results;
+	}
+	
+	function getUserFromUsername(username) {
+		var gr = new GlideRecord('sys_user');
+		gr.addQuery('active', true);
+		gr.addQuery('user_name', username);
+		gr.query();
+		while (gr.next()) {
+			return gr.getDisplayValue('name');
+		}
+	}
+	
+	function createEncodedQuery(term) {
+		var query = [];
+		var searchers = [
+			'loan_numberENDSWITH',
+			'loan_numberSTARTSWITH',
+			'short_descriptionLIKE',
+			'email_recipientsLIKE',
+			'caller_id.first_nameSTARTSWITH',
+			'caller_id.last_nameSTARTSWITH',
+			'assigned_to.first_nameSTARTSWITH',
+			'assigned_to.last_nameSTARTSWITH',
+			'sys_updated_bySTARTSWITH'
+		];
+		
+		// just get active if the search text is empty.
+		var empty = true;
+		if (term.text && term.text !== '') {
+			empty = false;
+		}
+		
+		if (!empty && term.text.length > 3) {
+			empty = false;
+		}
+		if (term.date) {
+			query.push('sys_created_onON' + term.date + "@javascript:gs.dateGenerate('"+ term.date +"', 'start')@javascript:gs.dateGenerate('"+ term.date +"', 'end')");
+			if (!empty) {
+				query.push('ORcaller_id.nameLIKE'+ term.text);
+			} else {
+				query.push('active=true');
+			}
+		} else if (empty) {
+			query.push('active=true');
+		}
+		
+		if (!empty) {
+			for (var i in searchers) {
+				query.push('OR' + searchers[i] + term.text);
+			}
+		}
+		
+		return query.join('^');
+	}
+})();]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-05-22 10:00:04</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>a6ecf8fbdbf05c50f2551329689619ed</sys_id>
+        <sys_mod_count>164</sys_mod_count>
+        <sys_name>Ratelock Search Results</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sp_widget_a6ecf8fbdbf05c50f2551329689619ed</sys_update_name>
+        <sys_updated_by>douglas.schamberg@movement.com</sys_updated_by>
+        <sys_updated_on>2020-09-06 15:21:17</sys_updated_on>
+        <template><![CDATA[<div class="row">
+  <div class="col-md-1"></div>
+  <div class="col-md-10">
+    <form ng-submit="c.submit()">
+      <div class="input-group">
+        <input ng-model="c.searchQuery" placeholder="Search for a request..." class="form-control" name="q"
+          type="text" />
+        <div class="input-group-btn">
+          <button type="submit" class="btn btn-default" ng-disabled="c.searchQuery === '' || c.loading" title="Search">
+            <i class="fa" aria-hidden="true" ng-class="{'fa-spinner fa-spin': c.loading, 'fa-search': !c.loading}"></i>
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="col-md-1"></div>
+</div>
+<div class="row m-t-sm">
+  <div class="col-md-1"></div>
+  <div class="col-md-10">
+    <a href ng-if="false" tabindex="0" ng-click="c.toggleAdvancedSearchOpen()" uib-accordian-transclude="heading"
+      class="accordion-link">
+      <span class="accordion-clicker">Advanced Search</span>
+      <span uib-accordion-header class="accordion-clicker glyphicon"
+        ng-class="{'glyphicon-chevron-right': !c.advancedSearchOpen, 'glyphicon-chevron-down': c.advancedSearchOpen}"></span>
+    </a>
+    <div ng-if="false" class="panel-collapse collapse m-t" uib-collapse="!c.advancedSearchOpen">
+      <sp-widget widget="data.advancedSearchWidget"></sp-widget>
+    </div>
+  </div>
+  <div class="col-md-1"></div>
+</div>
+<div class="row">
+  <div class="col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <span class="panel-title">Search Results</span>
+      </div>
+      <div class="panel-body panel-scroll">
+        <div class="loading" ng-show="c.loading">
+          <div class="loading-inner">
+            <div class="row">
+              <div class="col-md-12">
+                <div class="block">
+                  <i class="fa fa-spinner fa-spin"></i>
+                </div>
+              </div>
+              <div class="col-md-12 m-t">
+                <div class="block" ng-if="c.loadingMsg">
+                  <span ng-bind="c.loadingMsg"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <ul class="list-group" ng-show="!c.loading">
+          <li class="list-group-item primary-list" ng-if="c.results.length > 0" ng-repeat="result in c.results">
+            <div class="row padder">
+              <div class="row m-b-sm">
+                <div class="col-md-12">
+                  <a class="list-link primary-display" ng-href="{{ result.link }}" href>
+                    <span>{{ result.shortDescription }}</span>
+                  </a>
+                  <span class="pull-right">{{ result.createdAt }}</span>
+                </div>
+              </div>
+              <div class="row padding-l-sm">
+                <div class="col-md-12">
+                  <div class="text-muted details-small">
+                    <div>
+                      <span>
+                        <span ng-class="c.getPriorityColor(result.priority.value)">{{ result.priority.display }}</span>
+                      </span>
+                    </div>
+                    <div ng-if="result.loanNumber">
+                      <span>
+                        <b>Loan number</b>: <span>{{ result.loanNumber }}</span>
+                      </span>
+                    </div>
+                    <div ng-if="result.loanOfficer">
+                      <span>
+                        <b>Loan Officer</b>: <span>{{ result.loanOfficer }}</span>
+                      </span>
+                    </div>
+                    <div>
+                      <span>
+                        <b>Queue</b>: <span
+                          ng-class="c.getTypeColor(result.requestType.value)">{{ result.requestType.display }}</span>
+                      </span>
+                    </div>
+                    <div>
+                      <span>
+                        <b>State</b>: <span
+                          ng-class="c.getStateColor(result.state.value)">{{ result.state.display }}</span>
+                      </span>
+                    </div>
+                    <div ng-if="result.assignedTo">
+                      <span>
+                        <b>Assigned to</b>: <span>{{ result.assignedTo }}</span>
+                      </span>
+                    </div>
+                    <div>
+                      <span>
+                        <b>Last updated</b>:
+                        <span ng-if="c.updatedTimeClicked != result.id" class="updated-time"
+                          ng-click="c.updatedTimeClicked = result.id;">
+                          <time>
+                            <sn-time-ago timestamp="result.updatedAt.value"></sn-time-ago>
+                          </time>
+                        </span>
+                        <span ng-if="c.updatedTimeClicked == result.id" class="updated-time"
+                          ng-click="c.updatedTimeClicked = undefined;">{{ result.updatedAt.display }}</span>
+                      </span>
+                    </div>
+                    <div>
+                      <span>
+                        <b>Updated by</b>: <span>{{ result.updatedBy }}</span>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row m-t" ng-if="result.contains.length > 0">
+                <div class="col-md-12">
+                  <div class="contains">
+                    <ul class="contains-list">
+                      <li ng-repeat="contain in result.contains"><span>{{ data.term }}</span> is in
+                        <span>{{ contain }}</span></li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </li>
+          <li class="list-group-item list-group-no-records" ng-if="c.results.length === 0">
+            <span>${No results found}</span>
+          </li>
+        </ul>
+      </div>
+      <div class="panel-footer" ng-if="c.results.length > 0 && !c.loading">
+        <div class="row">
+          <div class="col-md-12">
+            <small class="text-primary">displaying {{ c.total }} results</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>]]></template>
+    </sp_widget>
+</record_update>

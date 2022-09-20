@@ -1,0 +1,378 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_angular_provider">
+    <sp_angular_provider action="DELETE">
+        <name>ratelockSession</name>
+        <script><![CDATA[function ratelockSession(amb, $rootScope, $window, $interval) {
+  var channels = {};
+
+  var DEFAULT_STORAGE_KEY = "ratelock:sessions";
+
+  var exitTimer = $interval(exitTimerFunc, 4000);
+
+  function exitTimerFunc() {
+    var storage = $window.localStorage.getItem(DEFAULT_STORAGE_KEY);
+    if (!storage) {
+      $interval.cancel(exitTimer);
+      return;
+    }
+
+    storage = JSON.parse(storage);
+    var sessions = {};
+    var keys = Object.keys(storage);
+    var date = new Date();
+    var expired = date.getTime();
+    for (var i in keys) {
+      var key = keys[i];
+      if (storage[key].status !== 'exiting') {
+        sessions[key] = storage[key];
+      }
+    }
+    $window.localStorage.setItem(DEFAULT_STORAGE_KEY, JSON.stringify(sessions));
+  }
+
+  $window.addEventListener("beforeunload", function () {
+    var keys = Object.keys(channels);
+    $interval.cancel(exitTimer);
+    exitTimerFunc();
+    for (var i in keys) {
+      removeChannel(keys[i]);
+    }
+  });
+
+  function setLocalStorage(key, message) {
+    var storage = $window.localStorage.getItem(DEFAULT_STORAGE_KEY);
+    var payload = {};
+    var shouldUseJSONParse = true;
+    if (!storage) {
+      $window.localStorage.setItem(DEFAULT_STORAGE_KEY, JSON.stringify({}));
+      storage = {};
+      shouldUseJSONParse = false;
+    }
+    if (storage) {
+      storage = shouldUseJSONParse ? JSON.parse(storage) : storage;
+      var keys = Object.keys(storage);
+      if (keys.includes(key)) {
+        delete storage[key];
+      }
+      if (!message.hasOwnProperty('presences')) {
+        message.presences = [];
+      }
+
+      var date = new Date();
+      date.setMinutes(date.getMinutes() + 5);
+      message.expiration = date.getTime();
+      payload[key] = message;
+      storage = angular.extend(storage, payload);
+      $window.localStorage.setItem(DEFAULT_STORAGE_KEY, JSON.stringify(storage));
+    }
+  }
+
+  function getLocalStorage(key) {
+    var storage = $window.localStorage.getItem(DEFAULT_STORAGE_KEY);
+    if (storage) {
+      storage = JSON.parse(storage);
+      return storage[key] || (key ? {} : storage);
+    }
+    return {};
+  }
+
+  function setSessions(key, sys_id, message) {
+    var payload = {};
+
+    payload[key] = message;
+    var channel = getChannel(sys_id);
+    if (channel.sessions.hasOwnProperty(key)) {
+      delete channel.sessions[key];
+    }
+
+    channel.sessions = angular.extend(channel.sessions, payload);
+    setChannel(sys_id, channel);
+
+  }
+
+  function getChannel(sys_id) {
+    return channels[sys_id];
+  }
+
+  function setChannel(sys_id, channel) {
+    if (!getChannel(sys_id)) {
+      channels[sys_id] = channel;
+    }
+  }
+
+  function removeChannel(sys_id) {
+    var channel = getChannel(sys_id);
+    if (channel) {
+      channel.channel.unsubscribe();
+      delete channels[sys_id];
+    }
+  }
+
+
+  function connect(table, sys_id) {
+    var url = '/sn/rp/' + table + '/' + sys_id;
+    var channel = amb.getChannel(url);
+    amb.connect();
+    setChannel(sys_id, {
+      channel: channel,
+      sessions: getLocalStorage() || {},
+      presences: []
+    });
+    return getChannel(sys_id);
+  }
+
+  return {
+    publish: function (table, sys_id, message, is_ping) {
+      var channel = getChannel(sys_id);
+      if (!channel)
+        channel = connect(table, sys_id);
+
+      if (channel.sessions.hasOwnProperty(message.session_id)) {
+        delete channel.sessions[message.session_id];
+      }
+
+      channel.sessions[message.session_id] = message;
+      var payload = channel.sessions[message.session_id];
+      payload = angular.extend(payload, {
+        presences: channel.presences
+      });
+      setLocalStorage(message.session_id, payload);
+      return channel.channel.publish(payload);
+    },
+    subscribe: function (table, sys_id, cb) {
+      var channel = getChannel(sys_id);
+      if (!channel) {
+        channel = connect(table, sys_id);
+      }
+      $rootScope.$emit("ratelock.sessions", channel.sessions);
+      channel.channel.subscribe(function (message) {
+        message.data.presences = message.data.presences || [];
+        if (message.data.session_id) {
+          if ($window.NOW.session_id != message.data.session_id) {
+            setSessions(message.data.session_id, sys_id, message.data);
+            setLocalStorage(message.data.session_id, message.data);
+            $rootScope.$broadcast("ratelock.sessions", channel.sessions);
+          }
+        }
+      });
+    }
+  }
+}]]></script>
+        <sys_class_name>sp_angular_provider</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2019-12-21 16:49:51</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>c42cdea61bb9cc1048a242e58d4bcb7b</sys_id>
+        <sys_mod_count>366</sys_mod_count>
+        <sys_name>ratelockSession</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sp_angular_provider_c42cdea61bb9cc1048a242e58d4bcb7b</sys_update_name>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-04-08 09:52:44</sys_updated_on>
+        <type>factory</type>
+    </sp_angular_provider>
+    <sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Ratelock">605affb71badc01048a242e58d4bcb76</application>
+        <file_path/>
+        <instance_id>94e8281edbb7470060a6f0e5bf9619f6</instance_id>
+        <instance_name>movementdev</instance_name>
+        <name>sp_angular_provider_c42cdea61bb9cc1048a242e58d4bcb7b</name>
+        <payload>&lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;record_update table="sp_angular_provider"&gt;&lt;sp_angular_provider action="INSERT_OR_UPDATE"&gt;&lt;name&gt;ratelockSession&lt;/name&gt;&lt;script&gt;&lt;![CDATA[function ratelockSession(amb, $rootScope, $window, $interval) {
+  var channels = {};
+
+  var DEFAULT_STORAGE_KEY = "ratelock:sessions";
+
+  var exitTimer = $interval(exitTimerFunc, 4000);
+
+  function exitTimerFunc() {
+    var storage = $window.localStorage.getItem(DEFAULT_STORAGE_KEY);
+    if (!storage) {
+      $interval.cancel(exitTimer);
+      return;
+    }
+
+    storage = JSON.parse(storage);
+    var sessions = {};
+    var keys = Object.keys(storage);
+    var date = new Date();
+    var expired = date.getTime();
+    for (var i in keys) {
+      var key = keys[i];
+      if (storage[key].status !== 'exiting') {
+        sessions[key] = storage[key];
+      }
+    }
+    $window.localStorage.setItem(DEFAULT_STORAGE_KEY, JSON.stringify(sessions));
+  }
+
+  $window.addEventListener("beforeunload", function () {
+    var keys = Object.keys(channels);
+    $interval.cancel(exitTimer);
+    exitTimerFunc();
+    for (var i in keys) {
+      removeChannel(keys[i]);
+    }
+  });
+
+  function setLocalStorage(key, message) {
+    var storage = $window.localStorage.getItem(DEFAULT_STORAGE_KEY);
+    var payload = {};
+    var shouldUseJSONParse = true;
+    if (!storage) {
+      $window.localStorage.setItem(DEFAULT_STORAGE_KEY, JSON.stringify({}));
+      storage = {};
+      shouldUseJSONParse = false;
+    }
+    if (storage) {
+      storage = shouldUseJSONParse ? JSON.parse(storage) : storage;
+      var keys = Object.keys(storage);
+      if (keys.includes(key)) {
+        delete storage[key];
+      }
+      if (!message.hasOwnProperty('presences')) {
+        message.presences = [];
+      }
+
+      var date = new Date();
+      date.setMinutes(date.getMinutes() + 5);
+      message.expiration = date.getTime();
+      payload[key] = message;
+      storage = angular.extend(storage, payload);
+      $window.localStorage.setItem(DEFAULT_STORAGE_KEY, JSON.stringify(storage));
+    }
+  }
+
+  function getLocalStorage(key) {
+    var storage = $window.localStorage.getItem(DEFAULT_STORAGE_KEY);
+    if (storage) {
+      storage = JSON.parse(storage);
+      return storage[key] || (key ? {} : storage);
+    }
+    return {};
+  }
+
+  function setSessions(key, sys_id, message) {
+    var payload = {};
+
+    payload[key] = message;
+    var channel = getChannel(sys_id);
+    if (channel.sessions.hasOwnProperty(key)) {
+      delete channel.sessions[key];
+    }
+
+    channel.sessions = angular.extend(channel.sessions, payload);
+    setChannel(sys_id, channel);
+
+  }
+
+  function getChannel(sys_id) {
+    return channels[sys_id];
+  }
+
+  function setChannel(sys_id, channel) {
+    if (!getChannel(sys_id)) {
+      channels[sys_id] = channel;
+    }
+  }
+
+  function removeChannel(sys_id) {
+    var channel = getChannel(sys_id);
+    if (channel) {
+      channel.channel.unsubscribe();
+      delete channels[sys_id];
+    }
+  }
+
+
+  function connect(table, sys_id) {
+    var url = '/sn/rp/' + table + '/' + sys_id;
+    var channel = amb.getChannel(url);
+    amb.connect();
+    setChannel(sys_id, {
+      channel: channel,
+      sessions: getLocalStorage() || {},
+      presences: []
+    });
+    return getChannel(sys_id);
+  }
+
+  return {
+    publish: function (table, sys_id, message, is_ping) {
+      var channel = getChannel(sys_id);
+      if (!channel)
+        channel = connect(table, sys_id);
+
+      if (channel.sessions.hasOwnProperty(message.session_id)) {
+        delete channel.sessions[message.session_id];
+      }
+
+      channel.sessions[message.session_id] = message;
+      var payload = channel.sessions[message.session_id];
+      payload = angular.extend(payload, {
+        presences: channel.presences
+      });
+      setLocalStorage(message.session_id, payload);
+      return channel.channel.publish(payload);
+    },
+    subscribe: function (table, sys_id, cb) {
+      var channel = getChannel(sys_id);
+      if (!channel) {
+        channel = connect(table, sys_id);
+      }
+      $rootScope.$emit("ratelock.sessions", channel.sessions);
+      channel.channel.subscribe(function (message) {
+        message.data.presences = message.data.presences || [];
+        if (message.data.session_id) {
+          if ($window.NOW.session_id != message.data.session_id) {
+            setSessions(message.data.session_id, sys_id, message.data);
+            setLocalStorage(message.data.session_id, message.data);
+            $rootScope.$broadcast("ratelock.sessions", channel.sessions);
+          }
+        }
+      });
+    }
+  }
+}]]&gt;&lt;/script&gt;&lt;sys_class_name&gt;sp_angular_provider&lt;/sys_class_name&gt;&lt;sys_created_by&gt;douglas.schamberg&lt;/sys_created_by&gt;&lt;sys_created_on&gt;2019-12-21 16:49:51&lt;/sys_created_on&gt;&lt;sys_customer_update&gt;false&lt;/sys_customer_update&gt;&lt;sys_id&gt;c42cdea61bb9cc1048a242e58d4bcb7b&lt;/sys_id&gt;&lt;sys_mod_count&gt;366&lt;/sys_mod_count&gt;&lt;sys_name&gt;ratelockSession&lt;/sys_name&gt;&lt;sys_package display_value="Ratelock" source="x_momo_ratelock"&gt;605affb71badc01048a242e58d4bcb76&lt;/sys_package&gt;&lt;sys_policy/&gt;&lt;sys_replace_on_upgrade&gt;false&lt;/sys_replace_on_upgrade&gt;&lt;sys_scope display_value="Ratelock"&gt;605affb71badc01048a242e58d4bcb76&lt;/sys_scope&gt;&lt;sys_update_name&gt;sp_angular_provider_c42cdea61bb9cc1048a242e58d4bcb7b&lt;/sys_update_name&gt;&lt;sys_updated_by&gt;douglas.schamberg&lt;/sys_updated_by&gt;&lt;sys_updated_on&gt;2020-04-08 09:52:44&lt;/sys_updated_on&gt;&lt;type&gt;factory&lt;/type&gt;&lt;/sp_angular_provider&gt;&lt;/record_update&gt;</payload>
+        <payload_hash>1718747</payload_hash>
+        <record_name>ratelockSession</record_name>
+        <reverted_from/>
+        <source>741a4e651b4cdc1048a242e58d4bcb9f</source>
+        <source_table>sys_update_set</source_table>
+        <state>previous</state>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-04-08 09:52:44</sys_created_on>
+        <sys_id>164592251b8cdc1048a242e58d4bcb08</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>1715934c9fd0000001</sys_recorded_at>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-04-08 09:52:44</sys_updated_on>
+        <type>Widget Angular Provider</type>
+        <update_guid>da459225d28cdc1059c1a22b0e269507</update_guid>
+        <update_guid_history>da459225d28cdc1059c1a22b0e269507:1718747,9c451e61448cdc10c8cf8ac78a289140:988106001,16355ee1f28cdc105c5b3779adaa07d9:1813061539,1615dae1f58cdc1005762bff4b613aa9:-5067727,ba059ae1f08cdc103fbbbb58418aefbc:383870651,83f41ee1e88cdc10cb8c654d93347031:-2005283831,12039a21b28cdc100d819ceb7a763f6b:1718747,b52c9be1905a4010cd8ef6f9b9a30b4c:0,3ef8d3edb91a4010674fad19b32490e3:-1796997540,8b071f692e1a401094b204aeff347817:0,7a465729241a4010cc3d98e85be23344:1320989819,0ef493e12f1a4010980b85e954f48b4d:0,f484d3a14b1a401021dda4a860b1673e:-1439053716,9023d36d1cd640101a7559b2c26e08c4:0,ea42dbe9cdd6401046f61542adfa1cb4:-1085547876,b4f0976574d64010fc811d8b09d147b9:0,1ae0d36566d64010e77f5aa47a134a39:1799161774,1c101f6101d64010633b5503146b6cab:0,ed001b61d5d640109e0ee8d51ce68d07:1799161774,667d87a93d964010f6dc0a7efacd6079:0,2f6d43a955964010985b75ef6d0b53a3:1799161774,e42833c364c6089005828449abeff12d:1533931322,fb4a060f5e8ec4901c5450ec8b8192cd:30180572,6d59828b838ec490c33a0142521a74a3:250222918,a7d7464b9d8ec490b2d77b7935ab1d71:-1814814248,c9878e0b358ec490b1632d559373da73:2121484358,f2470ec7838ec490d57f594d70a041ae:-20585916,b8850a87eb8ec490151210c7ea0827fa:1901199458,28750a071b8ec4908899d83287f7e412:-712827017,b3150e472c8ec490fa25509b47c826a9:-224387436,df058647538ec490270fb979044eeecd:-991660495,1fe48647468ec490d23459bf2e351bc8:-767579555,5d940207448ec4900938698c361b20e0:677841691,7b848647ac8ec4902eb714b3a0fedbc2:-767579555,425482475f8ec490fc2625475bd137e0:630456033,0c144e838f8ec490dee2fcdc095be14c:-1096518547,37e3c607728ec4907a58baa2b0e9e092:-642453066,52d30a07cc8ec49078febcd38f7a93bc:396477300,18d30a072c8ec4901d77ef1b472fa209:-1757661313,5db3c207ef8ec4905ef5bd0bf3a6b43f:-959891203,869302c3cc8ec4909d34101faf60cfef:-1757661313,ca63cec35a8ec4902a5e913522fea3ef:-959891203,d7130e83d78ec490aec8647aa3a6c354:-87131473,e90302c3f98ec49077d75d00c3a05198:2122947757,e79202c3298ec490dec41f6f67b04793:-87131473,3a524243608ec49052f41004e4da3f08:-351174570,aae182831d8ec490901eed5092262bbb:-911605838,d1d14283ba8ec4903f8783982ea18646:1279612208,88b1c243fd8ec490e99c5320615cb965:18109685,3f818a43518ec4907983fffcffc552f6:-1940962057,42214643758ec490216dd7d86264b077:-1570090270,3ff04243208ec4902fa7940d8c2783f7:-2094538204,38f00243b58ec4901233f52f2080dcfe:747005113,92e08acf984ec4900a2094a49ef7ba16:-174978117,e4e0ce03168ec490637a02f95370658d:1860159099,70d04e8fdd4ec490e047fc1a996112cc:-1512824967,e880c2cfc24ec4907eadf98f94595648:825506082,c0ff7dcff04ec490f4acd388a040c275:749797496,83df398f104ec490ebc2c02532a70b27:579817906,01af39cfa04ec49007ac423e1bc22c91:1780881264,946f7d4fb74ec490de6bc699d8b7003a:579817906,aa1fb18fa34ec4906edfbda822459716:-1329095997,03cdf90f574ec490c197cc44b01232fb:8819214,0c4d790fda4ec490199a02f2de3d337a:-861299252,4ffcb10f914ec49095ac101a620f3ef3:-1911210935,1eecf98b334ec490bc061f3388f2745f:1518283852,d7dc39c71b4ec490a4eeb6b203135bf6:-1015591026,eebcbd0b984ec49052ea12931f401f6c:1518283852,bf7c354b484ec490e04f6ec3c923f265:-2007330228,07dabd0bd54ec49033a748ec0aefb12e:848549953,811a7d0bf04ec490f25230f2a4156f65:188578204,2fb9310b784ec490fefbb97953f09f01:799473132,c189b10b7a4ec490b8e59c0f5c90b942:1890131192,3e69fdc7674ec490adece18f02cdd1f9:94266422,5d073dc3c84ec4908069c6cf698b9342:-228806145,15b231cf180ec490df0bc40d76a8416c:-1330161539,9b31fd4f1e0ec4908668c7d4d18345c2:1575574165,39f0b94fa40ec490d441dc96d1b0f5e5:-656413958,fcb0b14fbd0ec490105cd7797775872c:-1895714151,da80b14f0f0ec4905915f7ee03bba526:1025834057,18bfe9cb9f0ec490b11b8fd209e07358:-512537827,bf6e210bfc06c090a7caa9e9a77b927c:1743887985,f57ac776144a80902ff178f4b41d998e:-1533268013,105acff20e4a80904f73bd14197a3719:2381645,2a1a47362e4a8090133cbcc52d384b67:383968969,a889c336924a8090ef0f775572036ff1:564595646,9349c336e64a8090922b02752c3f1ceb:-331988616,c3f8cff2284a8090194ff3a728dc7c11:1781476522,9e7803f2294a8090d10e4230f3b7c9c1:-1139172130,45480fb2924a80906c9c5c5babb6f525:729873051,c62803f2be4a80902333c826a82ae6bc:63324720,11f743b2c94a80900f95ed05d706792b:-665097251,07b78372254a8090f994a375255a54fc:1509868224,2c8703b26a4a8090ced5a171291474b8:-461414378,4a4743b26d4a80901ad37475e9cc0425:1854836548,144703b23d4a809032fa8196425171b3:-387484145,e66683722f4a809024f4bbfb8afc32f4:-950841526,1e564372334a8090a471be09be222174:220698088,03468f32414a80909847915c4352a481:642179898,4a268f32254a80905112fc752d63ef7b:120690380,0d95b6becec680901b0692c366169026:1822187290,1185b2fed6c680904369e5fc417e40c1:1948703258,f335be7e5ec68090b46c06ccc3338b79:2022399422,23f4367ec9c68090b8438655715bae22:-1610509810,9ea4767efcc68090045f510636371ded:280310465,6e54be7eb3c680905c6c7f5d2e8d1373:-363039058,8db3367e60c680901bfdae06efd4ee17:481890040,8763befa12c6809095f021c5fb62d205:2034633517,87537afa62c680902137d90334d877fc:1392170655,2c227afa3fc6809059cab79448bfbef5:-135790791,d371f6ba4ec680902e5fc7a63389fbc4:891489166,c561fa7a22c680901814bcfe10ba96ac:-1223148530,2b3f6af6d9c680908b4cbcd2c5df6ec1:340155118,42fe623a8bc680907959259914b80111:390520494,30ce6ef69fc680905b38e296d5c09a84:-1766159178,509e6af65ac68090b1184916522208bb:190941765,3d5e6ab6acc680907d61ec1d2e9d6339:-870106478,5e0e66b657c680904a5a1772df5a3689:1915569114,a4ad6ab622c68090a55e06359dcc3f34:-962055439,7e3c62b2d3c68090e5bda64c5eb6897d:1970217214,a71ce236e1c680900b6d6f60c847c57a:-766651840,bed9a2b2fdc680900cbd3a7817aa9457:465685818,6f592efe4086809033daf1e2059eabf4:1970217214,03e8627229c6809089712c94b450a294:1445934530,2dc7a6329ac68090ade3ad359471c0a4:-134215879,815666bed6868090eab27d0e2455ed61:1254638344,46066abe70868090b4732b562e7e8d57:-537046911,b4e56e7e0d868090b16b443fbf0c73d0:-1031295600,01c56e7ef986809037048719a5c146cb:-1800821671,cc65a63e1286809085645cff2ba81165:-1661552134,ac55227ef8868090d085ca772e4543e1:-1957309490,5f45263e1c8680903b0e8f88eb600771:-1703899281,c024aafa458680900562b902e8c106ad:-887846266,a414e63ee786809080e5655ebba2e914:1464357520,7e04a63e1d86809028b7a8f784c8b459:2028738969,6104e6fa62868090d5cf36e7423ea5da:329643378,dff326fa58868090e81dbcacb33abe0f:-2101579989,d853aafa4e868090aa6ccd7b417dada6:-2042430584,82432afa428680908e384ec5fbea684a:-138565489,2c332afa84868090fb0ee1dee3d07244:916142414,e0f26aba5186809076fe4132f4df9b7c:-850043288,ad92e6bad98680908d875191c1ea0cdc:-1170435163,d7526aba60868090b462be84697d7674:-1067101681,c2d1aa7aca8680901d7dd5bc88e423cd:-975211332,7d71aa7af58680904ee55c32ff1f3dc7:-452379790,cfa02a3aa6868090239f7047895cafaa:1044924805,b050e63a8f86809008e7fb06ac11b11d:-1008554425,df40eab689868090c8288877c6fa2964:753643271,94dfdef6af868090dd55eff48ebcc95f:879376900,4faf12f6d68680900e51b2084b891c0b:863657640,c4be52b6f986809057192b951d200d38:-850236547,226a5e32ff868090d1f87fe22118ff22:816920171,69a7d6be56468090781da4709eb37679:-1639209310,e1f6d27e72468090881b3d41d82a1483:253009697,c7869a3e624680900d2ee8de33b5c76f:-488607222,00861a7e1a468090a3d82cb819ccb605:-32777016,75361e7e35468090ac64eac4845216d1:-1498652769,fa25123ea546809092a7c7a46483152a:1348055830,7ae416fa2546809033347fc136b0aada:-217868730,5794123e5646809058fabed3a547f125:-1765710259,aef316fa014680909bf29870ec48b9d2:1648600492,60435e32830e84909567d5ca51bd0a4a:-375699663,c92396ba7746809051a1a6bdf80dca5a:1606081126,272c59fe774280907b836b5999d1da12:-2135814248,4f8b19feb44280901a5b92d7edcc87ca:-1952923880,9b3bd9be284280906dca117d3713f5c0:1395500507,b13b91fe0442809046bbbff4a86c1f54:-2108344519,efc9913eb1428090c79ab1498feba964:-381819607,a1c9197e604280908a9cafaacf8c3fd6:338643978,8c391dba0042809002b280ced75f6b5b:50378340,208819fadf42809028a9796407a1b6cc:-2142163238,06f719fa0742809029b14392bb41eac5:338643978,ebd7157a0042809065d918be0b618baf:1728515385,5fc71dbaee4280906180624823b08873:338643978,f5b715faba4280908ad21752086cfe26:-1883362799,fa87d9bae7428090ba5f587f288303fe:-1413131968,da47d5ba3b42809051fdee449cf722cb:-461393741,d3f611bac9428090db470e48f7f9dadd:-2014078014,5d665d7a4a4280902baa1c4583c0d813:-1237187585,84661d3a624280909cfebb6334570094:1289742755,7295dd3a5c428090c955292a37250c5d:548617844,bc75d13ac6428090c8a3d27dac80a84b:1345398984,8845d13aa7428090c3818edb8d181d62:404018790,7a15953a50428090302639aad767dc61:2043847915,85d4513ab8428090b6ab8402e90a5fc5:288831734,5b4419f6c942809063d6f0c2af239c55:-1301268730,81e311b6bf428090b7798a36523f32f4:1477250296,2a63d5b65c428090736bf42e60f7a63b:1136951319,6e52157644428090f26b4e2313681c3d:1409676648,ad12dd36d2428090ea31885961693ca0:1561173624,2402593637428090b80b684a023f7bb9:259088877,e5511df2d542809044ee1a947366ae9b:-2081534482,480199721b42809070990d5083cfb48c:-962800384,474051b2b74280908bd68da5590b9525:-1950896156,5c4091b2f5428090189d0850e5f4659b:2112381412,607f41329b4280903e1b7b256a733858:-1557442300,9aae85328a428090dbfe32867835dae6:2042825165,91ad85be5d0280903f34ebc5ef11c782:130991119,dcd945ba9d0280906be3e434c9d5927f:2042825165,5e9805baa5028090f168505a13788dec:1378113263,8c38c97aeb0280901680dbd49a34f9be:-219452883,d0288d7ad9028090abdc11dfa8fd6c4b:-334315617,8108c97a85028090f7f9bfddb273b5b8:-2100693313,021bf0fadace4090b80161b05f4cd1ba:-1929480071,5cc9fc3a33ce40904dbcffd621b47a5d:-487970457,cb89f07ac9ce409046f2555f92f07a49:-1929480071,4ba770f6b6ce40909dc74e277a54c45d:-1815826801,f187bcb66fce40901b5976d6926615a5:1536008417,1a6730b6b2ce4090747ff67795cf870b:2122058867,9637fc7608ce4090c764d876d90009fc:-556598816,c437f4b626ce4090aff9bc67ce6136c9:1779814624,41c67836f0ce40900da8842df2321d82:-560271513,1bb6b47626ce4090a94c10e59f50b7ea:-1718954366,19a67c7620ce40909b4a3d0d58924d67:861272779,b346b03610ce409084fbdfbbf347d8ff:1536008417,1de53c3644ce40903dcbb246524d197f:-487970457,dbc5b43651ce40904d1760c37fc27ebc:-358101223,35b5bcb22ece4090fe71ab527ef6c87f:-1063508661,70b5b83687ce4090d75d1bbf9e235c1c:164010115,5335303605ce4090a6e4b615f7c102fb:-1291289132,0c153cb2ccce40905492beecdc697ae2:999713886,5c05f4f2ffce4090e71b22ee8d78a83a:-169289713,eed4b8f262ce4090cd4e9a542a1bb92c:-670812262,f7a434b279ce4090eec67418e0465116:-1409525492,2f14f4b236ce4090bce629233e8c94ba:-670812262,f6d3b87241ce4090f5b45fe5cff82a7a:25207629,59a3fc728cce4090a75fd525475666d3:1577023345,ab7330b201ce40906c397cfa6a9f4edc:254255396,0763fc72c0ce4090447e0b4581973e4f:1200701722,5323f832dece4090acc0cf8a3512a7e4:1481891541,d67178fea58e40909c8c1a1605589e74:-290696756,d96134be9b8e40905c4645c3650b24d3:-1516022074,54217cbeba8e40906b8fec76416d46b7:-35468204,810178be938e4090df3aa2d6e8065827:793472556,25d03cbe9d8e40906991415ad9b51fd6:-1516022074,43b0b8be7b8e4090e259f22332b74acb:-1289222468,3e6070bea08e4090531a8fc272445bb7:1772397594,e0403c3ee18e409029ccd4ee48c89182:-1289222468,823030bead8e4090d9e47d88840527d2:1940685352,75003c7e498e40901b215347e20cb20c:-1179172519,18ff2c7e318e4090defbbca79b4c6805:-237584438,65efa83ede8e4090e71e67d360e2b868:1440020332,e02f2c3ede8e4090c68d5826e7cb3154:1514626407,c4ceec7ad88e40905a733fbac3a775a7:1282241227,c1ed68ba518e40904a3ebe5304142146:-832033863,a4ddecf63c8e409075a3b5e9cec4e2a4:-162895470,e08d6cbaf28e409038762594a9786979:-59422361,f62ce07a988e4090525f0cc710cc9e01:1022909309,ce2be0f6998e4090d7dd407812a8dbaa:-1160995507,841bacf6008e4090ed790d60e644bde3:1187334349,cdba28f6928e4090c2e9a1379ae54138:-81356855,9d3aa876568e409016aebf6bc36bab61:-752405048,bd0ae0b68e8e409062026f20cf7b775c:-1319375510,807968364e8e40909c2bc217e36264b5:-7179380,abf620f2298e40909b1d4c63d37585d9:-1625394686,6f34a8fe144e4090998ab256b8c47849:-825895086,30e3e0fedf4e40909c1a560c5a296ae1:-1519275628,dec360fe744e40904cdf2923854a136b:-493548127,2d8160fa004e4090d23f9f0443101f01:-1291217500,9151acfae24e409099581c0da9a02006:-1795226712,bf41acfa684e40908a15f894d404a32f:914403326,bb01acba924e4090f6e595550373dd1b:-1420503735,5ca0acba2d4e409079f7c898e5505714:302171581,2eef18bad64e40909d7283f191822f0b:-1680090095,747f9c7a754e40901c3f0902ec77a47b:-319937192,32be103ac84e4090e1281a0eddda9d09:-1881124375,cc9e983ad44e40909f118a7ef9321399:-355993609,4bfd14f6f94e4090a3bf2de83a3e76b5:-1510440726,167d1876db4e40903aeee0518c1821d6:-1305029008,e7bc10b6464e409077a5e3046d41d85d:579986141,cd5c9c76204e4090590414de9e313b32:-207866447,270cdc36514e4090e616e771c8192358:504648519,ca0c1876894e4090afb60ae1ae3bcc15:-558933721,69cbd076954e40909fd34f5bb106f612:1970247166,884b94f2e74e4090fbad47be158b62af:-558933721,3d1a10728c4e4090f3f95f6f93bfaa8c:799042293,73d998b2b84e409006367726fa637181:-516583749,a4691872574e40900a3d960e6bbd318c:1562660339,0586d0be920e4090d8d3ef0e08e6a6de:-941463100,09e2583abb0e4090fd93edbfa79edf32:959289073,60a2143a790e4090bf17ad834bf83395:-1882904049,80529cf68e0e4090cff8b754558caf8f:2033662061,87ad0872f70e4090f48027f257461278:185419255,9a2dc872db0e40902e4406135a10a707:-982352036,e80d4832c70e40901160ef07f7c94635:1663198399,e4ec4032ac0e4090f712a6a24417891c:1370107920,b4ac0072130e40905aa59c1c19b6445b:-477139698,5b6c0072a90e4090aca0525a0753f054:1978213569,ad1b08feb7ca4090f821798fa8f02730:-347924249,8a6648ba45ca40909009dd8a4fc2f93a:-1618111023,842604ba02ca409070ea7ac3083ae079:378279863,1edee8ea9c02449097cd1cea2884ae26:-1774701006,4f8e282e490244908bde07eae770ae7f:1069606256,116e282e7d024490f5b7054405d0c679:-1419813456,9b9de06aae0244901aa77643f7240d97:1380854955,ad9ce86a00024490fd59f59264bc15fc:1841869737,622ca86ae6024490d9c9d72ffba6f1d9:-224834307,7759a0e2520244907506c42ea4420f4d:1021694506,215960e23a0244904559a5cec6b768e8:-2074429200,64596c62bf0244902e8ee1300842867c:1623201282,68c8ac62530244900ebc88fa674dbba1:297806976,91d2d066758a009086f6c84228602420:-508473163,1b721026418a00909f30585cab47b541:-827654193,8f5258e2c38a0090595ab72682fc61a4:526125122,949f3d4ee20e8c50a1a07d08e95c15c7:-508473163,2d7ef50e170e8c5013bf1e4d26ab2449:297806976,d25e310e540e8c50595a1f50d256c68f:-2032209445,d20e79caad0e8c5069e8b965f3e681be:297806976,b007bd82170e8c508cdcad2ba1371fc5:-508473163,0092b54e24ca8c50be2af40aad51748e:162959443,c521a1c22d8a8c50e08d4b2b082cb4b6:542787874,3f606d82b88a8c509538408b0feb2b10:1097737507,a500a942c28a8c50c0423aee61744ca7:1904017646,827f5542958a8c50cff663f3c77bf193:1097737507,01cb15ca284a8c50912aa867e65f7b9b:1667417062,d3aa1dca624a8c50d2aca7d10d2b3b04:-1476371024,6b9a910e924a8c50d0c35f64c5a30cc1:940701414,189add8a5a4a8c5021c5a545f3490596:1943085804,521a99cab44a8c501f260cb238e0f402:-1344133943,a0b9dd8abf4a8c50bac2b89bc01f969e:2136475268,973fc94e080a8c50e819175168ac9393:-1403157398,87ee8d0e300a8c50fb29b3902ad94cf1:1316557066,808e014e290a8c50bbebe4a554288b6c:11794150,5d2d41ca350a8c5030e1a39ab8796c75:-1192212794,d86c018a840a8c504be6b21d5e137ce6:-461441231,18a1c90e76c68c50014d3741085c709b:-998268015,a8f0850e51c68c5024208a4d4658745e:2068835207,fc704dcad4c68c50b532510e798c2e3b:210978667,de6049ca0ec68c50a4389a217de224d8:2048059856,b220c1cacbc68c505e436fe41cdee769:-229401037,061085caf1c68c5096d811dbf129ab4e:-473236416,ceeffc4a2fc68c500ccdc4dcb1516c48:-1329555009,b4bffc8a2fc68c5012f7761e9c6e8a87:210456471,ee0ff44a5cc68c500312262f551c0014:1535593780,c2aeb80a0fc68c505e825a525aac43ed:2106443842,3c7e3c0ab1c68c50db048018176019b9:553013282,2c4e3c0a6cc68c506fabc302b9739149:-702876615,02ed780a9cc68c506f901dc9fc6b7b7c:-904088450,0aaab80649c68c50ff6fac769897e10c:-2011348117,5f6a784217c68c50c91e1cab3dbe9bae:518670135,b35a34064ec68c50714812895d46c7fc:1581547033,b93a70065fc68c50b53039555c535fa6:-1913024397,80a93842fcc68c5031a23f48aa2e5a78:-191181712,623930c2ecc68c5031e7574e73cff31c:2088740804,7b68f08224c68c50d233e00bb10b42f5:1486574454,4a383082fcc68c50e5cf7a6c0c57dd69:1146869256,afb7f44247c68c50a88959e3db2dea9f:22071745,5003bcca7e868c504294edf4825d2b60:1737528876,a7f1f88a46868c5099be42eaf981ece7:1813342068,7bb0b44ac7868c50adc2f10a0e222e46:-1801303947,821ca8427d868c50db4b4097f01cb5ad:-1553166251,9748044729f140500298bab81e09e474:341147792,c167880721f140505ac626ef7d4f51c4:-1255166218,5047c40767f14050f6e8507532fb3bf4:-970214834,2d37c407a8f14050f0a582db5cd9642a:-259028303,c927c4c32df1405005533a8749e1674f:-86569992,5ff64cc3aef14050c82feb21133eb12f:-1901522122,33d6ccc3ccf14050e3288b6a83c9c09b:-1901598500,b5c6c4c3b2f140503796ba1c595ff85c:698471479,8da640c3acf140506f7fa12b729c9116:2063853061,8d76c0c3a1f1405048b28815264ecc82:-1333516100,b26684c310f14050a0be9e50565ebe9a:-335425595,d74640c3f9f1405078e8cc437e2ac221:-1108668383,84a54483bbf140508f1747b540b3b262:880438598,0935044382f14050ec708c9b19df807b:-1113417764,72e4c843d8f140508bd38633c012de1d:480747405,11e48803adf14050ea11d8a03ac642e8:903915419,4184848f59b1405038c51a99ceac23d2:-360810657,30b3400307f1405045bcac7d353a2609:-1167090796,b342848f73b1405058353170f26fd2d4:-304999710,9bef8f7e80fdc050a420ab93b0da3a10:-677839441,2d8722e24df9cc107fc652a755c8d022:262105206,0bc56a6225f9cc10c42225a32ba32cb6:1068385345,bab566ee6eb9cc1073a493f6c00da0a7:1324502394,bb65aaaeb9b9cc104ff948d02a78c1dc:769321915,f76362eeeeb9cc10cf03dd0ddf6b1c7c:-2098546431,6bf1262e70b9cc10e1cb674172d2d688:2126049972,3fb0aeea92b9cc10f98a72a7441679e8:368992118,12ef92eabdb9cc103580fd000226ae3b:104011970,b97f5aaa4bb9cc107a9a08e1ac853158:-1940672785</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete display_value="">44ec3a43db145450f255132968961975</sys_audit_delete>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-04-25 14:52:17</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_db_object display_value="" name="sp_angular_provider">sp_angular_provider</sys_db_object>
+        <sys_id>75c15c47a7c44b3bb2a3a18fad8c4639</sys_id>
+        <sys_metadata>c42cdea61bb9cc1048a242e58d4bcb7b</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>ratelockSession</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_parent/>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_scope_delete display_value="">57712118eaee4a49ae47b2048a14ac31</sys_scope_delete>
+        <sys_update_name>sp_angular_provider_c42cdea61bb9cc1048a242e58d4bcb7b</sys_update_name>
+        <sys_update_version display_value="sp_angular_provider_c42cdea61bb9cc1048a242e58d4bcb7b">164592251b8cdc1048a242e58d4bcb08</sys_update_version>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-04-25 14:52:17</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>

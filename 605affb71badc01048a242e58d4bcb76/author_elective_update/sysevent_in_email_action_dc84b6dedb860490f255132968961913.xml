@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update sys_domain="global" table="sysevent_in_email_action">
+    <sysevent_in_email_action action="DELETE">
+        <action>record_action</action>
+        <active>true</active>
+        <assignment_operator/>
+        <condition_script/>
+        <description/>
+        <event_name>email.read</event_name>
+        <filter_condition table="sys_email">direct=lock911@movement.com^EQ<item endquery="false" field="direct" goto="false" newquery="false" operator="=" or="false" value="lock911@movement.com"/>
+            <item endquery="true" field="" goto="false" newquery="false" operator="=" or="false" value=""/>
+        </filter_condition>
+        <from/>
+        <name>UPDATE: lock911@movement.com</name>
+        <order>94</order>
+        <plus_address/>
+        <reply_email/>
+        <required_roles/>
+        <script><![CDATA[var loan_number;
+if (/[\d]{7}/gi.test(email.subject)) {
+  loan_number = getLoanNumber(email.subject);
+} else if (/[\d]{7}/gi.test(email.body_text)) {
+  loan_number = getLoanNumber(email.body_text);
+}
+
+if (!/[\d]{7}/gi.test(loan_number)) {
+  loan_number = null;
+}
+
+
+if (loan_number) {
+  current.addQuery('loan_number', loan_number);
+}
+current.addQuery('active', true);
+current.query();
+
+if (current.next()) {
+  while (current.next()) {
+    if (current.getValue('caller_id') == email.from_sys_id) {
+      current.state = 1;
+      current.update();
+    }
+  }
+}
+
+
+function getLoanNumber(message) {
+  var regex = /.*(?=([\d]{7})).*/gm;
+  var matches = regex.exec(message);
+  if (matches.length > 0) {
+    for (var i=0;i<matches.length;i++) {
+      if (/^[\d]{7}$/gm.test(matches[i])) {
+        return matches[i].trim();
+      }
+    }
+  }
+  return;
+}]]></script>
+        <stop_processing>false</stop_processing>
+        <sys_class_name>sysevent_in_email_action</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-01-02 10:00:37</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_domain>global</sys_domain>
+        <sys_domain_path>/</sys_domain_path>
+        <sys_id>dc84b6dedb860490f255132968961913</sys_id>
+        <sys_mod_count>2</sys_mod_count>
+        <sys_name>UPDATE: lock911@movement.com</sys_name>
+        <sys_overrides/>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sysevent_in_email_action_dc84b6dedb860490f255132968961913</sys_update_name>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-01-02 10:05:30</sys_updated_on>
+        <table>x_momo_ratelock_ticket</table>
+        <template>commentsDYNAMIC367bf121ef3221002841f7f775c0fbe2^EQ</template>
+        <type/>
+    </sysevent_in_email_action>
+    <sys_translated_text action="DELETE" query="documentkey=dc84b6dedb860490f255132968961913"/>
+    <sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Ratelock">605affb71badc01048a242e58d4bcb76</application>
+        <file_path/>
+        <instance_id>94e8281edbb7470060a6f0e5bf9619f6</instance_id>
+        <instance_name>movementdev</instance_name>
+        <name>sysevent_in_email_action_dc84b6dedb860490f255132968961913</name>
+        <payload>&lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;record_update sys_domain="global" table="sysevent_in_email_action"&gt;&lt;sysevent_in_email_action action="INSERT_OR_UPDATE"&gt;&lt;action&gt;record_action&lt;/action&gt;&lt;active&gt;true&lt;/active&gt;&lt;assignment_operator/&gt;&lt;condition_script/&gt;&lt;description/&gt;&lt;event_name&gt;email.read&lt;/event_name&gt;&lt;filter_condition table="sys_email"&gt;direct=lock911@movement.com^EQ&lt;item endquery="false" field="direct" goto="false" newquery="false" operator="=" or="false" value="lock911@movement.com"/&gt;&lt;item endquery="true" field="" goto="false" newquery="false" operator="=" or="false" value=""/&gt;&lt;/filter_condition&gt;&lt;from/&gt;&lt;name&gt;UPDATE: lock911@movement.com&lt;/name&gt;&lt;order&gt;94&lt;/order&gt;&lt;plus_address/&gt;&lt;reply_email/&gt;&lt;required_roles/&gt;&lt;script&gt;&lt;![CDATA[var loan_number;
+if (/[\d]{7}/gi.test(email.subject)) {
+  loan_number = getLoanNumber(email.subject);
+} else if (/[\d]{7}/gi.test(email.body_text)) {
+  loan_number = getLoanNumber(email.body_text);
+}
+
+if (!/[\d]{7}/gi.test(loan_number)) {
+  loan_number = null;
+}
+
+
+if (loan_number) {
+  current.addQuery('loan_number', loan_number);
+}
+current.addQuery('active', true);
+current.query();
+
+if (current.next()) {
+  while (current.next()) {
+    if (current.getValue('caller_id') == email.from_sys_id) {
+      current.state = 1;
+      current.update();
+    }
+  }
+}
+
+
+function getLoanNumber(message) {
+  var regex = /.*(?=([\d]{7})).*/gm;
+  var matches = regex.exec(message);
+  if (matches.length &gt; 0) {
+    for (var i=0;i&lt;matches.length;i++) {
+      if (/^[\d]{7}$/gm.test(matches[i])) {
+        return matches[i].trim();
+      }
+    }
+  }
+  return;
+}]]&gt;&lt;/script&gt;&lt;stop_processing&gt;false&lt;/stop_processing&gt;&lt;sys_class_name&gt;sysevent_in_email_action&lt;/sys_class_name&gt;&lt;sys_created_by&gt;douglas.schamberg&lt;/sys_created_by&gt;&lt;sys_created_on&gt;2020-01-02 10:00:37&lt;/sys_created_on&gt;&lt;sys_customer_update&gt;false&lt;/sys_customer_update&gt;&lt;sys_domain&gt;global&lt;/sys_domain&gt;&lt;sys_domain_path&gt;/&lt;/sys_domain_path&gt;&lt;sys_id&gt;dc84b6dedb860490f255132968961913&lt;/sys_id&gt;&lt;sys_mod_count&gt;2&lt;/sys_mod_count&gt;&lt;sys_name&gt;UPDATE: lock911@movement.com&lt;/sys_name&gt;&lt;sys_overrides/&gt;&lt;sys_package display_value="Ratelock" source="x_momo_ratelock"&gt;605affb71badc01048a242e58d4bcb76&lt;/sys_package&gt;&lt;sys_policy/&gt;&lt;sys_replace_on_upgrade&gt;false&lt;/sys_replace_on_upgrade&gt;&lt;sys_scope display_value="Ratelock"&gt;605affb71badc01048a242e58d4bcb76&lt;/sys_scope&gt;&lt;sys_update_name&gt;sysevent_in_email_action_dc84b6dedb860490f255132968961913&lt;/sys_update_name&gt;&lt;sys_updated_by&gt;douglas.schamberg&lt;/sys_updated_by&gt;&lt;sys_updated_on&gt;2020-01-02 10:05:30&lt;/sys_updated_on&gt;&lt;table&gt;x_momo_ratelock_ticket&lt;/table&gt;&lt;template&gt;commentsDYNAMIC367bf121ef3221002841f7f775c0fbe2^EQ&lt;/template&gt;&lt;type/&gt;&lt;/sysevent_in_email_action&gt;&lt;sys_translated_text action="delete_multiple" query="documentkey=dc84b6dedb860490f255132968961913"/&gt;&lt;/record_update&gt;</payload>
+        <payload_hash>-1616161999</payload_hash>
+        <record_name>UPDATE: lock911@movement.com</record_name>
+        <reverted_from/>
+        <source>a45affb71badc01048a242e58d4bcb78</source>
+        <source_table>sys_update_set</source_table>
+        <state>previous</state>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-01-02 10:05:30</sys_created_on>
+        <sys_id>a7f5b216dbc60490f2551329689619e6</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>16f65b79ed20000001</sys_recorded_at>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-01-02 10:05:30</sys_updated_on>
+        <type>Inbound Email Actions</type>
+        <update_guid>6ff5b216eec6049058fc6ee71e9194e5</update_guid>
+        <update_guid_history>6ff5b216eec6049058fc6ee71e9194e5:-1616161999,7805be1621c6049005cb1b1f22ee1d55:-526876769,50e4bed2f7c6049027e7db5d594d7c6a:-1356816528</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete/>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-01-02 11:35:42</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_db_object display_value="" name="sysevent_in_email_action">sysevent_in_email_action</sys_db_object>
+        <sys_id>e9eb3fd0a3444702902bd49de79b9544</sys_id>
+        <sys_metadata>dc84b6dedb860490f255132968961913</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>UPDATE: lock911@movement.com</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_parent display_value="">744853641b71c41048a242e58d4bcb29</sys_parent>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_scope_delete display_value="">57712118eaee4a49ae47b2048a14ac31</sys_scope_delete>
+        <sys_update_name>sysevent_in_email_action_dc84b6dedb860490f255132968961913</sys_update_name>
+        <sys_update_version display_value="sysevent_in_email_action_dc84b6dedb860490f255132968961913">a7f5b216dbc60490f2551329689619e6</sys_update_version>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-01-02 11:35:42</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>

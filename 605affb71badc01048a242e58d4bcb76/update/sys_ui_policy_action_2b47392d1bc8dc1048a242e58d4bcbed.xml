@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_ui_policy_action">
+    <sys_ui_policy_action action="INSERT_OR_UPDATE">
+        <cleared>false</cleared>
+        <disabled>true</disabled>
+        <field>work_notes</field>
+        <mandatory>ignore</mandatory>
+        <sys_class_name>sys_ui_policy_action</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-04-08 07:41:45</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>2b47392d1bc8dc1048a242e58d4bcbed</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>work_notes</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sys_ui_policy_action_2b47392d1bc8dc1048a242e58d4bcbed</sys_update_name>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-04-08 07:41:45</sys_updated_on>
+        <table>x_momo_ratelock_ticket</table>
+        <ui_policy display_value="Read Only Fields on Closed">6347bde91bc8dc1048a242e58d4bcbc7</ui_policy>
+        <visible>ignore</visible>
+    </sys_ui_policy_action>
+</record_update>

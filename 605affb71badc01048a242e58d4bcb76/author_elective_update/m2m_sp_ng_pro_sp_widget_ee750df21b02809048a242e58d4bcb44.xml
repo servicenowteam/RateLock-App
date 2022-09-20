@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="m2m_sp_ng_pro_sp_widget">
+    <m2m_sp_ng_pro_sp_widget action="DELETE">
+        <sp_angular_provider display_value="ratelockSession">c42cdea61bb9cc1048a242e58d4bcb7b</sp_angular_provider>
+        <sp_widget display_value="Ratelock List Sessions">356581b61b02809048a242e58d4bcba9</sp_widget>
+        <sys_class_name>m2m_sp_ng_pro_sp_widget</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-01-03 15:10:52</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>ee750df21b02809048a242e58d4bcb44</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>ratelockSession.Ratelock List Sessions</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>m2m_sp_ng_pro_sp_widget_ee750df21b02809048a242e58d4bcb44</sys_update_name>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-01-03 15:10:52</sys_updated_on>
+    </m2m_sp_ng_pro_sp_widget>
+<sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Ratelock">605affb71badc01048a242e58d4bcb76</application>
+        <file_path/>
+        <instance_id>94e8281edbb7470060a6f0e5bf9619f6</instance_id>
+        <instance_name>movementdev</instance_name>
+        <name>m2m_sp_ng_pro_sp_widget_ee750df21b02809048a242e58d4bcb44</name>
+        <payload><![CDATA[<?xml version="1.0" encoding="UTF-8"?><record_update table="m2m_sp_ng_pro_sp_widget">
+    <m2m_sp_ng_pro_sp_widget action="INSERT_OR_UPDATE">
+        <sp_angular_provider display_value="ratelockSession">c42cdea61bb9cc1048a242e58d4bcb7b</sp_angular_provider>
+        <sp_widget display_value="Ratelock List Sessions">356581b61b02809048a242e58d4bcba9</sp_widget>
+        <sys_class_name>m2m_sp_ng_pro_sp_widget</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-01-03 15:10:52</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>ee750df21b02809048a242e58d4bcb44</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>ratelockSession.Ratelock List Sessions</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>m2m_sp_ng_pro_sp_widget_ee750df21b02809048a242e58d4bcb44</sys_update_name>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-01-03 15:10:52</sys_updated_on>
+    </m2m_sp_ng_pro_sp_widget>
+</record_update>]]></payload>
+        <payload_hash>-1856002708</payload_hash>
+        <record_name>ratelockSession.Ratelock List Sessions</record_name>
+        <reverted_from/>
+        <source>bf1c1be11b5a401048a242e58d4bcb30</source>
+        <source_table>sys_upgrade_history</source_table>
+        <state>previous</state>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-01-12 15:12:28</sys_created_on>
+        <sys_id>a52c9be11b5a401048a242e58d4bcb36</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>16f9a5042050000001</sys_recorded_at>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-01-12 15:12:28</sys_updated_on>
+        <type>Angular Providers</type>
+        <update_guid>e12c9be1755a40104874dd2258b81736</update_guid>
+        <update_guid_history>e12c9be1755a40104874dd2258b81736:0,85f813eda11a40103e6e10fc0d8f064e:784396485,03071f69021a40108f8d37524e87a702:0,af369fe50a1a4010daa0383d4632102a:1930756112,46f493e11b1a4010ec579be59cf3a838:0,ed745f61341a4010c35a535650c146b8:-749123267,9023d36d2bd640107e30e9c5f2df8794:0,a33257e974d64010193819e9d2868bdb:-1302625535,6cf09765f0d64010e217c1a7128e8195:0,c0e0df2516d6401008b28fedfd654a7c:-1387277762,d0101f615ed64010294d619c56641e88:0,62ffc361c0d640102090c601134a93b0:-1387277762,267d87a9a8964010fa2b2edf4a4c7762:0,ab5d0b6918964010882e54b8114a3886:-1387277762,2e750df2b7028090046428984bf92e46:-1741665740</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete display_value="">48ec3a43db145450f255132968961971</sys_audit_delete>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-04-25 14:52:17</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_db_object display_value="" name="m2m_sp_ng_pro_sp_widget">m2m_sp_ng_pro_sp_widget</sys_db_object>
+        <sys_id>283fdcd71c494959a4c27f74a78ea5b9</sys_id>
+        <sys_metadata>ee750df21b02809048a242e58d4bcb44</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>ratelockSession.Ratelock List Sessions</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_parent/>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_scope_delete display_value="">57712118eaee4a49ae47b2048a14ac31</sys_scope_delete>
+        <sys_update_name>m2m_sp_ng_pro_sp_widget_ee750df21b02809048a242e58d4bcb44</sys_update_name>
+        <sys_update_version display_value="m2m_sp_ng_pro_sp_widget_ee750df21b02809048a242e58d4bcb44">a52c9be11b5a401048a242e58d4bcb36</sys_update_version>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-04-25 14:52:17</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>

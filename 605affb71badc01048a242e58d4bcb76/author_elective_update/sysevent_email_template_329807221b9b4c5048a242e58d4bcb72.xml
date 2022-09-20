@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sysevent_email_template">
+    <sysevent_email_template action="DELETE">
+        <collection>incident</collection>
+        <email_layout/>
+        <message/>
+        <message_html><![CDATA[<style>.tdwrap{color:#ccc;}sup{color:#ccc;}</style>
+<!-- [if mso]><style>*[class="tdwrap"]{mso-hide: none;}sup{mso-hide: none;}</style><![endif]-->]]></message_html>
+        <message_list/>
+        <message_text/>
+        <name>Ratelock Default Template</name>
+        <sms_alternate/>
+        <subject/>
+        <sys_class_name>sysevent_email_template</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-03-05 09:23:48</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>329807221b9b4c5048a242e58d4bcb72</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>Ratelock Default Template</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sysevent_email_template_329807221b9b4c5048a242e58d4bcb72</sys_update_name>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-03-05 09:23:48</sys_updated_on>
+        <sys_version>2</sys_version>
+    </sysevent_email_template>
+    <sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Ratelock">605affb71badc01048a242e58d4bcb76</application>
+        <file_path/>
+        <instance_id>94e8281edbb7470060a6f0e5bf9619f6</instance_id>
+        <instance_name>movementdev</instance_name>
+        <name>sysevent_email_template_329807221b9b4c5048a242e58d4bcb72</name>
+        <payload>&lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;record_update table="sysevent_email_template"&gt;&lt;sysevent_email_template action="INSERT_OR_UPDATE"&gt;&lt;collection&gt;incident&lt;/collection&gt;&lt;email_layout/&gt;&lt;message/&gt;&lt;message_html&gt;&lt;![CDATA[&lt;style&gt;.tdwrap{color:#ccc;}sup{color:#ccc;}&lt;/style&gt;
+&lt;!-- [if mso]&gt;&lt;style&gt;*[class="tdwrap"]{mso-hide: none;}sup{mso-hide: none;}&lt;/style&gt;&lt;![endif]--&gt;]]&gt;&lt;/message_html&gt;&lt;message_list/&gt;&lt;message_text/&gt;&lt;name&gt;Ratelock Default Template&lt;/name&gt;&lt;sms_alternate/&gt;&lt;subject/&gt;&lt;sys_class_name&gt;sysevent_email_template&lt;/sys_class_name&gt;&lt;sys_created_by&gt;douglas.schamberg&lt;/sys_created_by&gt;&lt;sys_created_on&gt;2020-03-05 09:23:48&lt;/sys_created_on&gt;&lt;sys_customer_update&gt;false&lt;/sys_customer_update&gt;&lt;sys_id&gt;329807221b9b4c5048a242e58d4bcb72&lt;/sys_id&gt;&lt;sys_mod_count&gt;0&lt;/sys_mod_count&gt;&lt;sys_name&gt;Ratelock Default Template&lt;/sys_name&gt;&lt;sys_package display_value="Ratelock" source="x_momo_ratelock"&gt;605affb71badc01048a242e58d4bcb76&lt;/sys_package&gt;&lt;sys_policy/&gt;&lt;sys_replace_on_upgrade&gt;false&lt;/sys_replace_on_upgrade&gt;&lt;sys_scope display_value="Ratelock"&gt;605affb71badc01048a242e58d4bcb76&lt;/sys_scope&gt;&lt;sys_update_name&gt;sysevent_email_template_329807221b9b4c5048a242e58d4bcb72&lt;/sys_update_name&gt;&lt;sys_updated_by&gt;douglas.schamberg&lt;/sys_updated_by&gt;&lt;sys_updated_on&gt;2020-03-05 09:23:48&lt;/sys_updated_on&gt;&lt;sys_version&gt;2&lt;/sys_version&gt;&lt;/sysevent_email_template&gt;&lt;/record_update&gt;</payload>
+        <payload_hash>-1318934968</payload_hash>
+        <record_name>Ratelock Default Template</record_name>
+        <reverted_from/>
+        <source>74fc5f651b5a401048a242e58d4bcbbc</source>
+        <source_table>sys_update_set</source_table>
+        <state>previous</state>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-03-05 09:23:48</sys_created_on>
+        <sys_id>4f9807221b9b4c5048a242e58d4bcb73</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>170aa0216da0000001</sys_recorded_at>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-03-05 09:23:48</sys_updated_on>
+        <type>Email Template</type>
+        <update_guid>47980722c59b4c507a30453abc00c973</update_guid>
+        <update_guid_history>47980722c59b4c507a30453abc00c973:-1318934968</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete/>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-03-09 16:53:31</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_db_object display_value="" name="sysevent_email_template">sysevent_email_template</sys_db_object>
+        <sys_id>020f1522fc8a4cf29a64d0b72889f3a4</sys_id>
+        <sys_metadata>329807221b9b4c5048a242e58d4bcb72</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>Ratelock Default Template</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_parent display_value="Incident">0628f274db60320093373c8f9d961919</sys_parent>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_scope_delete display_value="">57712118eaee4a49ae47b2048a14ac31</sys_scope_delete>
+        <sys_update_name>sysevent_email_template_329807221b9b4c5048a242e58d4bcb72</sys_update_name>
+        <sys_update_version display_value="sysevent_email_template_329807221b9b4c5048a242e58d4bcb72">4f9807221b9b4c5048a242e58d4bcb73</sys_update_version>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-03-09 16:53:31</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_schema_attribute_m2m">
+    <sys_schema_attribute_m2m action="INSERT_OR_UPDATE">
+        <attribute display_value="Edge Encryption Enabled">59f126217f1231009559391ffdfa918c</attribute>
+        <schema display_value="Description" element="description" name="x_momo_ratelock_ticket">2045db7ddb9c9c90a5bf58eadc961940</schema>
+        <sys_class_name>sys_schema_attribute_m2m</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2019-12-15 16:21:56</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>968f17201bb1c41048a242e58d4bcbbf</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>true</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sys_schema_attribute_m2m_968f17201bb1c41048a242e58d4bcbbf</sys_update_name>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2019-12-15 16:21:56</sys_updated_on>
+        <value>true</value>
+    </sys_schema_attribute_m2m>
+</record_update>

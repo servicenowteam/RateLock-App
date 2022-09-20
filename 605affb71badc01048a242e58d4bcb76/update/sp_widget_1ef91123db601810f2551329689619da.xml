@@ -1,0 +1,481 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_widget">
+    <sp_widget action="INSERT_OR_UPDATE">
+        <category>custom</category>
+        <client_script><![CDATA[function ($scope, $rootScope, $timeout, $window, $animate, spUtil) {
+  /* widget controller */
+  var c = this;
+
+  $scope.searcher = undefined;
+  $scope.searchModelOptions = {
+    'default': 500
+  };
+  $scope.isDatePickerOpen = false;
+  $scope.dateOptions = {
+    minDate: new Date(Date.UTC(1900, 1, 1)),
+    maxDate: new Date()
+  };
+  $scope.dateFilter = null;
+  $scope.isInitialDate = true;
+  $scope.searcherPlaceholder = "Search logs...";
+  $scope.isResultsLoading = false;
+
+  spUtil.recordWatch($scope, c.data.watchTable, c.data.watchFilter, function (response) {
+    if (response.data) {
+      if (response.data.operation === 'insert' && angular.isArray($scope.records)) {
+        var rec = response.data.record;
+        var _recordObj = {
+          id: rec.sys_id,
+          createdOn: {
+            value: rec.sys_created_on.display_value,
+            display: c.formatDateTime(rec.sys_created_on.display_value)
+          },
+          content: rec.value.value.replace(/\[code\]/gmi, '').replace(/\[\/code\]/gmi, ''),
+          createdBy: c.formatCreatedBy(rec.sys_created_by.display_value)
+        };
+        $scope.initial.records.unshift(_recordObj);
+      }
+    }
+  });
+
+  c.$onInit = function () {
+    $scope.initial = {
+      records: c.data.records
+    };
+    $scope.records = $scope.data.records;
+    $scope.previous = $scope.data.records;
+    if (!angular.isArray($scope.records)) {
+      $scope.records = [];
+    }
+
+    if (angular.isDefined(c.startTimer)) {
+      $timeout.cancel(c.startTimer);
+    }
+
+    c.startTimer = $timeout(function () {
+      $rootScope.$broadcast('ratelock.history.ready');
+    }, 400);
+  };
+
+  $rootScope.$on('ratelock.history.request', function () {
+    if (angular.isDefined(c.startTimer)) {
+      $timeout.cancel(c.startTimer);
+    }
+    if (!angular.isArray($scope.records)) {
+      $scope.records = $scope.data.records;
+      $scope.previous = $scope.data.records;
+      c.startTimer = $timeout(function () {
+        $rootScope.$broadcast('ratelock.history.ready');
+      }, 400);
+    } else {
+      if ($scope.dateFilter) {
+        var f = new Date($scope.dateFilter);
+        $scope.data.dateFilter = f.getMonth() + '/' + f.getDate() + '/' + f.getFullYear();
+      } else {
+        $scope.data.dateFilter = $scope.dateFilter;
+      }
+      $scope.server.update().then(function (response) {
+        $scope.initial.records = response.records;
+        $scope.records = response.records;
+        $scope.previous = response.records;
+        c.startTimer = $timeout(function () {
+          $rootScope.$broadcast('ratelock.history.ready');
+        }, 400);
+      })
+    }
+  });
+
+  c.$onDestroy = function () {
+    if (angular.isDefined(c.startTimer)) {
+      $timeout.cancel(c.startTimer);
+    }
+
+    c.records = [];
+  };
+
+  c.onSearch = function () {
+    $scope.isResultsLoading = true;
+    if (!$scope.searcher || $scope.searcher === '') {
+      $scope.records = $scope.initial.records;
+    } else if ($scope.searcher.length >= 4) {
+      if ($scope.records.length === 0) {
+        $scope.records = $scope.previous;
+      }
+      var regex = new RegExp($scope.searcher, 'gmi');
+      if ($scope.dateFilter && $scope.dateFilter !== '') {
+        var ft = new Date($scope.dateFilter);
+        $scope.records = $scope.initial.records.filter(function (item) {
+          var created = new Date(item.createdOn.value);
+          return (regex.test(item.content) || regex.test(item.createdBy)) && ft.getDate() === created.getDate();
+        });
+      } else {
+        $scope.records = $scope.initial.records.filter(function (item) {
+          return regex.test(item.content) || regex.test(item.createdBy);
+        });
+      }
+    } else {
+      if ($scope.dateFilter && $scope.dateFilter !== '') {
+        var f = new Date($scope.dateFilter);
+        $scope.records = $scope.initial.records.filter(function (item) {
+          var created = new Date(item.createdOn.value);
+          return created.getDate() === f.getDate();
+        });
+      } else {
+        $scope.records = $scope.initial.records;
+      }
+
+      $scope.previous = $scope.records;
+    }
+    if (angular.isDefined(c.searchTimer)) {
+      $timeout.cancel(c.searchTimer);
+    }
+    c.searchTimer = $timeout(function () {
+      $scope.isResultsLoading = false;
+    }, 500);
+
+  };
+
+  c.filterByDate = function () {
+    if (!$scope.isInitialDate) {
+			$scope.dateFilter = null;
+      $scope.isInitialDate = true;
+      $scope.searcherPlaceholder = "Search logs...";
+      $scope.isDatePickerOpen = false;
+      if ($scope.records.length !== $scope.previous.length && $scope.searcher) {
+        c.onSearch();
+      } else if ($scope.records.length !== $scope.previous.length) {
+        $scope.records = $scope.initial.records;
+      }
+      return;
+    }
+    $scope.isInitialDate = false;
+    $scope.isDatePickerOpen = true;
+
+  };
+
+  $scope.$watch('dateFilter', function (newVal, prev) {
+    if (newVal) {
+      var f = new Date(newVal);
+      if (!$scope.isInitialDate) {
+        $scope.searcherPlaceholder = "Filtering by tickets on " + f.toLocaleString('en-US', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+          timezone: $window.g_tz || 'US/Eastern'
+        });
+      }
+      $scope.records = $scope.records.filter(function (item) {
+        var created = new Date(item.createdOn.value);
+        return created.getDate() === f.getDate();
+      });
+    } else if (!$scope.searcher && $scope.searcher !== '') {
+      $scope.records = $scope.initial.records;
+      $scope.previous = $scope.initial.records;
+    }
+  });
+
+  $scope.$watch('initial.records', function (newVal) {
+    if (angular.isArray(newVal)) {
+      if (!$scope.searcher && $scope.searcher !== '' && !$scope.isInitialDate) {
+        $scope.records = newVal;
+        $scope.previous = newVal;
+      }
+    }
+  });
+
+  c.formatCreatedBy = function (username) {
+    var user = username;
+    if (/\./gi.test(username)) {
+      user = username.split('.');
+      user = user.map(function (part) {
+        return part.charAt(0).toUpperCase() + part.slice(1, part.length);
+      });
+      user = user.join(' ');
+    }
+    return user;
+  };
+
+  c.formatDateTime = function (gtDate) {
+    var date = new Date(gtDate);
+    var options = {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      timezone: $window.g_tz || 'US/Eastern'
+    };
+    var timeOptions = {
+      hour: 'numeric',
+      minute: 'numeric',
+      hour12: true,
+      timezone: $window.g_tz || 'US/Eastern'
+    };
+    var lt = new Intl.DateTimeFormat('en-US', options).format(date);
+    var time = new Intl.DateTimeFormat('en-US', timeOptions).format(date);
+    return lt + ' at ' + time;
+  };
+}]]></client_script>
+        <controller_as>c</controller_as>
+        <css>.created-at {
+	text-align: right;
+}
+
+.scroller {
+	max-height: 48vh;
+  overflow-y: auto;
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+  border-bottom: 1px solid #ddd;
+  
+  &amp; .list-group-item {
+    &amp;:last-child {
+    	border-bottom: 0px;
+    }
+    &amp;:hover {
+    	background-color: #f0f0f0;
+  		transition: all 0.3s ease;
+    }
+  	&amp;.ng-enter,
+    &amp;.ng-leave {
+    	opacity: 0;
+  		max-height: 0;
+  		transition: max-height .7s;
+  		-webkit-transition: max-height .7s;
+    }
+    
+    &amp;.ng-enter.ng-enter-active, .ng-leave {
+    	opacity: 1;
+      max-height: 100%;
+    }
+    
+    &amp;.ng-leave.ng-leave-active, .ng-enter {
+    	opacity: 0;
+      max-height: 0;
+    }
+    
+  }
+}
+
+.loading {
+  display: flex;
+  width: 100%;
+  vertical-align: middle;
+  align-items: center;
+  justify-content: center;
+
+  &amp;.absolute-loader {
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: #fff;
+    z-index: 1049;
+  }
+
+  &amp; span.loading-inline {
+    font-size: 3rem;
+    font-weight: 700;
+    color: $brand-primary;
+  }
+}
+
+.centered {
+	text-align: center;
+  padding-top: 30px;
+  padding-bottom: 30px;
+  padding-right: 0px;
+  padding-left: 0px;
+}
+
+.no-records {
+  
+}
+
+.history {
+  justify-content: center;
+  width: 100%;
+  text-align: center;
+  
+  &amp; .previous-record-history,
+  &amp; .current-record-history {
+  	font-weight: 700;
+    text-align: justify;
+  }
+}
+
+.list-group-headers {
+	border-bottom: none;
+  border-color: #ddd;
+  background: #f5f5f5;
+  border-bottom-left-radius: 0px;
+  border-bottom-right-radius: 0px;
+}
+
+.hovering {
+	background-color: #eee;
+  transition: all 0.3s ease;
+}
+
+.header {
+  font-size: 16px;
+  font-family: "SourceSansPro", Helvetica, Arial, sans-serif;
+  font-weight: 500;
+}
+
+.text-center {
+	text-align: center;
+}
+
+.text-right {
+	text-align: right;
+}
+
+.form-control {
+  &amp;:focus,
+  &amp;:active {
+  	border: 1px solid $brand-primary;
+    outline: none;
+  }
+}</css>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description/>
+        <docs/>
+        <field_list/>
+        <has_preview>false</has_preview>
+        <id>ratelock_ticket_history_list</id>
+        <internal>false</internal>
+        <link><![CDATA[function link(scope, element, attrs, controller) {  }]]></link>
+        <name>Ratelock Ticket History List</name>
+        <option_schema/>
+        <public>false</public>
+        <roles/>
+        <script><![CDATA[(function() {
+  /* populate the 'data' object */
+  /* e.g., data.table = $sp.getValue('table'); */
+	gs.include('RatelockDateUtils');
+	data.table = (input ? input.table : undefined) || options.table || $sp.getParameter('table');
+	data.sys_id = (input ? input.sys_id : undefined) || options.sys_id || $sp.getParameter('sys_id');
+	data.dateFilter = (input ? input.dateFilter : undefined);
+	data.records = getTicketHistory(data.table, data.sys_id, data.dateFilter);
+	data.watchTable = "sys_journal_field";
+	data.watchFilter = "element=ticket_history^element_id=" + data.sys_id + '^name=' + data.table;
+	
+	function getTicketHistory(table, sysId, dateFilter) {
+		var entries = [];
+		var hist = new GlideRecord('sys_journal_field');
+		if (dateFilter) {
+			hist.addQuery('sys_created_on', '>=', dateFilter + ' 00:00:00');
+			hist.addQuery('sys_created_on', '<=', dateFilter + '23:59:59');
+		}
+		hist.addQuery('element', 'ticket_history');
+		hist.addQuery('element_id', sysId);
+		hist.addQuery('name', table);
+		hist.orderByDesc('sys_created_on');
+		hist.query();
+		while (hist.next()) {
+			var content = hist.value.getHTMLValue();
+			entries.push({
+				id: hist.getUniqueValue(),
+				createdOn: {
+					value: hist.getDisplayValue('sys_created_on'),
+					display: RatelockDateUtils.formatDateTime(hist.sys_created_on)
+				},
+				content: content.replace(/\[code\]/gmi, '').replace(/\[\/code\]/gmi, ''),
+				createdBy: hist.sys_created_by.nil() ? null : getUserDisplayName(hist.getValue('sys_created_by'))
+			});
+		}
+		return entries;
+	}
+	
+	function getUserDisplayName(username) {
+		var gr = new GlideRecord('sys_user');
+		gr.addActiveQuery();
+		gr.setLimit(1);
+		gr.addQuery('user_name', username);
+		gr.query();
+		while (gr.next()) {
+			return gr.getDisplayValue('name');
+		}
+	}
+})();]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-05-09 07:12:50</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>1ef91123db601810f2551329689619da</sys_id>
+        <sys_mod_count>212</sys_mod_count>
+        <sys_name>Ratelock Ticket History List</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sp_widget_1ef91123db601810f2551329689619da</sys_update_name>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-07-03 13:04:16</sys_updated_on>
+        <template><![CDATA[<div class="padder">
+  <div class="row">
+    <div class="col-md-4">
+      <form name="search">
+        <input type="text" style="display:none;" show-button-bar="false" datepicker-options="dateOptions" uib-datepicker-popup ng-model="dateFilter" is-open="isDatePickerOpen" close-text="Close" />
+        <div class="input-group">
+          <div class="input-group-btn">
+            <button class="btn" 
+                    ng-class="{'btn-default': isInitialDate, 'btn-primary': !isInitialDate}" 
+                    ng-click="c.filterByDate()" ng-disabled="records.length === 0 && previous.length === 0" 
+                    type="button">
+              <i class="fa fa-calendar" aria-hidden="true" ng-if="isInitialDate"></i>
+              <i class="fa fa-close" aria-hidden="true" ng-if="!isInitialDate"></i>
+            </button>
+          </div>
+          <input class="form-control"
+                 ng-model="searcher"
+                 ng-change="c.onSearch()"
+                 ng-model-options="searchModelOptions"
+                 placeholder="{{ searcherPlaceholder }}"
+                 ng-disabled="records.length === 0 && previous.length === 0"
+                 type="text" />
+        </div>
+      </form>
+    </div>
+    <div class="col-md-8"></div>
+  </div>
+  <ul class="list-group m-t">
+    <li class="list-group-item list-group-headers">
+      <div class="row">
+        <div class="col-md-2">
+          <span class="header">Updated By</span>
+        </div>
+        <div class="col-md-8 text-center">
+          <span class="header">Details</span>
+        </div>
+        <div class="col-md-2 text-center">
+          <span class="header">Created On</span>
+        </div>
+      </div>
+    </li>
+    <div class="scroller" ng-show="records.length > 0">
+      <div class="loading" ng-show="isResultsLoading">
+        <span class="loading-inline">
+          <i class="fa fa-refresh fa-spin" aria-hidden="true"></i>
+        </span>
+      </div>
+      <li class="list-group-item"
+        ng-repeat="record in records track by $index">
+        <div class="row">
+          <div class="col-md-2">
+            <span class="text-muted">{{ record.createdBy }}</span>
+          </div>
+          <div class="col-md-8" ng-bind-html="record.content"></div>
+          <div class="col-md-2 text-right">
+            <small class="text-muted">{{ record.createdOn.display }}</small>
+          </div>
+        </div>
+      </li>
+    </div>
+    <li class="list-group-item centered" ng-show="records.length === 0">
+      ${No records found}
+    </li>
+  </ul>
+</div>]]></template>
+    </sp_widget>
+</record_update>

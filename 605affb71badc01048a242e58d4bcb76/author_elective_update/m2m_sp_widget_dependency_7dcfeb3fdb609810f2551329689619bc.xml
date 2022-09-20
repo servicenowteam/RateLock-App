@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="m2m_sp_widget_dependency">
+    <m2m_sp_widget_dependency action="DELETE">
+        <sp_dependency display_value="movement-sessions">996da73fdb609810f2551329689619e2</sp_dependency>
+        <sp_widget display_value="Ratelock List Sessions">356581b61b02809048a242e58d4bcba9</sp_widget>
+        <sys_class_name>m2m_sp_widget_dependency</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-05-10 12:45:50</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>7dcfeb3fdb609810f2551329689619bc</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>movement-sessions.Ratelock List Sessions</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>m2m_sp_widget_dependency_7dcfeb3fdb609810f2551329689619bc</sys_update_name>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-05-10 12:45:50</sys_updated_on>
+    </m2m_sp_widget_dependency>
+    <sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Ratelock">605affb71badc01048a242e58d4bcb76</application>
+        <file_path/>
+        <instance_id>94e8281edbb7470060a6f0e5bf9619f6</instance_id>
+        <instance_name>movementdev</instance_name>
+        <name>m2m_sp_widget_dependency_7dcfeb3fdb609810f2551329689619bc</name>
+        <payload><![CDATA[<?xml version="1.0" encoding="UTF-8"?><record_update table="m2m_sp_widget_dependency"><m2m_sp_widget_dependency action="INSERT_OR_UPDATE"><sp_dependency display_value="movement-sessions">996da73fdb609810f2551329689619e2</sp_dependency><sp_widget display_value="Ratelock List Sessions">356581b61b02809048a242e58d4bcba9</sp_widget><sys_class_name>m2m_sp_widget_dependency</sys_class_name><sys_created_by>douglas.schamberg</sys_created_by><sys_created_on>2020-05-10 12:45:50</sys_created_on><sys_customer_update>false</sys_customer_update><sys_id>7dcfeb3fdb609810f2551329689619bc</sys_id><sys_mod_count>0</sys_mod_count><sys_name>movement-sessions.Ratelock List Sessions</sys_name><sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package><sys_policy/><sys_replace_on_upgrade>false</sys_replace_on_upgrade><sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope><sys_update_name>m2m_sp_widget_dependency_7dcfeb3fdb609810f2551329689619bc</sys_update_name><sys_updated_by>douglas.schamberg</sys_updated_by><sys_updated_on>2020-05-10 12:45:50</sys_updated_on></m2m_sp_widget_dependency></record_update>]]></payload>
+        <payload_hash>2050791658</payload_hash>
+        <record_name>movement-sessions.Ratelock List Sessions</record_name>
+        <reverted_from/>
+        <source>741a4e651b4cdc1048a242e58d4bcb9f</source>
+        <source_table>sys_update_set</source_table>
+        <state>previous</state>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-05-10 12:45:50</sys_created_on>
+        <sys_id>fdcf2bffdb609810f255132968961958</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>171fe9ec5720000001</sys_recorded_at>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-05-10 12:45:50</sys_updated_on>
+        <type>Widget Dependency</type>
+        <update_guid>f5cf2bffe3609810b4514637be5b2b58</update_guid>
+        <update_guid_history>f5cf2bffe3609810b4514637be5b2b58:2050791658</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete display_value="">6b065cda1b3c945048a242e58d4bcbde</sys_audit_delete>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-05-17 15:19:24</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_db_object display_value="" name="m2m_sp_widget_dependency">m2m_sp_widget_dependency</sys_db_object>
+        <sys_id>411841151fd7482681a2910c2e9e3ed1</sys_id>
+        <sys_metadata>7dcfeb3fdb609810f2551329689619bc</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>movement-sessions.Ratelock List Sessions</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_parent/>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_scope_delete display_value="">57712118eaee4a49ae47b2048a14ac31</sys_scope_delete>
+        <sys_update_name>m2m_sp_widget_dependency_7dcfeb3fdb609810f2551329689619bc</sys_update_name>
+        <sys_update_version display_value="m2m_sp_widget_dependency_7dcfeb3fdb609810f2551329689619bc">fdcf2bffdb609810f255132968961958</sys_update_version>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-05-17 15:19:24</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>

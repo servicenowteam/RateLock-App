@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update>
+    <sys_choice action="INSERT_OR_UPDATE" field="state" table="x_momo_ratelock_ticket" version="3">
+        <sys_choice_set action="INSERT_OR_UPDATE">
+            <element>state</element>
+            <name>x_momo_ratelock_ticket</name>
+            <sys_class_name>sys_choice_set</sys_class_name>
+            <sys_created_by>douglas.schamberg</sys_created_by>
+            <sys_created_on>2020-01-12 16:26:01</sys_created_on>
+            <sys_customer_update>false</sys_customer_update>
+            <sys_id>cc46c4241b17d850b482dce8cc4bcb19</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_name>state</sys_name>
+            <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+            <sys_policy/>
+            <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+            <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+            <sys_update_name>sys_choice_x_momo_ratelock_ticket_state</sys_update_name>
+            <sys_updated_by>douglas.schamberg</sys_updated_by>
+            <sys_updated_on>2020-01-12 16:26:01</sys_updated_on>
+        </sys_choice_set>
+        <sys_choice action="INSERT_OR_UPDATE">
+            <dependent_value/>
+            <element>state</element>
+            <hint/>
+            <inactive>false</inactive>
+            <label>Active</label>
+            <language>en</language>
+            <name>x_momo_ratelock_ticket</name>
+            <sequence>1</sequence>
+            <synonyms/>
+            <sys_created_by>douglas.schamberg</sys_created_by>
+            <sys_created_on>2020-01-12 16:26:21</sys_created_on>
+            <sys_domain>global</sys_domain>
+            <sys_domain_path>/</sys_domain_path>
+            <sys_id>9bfc2ba91b9a401048a242e58d4bcb7c</sys_id>
+            <sys_mod_count>2</sys_mod_count>
+            <sys_updated_by>douglas.schamberg</sys_updated_by>
+            <sys_updated_on>2020-01-12 16:31:21</sys_updated_on>
+            <value>1</value>
+        </sys_choice>
+        <sys_choice action="INSERT_OR_UPDATE">
+            <dependent_value/>
+            <element>state</element>
+            <hint/>
+            <inactive>false</inactive>
+            <label>Pending</label>
+            <language>en</language>
+            <name>x_momo_ratelock_ticket</name>
+            <sequence>2</sequence>
+            <synonyms/>
+            <sys_created_by>douglas.schamberg</sys_created_by>
+            <sys_created_on>2020-01-12 16:26:40</sys_created_on>
+            <sys_domain>global</sys_domain>
+            <sys_domain_path>/</sys_domain_path>
+            <sys_id>3b0da7a91b9a401048a242e58d4bcbbe</sys_id>
+            <sys_mod_count>2</sys_mod_count>
+            <sys_updated_by>douglas.schamberg</sys_updated_by>
+            <sys_updated_on>2020-01-12 16:31:23</sys_updated_on>
+            <value>2</value>
+        </sys_choice>
+        <sys_choice action="INSERT_OR_UPDATE">
+            <dependent_value/>
+            <element>state</element>
+            <hint/>
+            <inactive>false</inactive>
+            <label>Awaiting User Info</label>
+            <language>en</language>
+            <name>x_momo_ratelock_ticket</name>
+            <sequence>3</sequence>
+            <synonyms/>
+            <sys_created_by>douglas.schamberg</sys_created_by>
+            <sys_created_on>2020-01-12 16:26:57</sys_created_on>
+            <sys_domain>global</sys_domain>
+            <sys_domain_path>/</sys_domain_path>
+            <sys_id>682def691b9a401048a242e58d4bcbb7</sys_id>
+            <sys_mod_count>2</sys_mod_count>
+            <sys_updated_by>douglas.schamberg</sys_updated_by>
+            <sys_updated_on>2020-01-12 16:31:25</sys_updated_on>
+            <value>3</value>
+        </sys_choice>
+        <sys_choice action="INSERT_OR_UPDATE">
+            <dependent_value/>
+            <element>state</element>
+            <hint/>
+            <inactive>false</inactive>
+            <label>Resolved</label>
+            <language>en</language>
+            <name>x_momo_ratelock_ticket</name>
+            <sequence>4</sequence>
+            <synonyms/>
+            <sys_created_by>douglas.schamberg</sys_created_by>
+            <sys_created_on>2020-01-12 16:27:09</sys_created_on>
+            <sys_domain>global</sys_domain>
+            <sys_domain_path>/</sys_domain_path>
+            <sys_id>283d2f651b9a401048a242e58d4bcb8e</sys_id>
+            <sys_mod_count>3</sys_mod_count>
+            <sys_updated_by>douglas.schamberg</sys_updated_by>
+            <sys_updated_on>2020-01-12 16:31:28</sys_updated_on>
+            <value>5</value>
+        </sys_choice>
+        <sys_choice action="INSERT_OR_UPDATE">
+            <dependent_value/>
+            <element>state</element>
+            <hint/>
+            <inactive>false</inactive>
+            <label>Closed</label>
+            <language>en</language>
+            <name>x_momo_ratelock_ticket</name>
+            <sequence>5</sequence>
+            <synonyms/>
+            <sys_created_by>douglas.schamberg</sys_created_by>
+            <sys_created_on>2020-01-12 16:26:01</sys_created_on>
+            <sys_domain>global</sys_domain>
+            <sys_domain_path>/</sys_domain_path>
+            <sys_id>0bfc6ba91b9a401048a242e58d4bcb0e</sys_id>
+            <sys_mod_count>2</sys_mod_count>
+            <sys_updated_by>douglas.schamberg</sys_updated_by>
+            <sys_updated_on>2020-01-12 16:31:32</sys_updated_on>
+            <value>6</value>
+        </sys_choice>
+    </sys_choice>
+</record_update>

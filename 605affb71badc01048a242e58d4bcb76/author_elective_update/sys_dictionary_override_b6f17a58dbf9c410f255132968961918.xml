@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_dictionary_override">
+    <sys_dictionary_override action="DELETE">
+        <attributes/>
+        <attributes_override>false</attributes_override>
+        <base_table>task</base_table>
+        <calculation/>
+        <calculation_override>false</calculation_override>
+        <default_value/>
+        <default_value_override>false</default_value_override>
+        <dependent/>
+        <dependent_override>false</dependent_override>
+        <display_override>false</display_override>
+        <element>active</element>
+        <mandatory>false</mandatory>
+        <mandatory_override>false</mandatory_override>
+        <name>x_momo_ratelock_ticket</name>
+        <read_only>true</read_only>
+        <read_only_override>true</read_only_override>
+        <reference_qual/>
+        <reference_qual_override>false</reference_qual_override>
+        <sys_class_name>sys_dictionary_override</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2019-12-14 18:24:25</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>b6f17a58dbf9c410f255132968961918</sys_id>
+        <sys_mod_count>1</sys_mod_count>
+        <sys_name>active</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sys_dictionary_override_b6f17a58dbf9c410f255132968961918</sys_update_name>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2019-12-14 18:24:25</sys_updated_on>
+    </sys_dictionary_override>
+    <sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Ratelock">605affb71badc01048a242e58d4bcb76</application>
+        <file_path/>
+        <instance_id>94e8281edbb7470060a6f0e5bf9619f6</instance_id>
+        <instance_name>movementdev</instance_name>
+        <name>sys_dictionary_override_b6f17a58dbf9c410f255132968961918</name>
+        <payload><![CDATA[<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_dictionary_override"><sys_dictionary_override action="INSERT_OR_UPDATE"><attributes/><attributes_override>false</attributes_override><base_table>task</base_table><calculation/><calculation_override>false</calculation_override><default_value/><default_value_override>false</default_value_override><dependent/><dependent_override>false</dependent_override><display_override>false</display_override><element>active</element><mandatory>false</mandatory><mandatory_override>false</mandatory_override><name>x_momo_ratelock_ticket</name><read_only>true</read_only><read_only_override>true</read_only_override><reference_qual/><reference_qual_override>false</reference_qual_override><sys_class_name>sys_dictionary_override</sys_class_name><sys_created_by>douglas.schamberg</sys_created_by><sys_created_on>2019-12-14 18:24:25</sys_created_on><sys_customer_update>false</sys_customer_update><sys_id>b6f17a58dbf9c410f255132968961918</sys_id><sys_mod_count>1</sys_mod_count><sys_name>active</sys_name><sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package><sys_policy/><sys_replace_on_upgrade>false</sys_replace_on_upgrade><sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope><sys_update_name>sys_dictionary_override_b6f17a58dbf9c410f255132968961918</sys_update_name><sys_updated_by>douglas.schamberg</sys_updated_by><sys_updated_on>2019-12-14 18:24:25</sys_updated_on></sys_dictionary_override></record_update>]]></payload>
+        <payload_hash>241506694</payload_hash>
+        <record_name>active</record_name>
+        <reverted_from/>
+        <source>a45affb71badc01048a242e58d4bcb78</source>
+        <source_table>sys_update_set</source_table>
+        <state>previous</state>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2019-12-14 18:24:25</sys_created_on>
+        <sys_id>baf17a58dbf9c410f2551329689619a7</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>16f05a792410000001</sys_recorded_at>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2019-12-14 18:24:25</sys_updated_on>
+        <type>Dictionary Entry Override</type>
+        <update_guid>72f17a586df9c410f01bff0a7249b9a7</update_guid>
+        <update_guid_history>72f17a586df9c410f01bff0a7249b9a7:241506694,f2f17a58daf9c410cd3ef5b7aefb6ca3:1312443834</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete/>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2019-12-15 15:50:02</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_db_object display_value="" name="sys_dictionary_override">sys_dictionary_override</sys_db_object>
+        <sys_id>1bbe776252ca46b6848df2f016be8144</sys_id>
+        <sys_metadata>b6f17a58dbf9c410f255132968961918</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>active</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_parent display_value="">f52b01041b35041048a242e58d4bcbff</sys_parent>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_scope_delete display_value="">57712118eaee4a49ae47b2048a14ac31</sys_scope_delete>
+        <sys_update_name>sys_dictionary_override_b6f17a58dbf9c410f255132968961918</sys_update_name>
+        <sys_update_version display_value="sys_dictionary_override_b6f17a58dbf9c410f255132968961918">baf17a58dbf9c410f2551329689619a7</sys_update_version>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2019-12-15 15:50:02</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>

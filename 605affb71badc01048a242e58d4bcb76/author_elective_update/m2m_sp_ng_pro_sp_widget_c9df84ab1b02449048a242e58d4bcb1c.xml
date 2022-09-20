@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="m2m_sp_ng_pro_sp_widget">
+    <m2m_sp_ng_pro_sp_widget action="DELETE">
+        <sp_angular_provider display_value="ratelockRecordPicker">727e806f1b02449048a242e58d4bcb5e</sp_angular_provider>
+        <sp_widget display_value="Ratelock Ticket Watchlist">19da84a71b02449048a242e58d4bcbd9</sp_widget>
+        <sys_class_name>m2m_sp_ng_pro_sp_widget</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-01-05 19:11:55</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>c9df84ab1b02449048a242e58d4bcb1c</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>ratelockRecordPicker.Ratelock Ticket Watchlist</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>m2m_sp_ng_pro_sp_widget_c9df84ab1b02449048a242e58d4bcb1c</sys_update_name>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-01-05 19:11:55</sys_updated_on>
+    </m2m_sp_ng_pro_sp_widget>
+<sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Ratelock">605affb71badc01048a242e58d4bcb76</application>
+        <file_path/>
+        <instance_id>94e8281edbb7470060a6f0e5bf9619f6</instance_id>
+        <instance_name>movementdev</instance_name>
+        <name>m2m_sp_ng_pro_sp_widget_c9df84ab1b02449048a242e58d4bcb1c</name>
+        <payload><![CDATA[<?xml version="1.0" encoding="UTF-8"?><record_update table="m2m_sp_ng_pro_sp_widget">
+    <m2m_sp_ng_pro_sp_widget action="INSERT_OR_UPDATE">
+        <sp_angular_provider display_value="ratelockRecordPicker">727e806f1b02449048a242e58d4bcb5e</sp_angular_provider>
+        <sp_widget display_value="Ratelock Ticket Watchlist">19da84a71b02449048a242e58d4bcbd9</sp_widget>
+        <sys_class_name>m2m_sp_ng_pro_sp_widget</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-01-05 19:11:55</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>c9df84ab1b02449048a242e58d4bcb1c</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>ratelockRecordPicker.Ratelock Ticket Watchlist</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>m2m_sp_ng_pro_sp_widget_c9df84ab1b02449048a242e58d4bcb1c</sys_update_name>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-01-05 19:11:55</sys_updated_on>
+    </m2m_sp_ng_pro_sp_widget>
+</record_update>]]></payload>
+        <payload_hash>-1503634269</payload_hash>
+        <record_name>ratelockRecordPicker.Ratelock Ticket Watchlist</record_name>
+        <reverted_from/>
+        <source>bf1c1be11b5a401048a242e58d4bcb30</source>
+        <source_table>sys_upgrade_history</source_table>
+        <state>previous</state>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-01-12 15:12:28</sys_created_on>
+        <sys_id>ad2c9be11b5a401048a242e58d4bcb31</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>16f9a5041d00000001</sys_recorded_at>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-01-12 15:12:28</sys_updated_on>
+        <type>Angular Providers</type>
+        <update_guid>e92c9be1985a401075ef6c00a7e9e531</update_guid>
+        <update_guid_history>e92c9be1985a401075ef6c00a7e9e531:0,18f8dfadd51a40102386539d7ff84127:-753227817,0b07db69d71a4010322a41bf3246c5fd:0,3e361fe5ce1a40104b9c127494efc780:-1656893928,4ef493e1f51a4010c69f50112a324a33:0,3c741f61861a4010d7977cb63779ac50:-807218653,0823d36d16d64010938be2002a535476:0,8b3217e9bcd64010d6a8059280ea1694:-1685212918,60f097653ed6401054cb876a9b74f291:0,a7d09f2508d640105fa15191abed308c:1893176717,d4101f61d5d64010cc0c881e2d2a3883:0,25ff836145d6401060c5e47d66a96a51:1893176717,2a7d87a9479640102c5dad156e0ab25d:0,875dc769d4964010ae38f8ea7fbf4b89:1893176717,01dfc8af4902449046d9a292a2aa6e5a:-213343071</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete display_value="">ee79b46fdb90d450f255132968961944</sys_audit_delete>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-04-26 18:35:10</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_db_object display_value="" name="m2m_sp_ng_pro_sp_widget">m2m_sp_ng_pro_sp_widget</sys_db_object>
+        <sys_id>2c7d4dab322145238c6473b90e1b1831</sys_id>
+        <sys_metadata>c9df84ab1b02449048a242e58d4bcb1c</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>ratelockRecordPicker.Ratelock Ticket Watchlist</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_parent/>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_scope_delete display_value="">57712118eaee4a49ae47b2048a14ac31</sys_scope_delete>
+        <sys_update_name>m2m_sp_ng_pro_sp_widget_c9df84ab1b02449048a242e58d4bcb1c</sys_update_name>
+        <sys_update_version display_value="m2m_sp_ng_pro_sp_widget_c9df84ab1b02449048a242e58d4bcb1c">ad2c9be11b5a401048a242e58d4bcb31</sys_update_version>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-04-26 18:35:10</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>

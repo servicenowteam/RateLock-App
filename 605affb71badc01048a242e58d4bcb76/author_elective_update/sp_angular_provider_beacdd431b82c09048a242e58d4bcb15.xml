@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_angular_provider">
+    <sp_angular_provider action="DELETE">
+        <name>ratelockListSessionTicker</name>
+        <script><![CDATA[function(){
+  return {
+    template: '<div class="ticker"' +
+      'ng-show="s.sys_id === sys_id && s.status !== \'exiting\'"' +
+      'ng-repeat="s in sessions track by $index">' +
+      '<span uib-tooltip="{{s.user_display_name}} is {{s.status}}"' +
+      'ng-class="getHTMLClass(s.status)"' + 
+      'tooltip-placement="top"' +
+      'tooltip-append-to-body="true"></span>' +
+    '</div>',
+    restrict: 'E',
+    replace: true,
+    scope: {
+      table: "=",
+      ticket: "="
+    },
+    link: function(scope, element, attrs){},
+    controller: function($scope, $rootScope, ratelockSession) {
+      var c = this;
+			c.$onInit = function() {
+				ratelockSession.subscribe($scope.table, $scope.ticket);
+			}
+			
+			$rootScope.$on('ratelock.sessions', function(e, payload){
+				$scope.sessions = payload;
+			})
+      
+      $scope.getHTMLClass = function(status) {
+        var cls = "transparent";
+          switch (status) {
+            case 'exiting':
+              color = 'yellow';
+              break;
+            case 'viewing':
+              color = 'green';
+              break;
+            case 'typing':
+              color = 'red';
+              break;
+            default:
+              color = 'transparent';
+              break;
+          }
+          return color;
+      }
+    }
+  }
+}]]></script>
+        <sys_class_name>sp_angular_provider</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-01-04 11:31:24</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>beacdd431b82c09048a242e58d4bcb15</sys_id>
+        <sys_mod_count>22</sys_mod_count>
+        <sys_name>ratelockListSessionTicker</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sp_angular_provider_beacdd431b82c09048a242e58d4bcb15</sys_update_name>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-01-04 13:02:59</sys_updated_on>
+        <type>directive</type>
+    </sp_angular_provider>
+    <sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Ratelock">605affb71badc01048a242e58d4bcb76</application>
+        <file_path/>
+        <instance_id>94e8281edbb7470060a6f0e5bf9619f6</instance_id>
+        <instance_name>movementdev</instance_name>
+        <name>sp_angular_provider_beacdd431b82c09048a242e58d4bcb15</name>
+        <payload>&lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;record_update table="sp_angular_provider"&gt;&lt;sp_angular_provider action="INSERT_OR_UPDATE"&gt;&lt;name&gt;ratelockListSessionTicker&lt;/name&gt;&lt;script&gt;&lt;![CDATA[function(){
+  return {
+    template: '&lt;div class="ticker"' +
+      'ng-show="s.sys_id === sys_id &amp;&amp; s.status !== \'exiting\'"' +
+      'ng-repeat="s in sessions track by $index"&gt;' +
+      '&lt;span uib-tooltip="{{s.user_display_name}} is {{s.status}}"' +
+      'ng-class="getHTMLClass(s.status)"' + 
+      'tooltip-placement="top"' +
+      'tooltip-append-to-body="true"&gt;&lt;/span&gt;' +
+    '&lt;/div&gt;',
+    restrict: 'E',
+    replace: true,
+    scope: {
+      table: "=",
+      ticket: "="
+    },
+    link: function(scope, element, attrs){},
+    controller: function($scope, $rootScope, ratelockSession) {
+      var c = this;
+			c.$onInit = function() {
+				ratelockSession.subscribe($scope.table, $scope.ticket);
+			}
+			
+			$rootScope.$on('ratelock.sessions', function(e, payload){
+				$scope.sessions = payload;
+			})
+      
+      $scope.getHTMLClass = function(status) {
+        var cls = "transparent";
+          switch (status) {
+            case 'exiting':
+              color = 'yellow';
+              break;
+            case 'viewing':
+              color = 'green';
+              break;
+            case 'typing':
+              color = 'red';
+              break;
+            default:
+              color = 'transparent';
+              break;
+          }
+          return color;
+      }
+    }
+  }
+}]]&gt;&lt;/script&gt;&lt;sys_class_name&gt;sp_angular_provider&lt;/sys_class_name&gt;&lt;sys_created_by&gt;douglas.schamberg&lt;/sys_created_by&gt;&lt;sys_created_on&gt;2020-01-04 11:31:24&lt;/sys_created_on&gt;&lt;sys_customer_update&gt;false&lt;/sys_customer_update&gt;&lt;sys_id&gt;beacdd431b82c09048a242e58d4bcb15&lt;/sys_id&gt;&lt;sys_mod_count&gt;22&lt;/sys_mod_count&gt;&lt;sys_name&gt;ratelockListSessionTicker&lt;/sys_name&gt;&lt;sys_package display_value="Ratelock" source="x_momo_ratelock"&gt;605affb71badc01048a242e58d4bcb76&lt;/sys_package&gt;&lt;sys_policy/&gt;&lt;sys_replace_on_upgrade&gt;false&lt;/sys_replace_on_upgrade&gt;&lt;sys_scope display_value="Ratelock"&gt;605affb71badc01048a242e58d4bcb76&lt;/sys_scope&gt;&lt;sys_update_name&gt;sp_angular_provider_beacdd431b82c09048a242e58d4bcb15&lt;/sys_update_name&gt;&lt;sys_updated_by&gt;douglas.schamberg&lt;/sys_updated_by&gt;&lt;sys_updated_on&gt;2020-01-04 13:02:59&lt;/sys_updated_on&gt;&lt;type&gt;directive&lt;/type&gt;&lt;/sp_angular_provider&gt;&lt;/record_update&gt;</payload>
+        <payload_hash>-1187570175</payload_hash>
+        <record_name>ratelockListSessionTicker</record_name>
+        <reverted_from/>
+        <source>a45affb71badc01048a242e58d4bcb78</source>
+        <source_table>sys_update_set</source_table>
+        <state>previous</state>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-01-04 13:02:59</sys_created_on>
+        <sys_id>3ec1b58fdb0ec490f25513296896199f</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>16f70a6d57a0000001</sys_recorded_at>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-01-04 13:02:59</sys_updated_on>
+        <type>Widget Angular Provider</type>
+        <update_guid>f2c1b58fca0ec490fc77c20ed878499f</update_guid>
+        <update_guid_history>f2c1b58fca0ec490fc77c20ed878499f:-1187570175,7dee61cbc40ec4906368b620dbbf31cd:781248133,9edd6d4b6f0ec490ec61cea78ab81f49:-1081974586,2f2d69c7b20ec4904523148fe8fdf9c9:-699429924,2e2d214b570ec4906198bac3fa0693b4:231219933,f2dca90b780ec490a3bb6f1efd91efba:-1485062723,20cc290b900ec4908f5ef59d9572d5bd:996347016,73aca50b4e0ec490e4d8d45f1b8542fc:239112453,1e7c61c72d0ec4902a9fc902f4138d6e:1397663924,3acba5c7680ec490a35cb35b5bb51821:-1139427437,0cbbe9872b0ec490516d0a84ac4379da:1697640043,c28b6183c60ec490aac5e28cd46463dc:-1729505484,bf6bed87e50ec490e81ff76f6121b651:-956198884,8d3ba9874d0ec49075d5580e505872b4:-684492069,8bbaad47a30ec490b7d98be4e1005015:-170282132,24ba6507520ec4908d841bd924117887:-359478210,eeaaa947b50ec49065bd011251e95d0d:301488480,5d69e5c3ee0ec4909122a19c653248fd:806345881,84a0ad477bc2c0906d772c7db81f718a:-962791399,2e70ad0767c2c090e6486ad3c362fe40:-1827089031,8acfd5c3bec2c09015d27c7659652dcb:-1149626100,c89f1d830cc2c090de5bdda4e1a62b49:-1373311209,5ddc5503d2c2c0904eca1b92ea6d3239:-1179382169</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete display_value="">4662f5cfdb0ec490f255132968961988</sys_audit_delete>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-01-04 13:05:39</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_db_object display_value="" name="sp_angular_provider">sp_angular_provider</sys_db_object>
+        <sys_id>5ea9bb7e84fb4728a893d3f47a3a4941</sys_id>
+        <sys_metadata>beacdd431b82c09048a242e58d4bcb15</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>ratelockListSessionTicker</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_parent/>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_scope_delete display_value="">57712118eaee4a49ae47b2048a14ac31</sys_scope_delete>
+        <sys_update_name>sp_angular_provider_beacdd431b82c09048a242e58d4bcb15</sys_update_name>
+        <sys_update_version display_value="sp_angular_provider_beacdd431b82c09048a242e58d4bcb15">3ec1b58fdb0ec490f25513296896199f</sys_update_version>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-01-04 13:05:39</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>

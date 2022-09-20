@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_angular_provider">
+    <sp_angular_provider action="INSERT_OR_UPDATE">
+        <name>mmSessions</name>
+        <script><![CDATA[function mmSessions($rootScope, $window, amb) {
+  var channel;
+  var client = amb;
+  var IS_CONNECTED = false;
+  var payload = {
+    sessionId: $window.NOW.session_id,
+    userId: $window.NOW.user_id,
+    userAvatar: $window.NOW.user_avatar === "" ? null : $window.NOW.user_avatar,
+    userInitial: $window.NOW.user_initials,
+    userDisplayName: $window.NOW.user_display_name,
+    username: $window.NOW.user_name,
+    presences: [],
+    status: "exiting",
+    ping: false,
+    pong: false
+  };
+
+  return {
+    viewing: function (id) {
+      if (IS_CONNECTED) {
+        payload.status = "viewing";
+        payload.id = id;
+        payload.ping = false;
+        payload.pong = false;
+        return channel.publish(payload);
+      }
+    },
+    typing: function (id) {
+      if (IS_CONNECTED) {
+        payload.status = "typing";
+        payload.id = id;
+        payload.ping = false;
+        payload.pong = false;
+        return channel.publish(payload);
+      }
+    },
+    exiting: function (id) {
+      if (IS_CONNECTED) {
+        payload.status = "exiting";
+        payload.id = id;
+        payload.ping = false;
+        payload.pong = false;
+        return channel.publish(payload);
+      }
+    },
+    subscribe: function (id) {
+      if (IS_CONNECTED) {
+        channel.subscribe(function (message) {
+          var data = message.data;
+          if (data.sessionId && id) {
+            if (data.sessionId != $window.NOW.session_id && id == data.id) {
+              var EVENT_NAME = 'message';
+              if (data.ping) {
+                EVENT_NAME = 'ping';
+              } else if (data.pong) {
+                EVENT_NAME = 'pong';
+              }
+              $rootScope.$broadcast('sessions.' + id + '.' + EVENT_NAME, data);
+            }
+          }
+        });
+      }
+    },
+    ping: function (id) {
+      if (IS_CONNECTED) {
+        payload.id = id;
+        payload.ping = true;
+        payload.pong = false;
+				delete payload.status;
+        return channel.publish(payload);
+      }
+    },
+    pong: function (id) {
+      if (IS_CONNECTED) {
+        payload.id = id;
+        payload.ping = false;
+        payload.pong = true;
+				if (!payload.status) {
+					payload.status = "viewing";
+				}
+        return channel.publish(payload);
+      }
+    },
+    setChannel: function (table, id, view) {
+      var url = '/sn/rp/' + table + '/' + id;
+      channel = client.getChannel(url);
+			client.connect();
+      
+			// prevent a unexpected viewing status from
+			// both list sessions and ticket sessions
+			var suffix = '';
+			if (view) {
+				suffix = '.ticket';
+			}
+			
+      IS_CONNECTED = true;
+			
+      $rootScope.$broadcast('sessions.' + id + '.connected' + suffix, {
+        table: table,
+        id: id,
+        connected: IS_CONNECTED
+      });
+    }
+  };
+}]]></script>
+        <sys_class_name>sp_angular_provider</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-05-25 12:55:12</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>62a14d341b0d909048a242e58d4bcb30</sys_id>
+        <sys_mod_count>40</sys_mod_count>
+        <sys_name>mmSessions</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sp_angular_provider_62a14d341b0d909048a242e58d4bcb30</sys_update_name>
+        <sys_updated_by>douglas.schamberg@movement.com</sys_updated_by>
+        <sys_updated_on>2020-08-20 10:53:12</sys_updated_on>
+        <type>factory</type>
+    </sp_angular_provider>
+</record_update>

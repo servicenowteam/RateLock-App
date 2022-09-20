@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update>
+    <sys_ui_form_sections form_id="af39c3f7db1d1010f2551329689619f0" sys_domain="global" table="connection_attributes" version="3">
+        <sys_ui_form_section action="INSERT_OR_UPDATE">
+            <position>0</position>
+            <sys_created_by>douglas.schamberg</sys_created_by>
+            <sys_created_on>2020-06-16 16:44:34</sys_created_on>
+            <sys_domain>global</sys_domain>
+            <sys_domain_path>/</sys_domain_path>
+            <sys_id>3f3907f7db1d1010f255132968961903</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_overrides/>
+            <sys_ui_form display_value="connection_attributes" name="connection_attributes" sys_domain="global" view="Default view">af39c3f7db1d1010f2551329689619f0</sys_ui_form>
+            <sys_ui_section display_value="">3739c3f7db1d1010f2551329689619fa</sys_ui_section>
+            <sys_updated_by>douglas.schamberg</sys_updated_by>
+            <sys_updated_on>2020-06-16 16:44:34</sys_updated_on>
+        </sys_ui_form_section>
+        <sys_ui_form_section action="INSERT_OR_UPDATE">
+            <position>1</position>
+            <sys_created_by>douglas.schamberg</sys_created_by>
+            <sys_created_on>2020-06-16 16:44:34</sys_created_on>
+            <sys_domain>global</sys_domain>
+            <sys_domain_path>/</sys_domain_path>
+            <sys_id>a739c3f7db1d1010f2551329689619f9</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_overrides/>
+            <sys_ui_form display_value="connection_attributes" name="connection_attributes" sys_domain="global" view="Default view">af39c3f7db1d1010f2551329689619f0</sys_ui_form>
+            <sys_ui_section display_value="">ef39c3f7db1d1010f2551329689619f3</sys_ui_section>
+            <sys_updated_by>douglas.schamberg</sys_updated_by>
+            <sys_updated_on>2020-06-16 16:44:34</sys_updated_on>
+        </sys_ui_form_section>
+        <sys_ui_form_section action="INSERT_OR_UPDATE">
+            <position>2</position>
+            <sys_created_by>douglas.schamberg</sys_created_by>
+            <sys_created_on>2020-06-16 16:44:34</sys_created_on>
+            <sys_domain>global</sys_domain>
+            <sys_domain_path>/</sys_domain_path>
+            <sys_id>bb3907f7db1d1010f25513296896190b</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_overrides/>
+            <sys_ui_form display_value="connection_attributes" name="connection_attributes" sys_domain="global" view="Default view">af39c3f7db1d1010f2551329689619f0</sys_ui_form>
+            <sys_ui_section display_value="">f33907f7db1d1010f255132968961908</sys_ui_section>
+            <sys_updated_by>douglas.schamberg</sys_updated_by>
+            <sys_updated_on>2020-06-16 16:44:34</sys_updated_on>
+        </sys_ui_form_section>
+        <sys_ui_form_section action="INSERT_OR_UPDATE">
+            <position>3</position>
+            <sys_created_by>douglas.schamberg</sys_created_by>
+            <sys_created_on>2020-06-16 16:44:34</sys_created_on>
+            <sys_domain>global</sys_domain>
+            <sys_domain_path>/</sys_domain_path>
+            <sys_id>fb3907f7db1d1010f255132968961907</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_overrides/>
+            <sys_ui_form display_value="connection_attributes" name="connection_attributes" sys_domain="global" view="Default view">af39c3f7db1d1010f2551329689619f0</sys_ui_form>
+            <sys_ui_section display_value="">373907f7db1d1010f255132968961904</sys_ui_section>
+            <sys_updated_by>douglas.schamberg</sys_updated_by>
+            <sys_updated_on>2020-06-16 16:44:34</sys_updated_on>
+        </sys_ui_form_section>
+        <sys_ui_form action="INSERT_OR_UPDATE">
+            <name>connection_attributes</name>
+            <roles/>
+            <sys_class_name>sys_ui_form</sys_class_name>
+            <sys_created_by>douglas.schamberg</sys_created_by>
+            <sys_created_on>2020-06-16 16:44:34</sys_created_on>
+            <sys_customer_update>false</sys_customer_update>
+            <sys_domain>global</sys_domain>
+            <sys_domain_path>/</sys_domain_path>
+            <sys_id>af39c3f7db1d1010f2551329689619f0</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_name>connection_attributes</sys_name>
+            <sys_overrides/>
+            <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+            <sys_policy/>
+            <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+            <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+            <sys_update_name>sys_ui_form_sections_af39c3f7db1d1010f2551329689619f0</sys_update_name>
+            <sys_updated_by>douglas.schamberg</sys_updated_by>
+            <sys_updated_on>2020-06-16 16:44:34</sys_updated_on>
+            <sys_user/>
+            <view display_value="Default view" name="NULL">Default view</view>
+            <view_name/>
+        </sys_ui_form>
+    </sys_ui_form_sections>
+</record_update>

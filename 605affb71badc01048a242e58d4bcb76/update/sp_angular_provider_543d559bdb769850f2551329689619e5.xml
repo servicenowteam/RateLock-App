@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_angular_provider">
+    <sp_angular_provider action="INSERT_OR_UPDATE">
+        <name>ratelockDynamicSpWidget</name>
+        <script><![CDATA[function ratelockDynamicSpWidget() {
+
+  function ratelockDynamicSpWidgetLink(scope, elem, attrs) {}
+
+  function ratelockDynamicSpWidgetCtrl($scope, $timeout) {
+    var c = this;
+
+    $scope.widgetIsChanging = false;
+
+    c.$onInit = function () {
+      setWidget();
+    };
+
+    $scope.$watch('widget', function (cur, prev) {
+      if (!cur) return;
+
+      if (cur !== prev) {
+        setWidget();
+      }
+    });
+
+    function setWidget() {
+      $scope.widgetIsChanging = true;
+      c.widget = $scope.widget;
+
+      $timeout(function () {
+        $scope.widgetIsChanging = false;
+      }, 250);
+    }
+  }
+
+  return {
+    restrict: 'E',
+    replace: true,
+    scope: {
+      widget: '='
+    },
+    template: '<span ng-if="!widgetIsChanging && c.widget"><sp-widget widget="c.widget"></sp-widget></span>',
+    link: ratelockDynamicSpWidgetLink,
+    controller: ratelockDynamicSpWidgetCtrl,
+    controllerAs: 'c',
+    bindToController: true
+  };
+}]]></script>
+        <sys_class_name>sp_angular_provider</sys_class_name>
+        <sys_created_by>douglas.schamberg@movement.com</sys_created_by>
+        <sys_created_on>2020-08-28 09:09:58</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>543d559bdb769850f2551329689619e5</sys_id>
+        <sys_mod_count>2</sys_mod_count>
+        <sys_name>ratelockDynamicSpWidget</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sp_angular_provider_543d559bdb769850f2551329689619e5</sys_update_name>
+        <sys_updated_by>douglas.schamberg@movement.com</sys_updated_by>
+        <sys_updated_on>2020-08-28 09:23:34</sys_updated_on>
+        <type>directive</type>
+    </sp_angular_provider>
+</record_update>

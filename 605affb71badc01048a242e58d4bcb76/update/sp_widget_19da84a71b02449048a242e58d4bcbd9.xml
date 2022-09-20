@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_widget">
+    <sp_widget action="INSERT_OR_UPDATE">
+        <category>custom</category>
+        <client_script><![CDATA[function($scope, $rootScope, spUtil) {
+  $scope.email_recipients = {
+    displayValue: $scope.data.displayValue,
+    value: $scope.data.value,
+    name: 'email_recipients'
+  };
+	
+	$rootScope.$on('editor.mention.added', function(evt, item) {
+		$scope.server.refresh().then(function(response){
+			$scope.watch_list.value = response.data.value;
+			$scope.watch_list.displayValue = response.data.displayValue;
+		});
+	});
+
+	$scope.$on("field.change", function(evt, args) {
+    $scope.data.displayValue = args.field.displayValue;
+    $scope.data.value = args.field.value;
+    $scope.server.update().then(function(results) {
+      console.log(results);
+    });
+  });
+}]]></client_script>
+        <controller_as>c</controller_as>
+        <css>.panel-heading {&#13;
+  border-radius:2px;&#13;
+} &#13;
+&#13;
+.sp-geo-canvas-container {&#13;
+  height: 400px; &#13;
+  width: 100%;&#13;
+}&#13;
+&#13;
+.other-name {&#13;
+  vertical-align:bottom;&#13;
+  padding-left:4px;&#13;
+  font-size:0.9em;&#13;
+}&#13;
+&#13;
+.other-item {&#13;
+  padding:2px;&#13;
+  white-space:nowrap;&#13;
+}&#13;
+&#13;
+.map-icon {&#13;
+  vertical-align:bottom;&#13;
+  height:30px;&#13;
+  padding:4px 0px 4px 4px;&#13;
+}  </css>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description/>
+        <docs/>
+        <field_list/>
+        <has_preview>false</has_preview>
+        <id>ratelock-ticket-watchlist</id>
+        <internal>false</internal>
+        <link><![CDATA[function link(scope, element, attrs, controller) {  }]]></link>
+        <name>Ratelock Ticket Watchlist</name>
+        <option_schema/>
+        <public>false</public>
+        <roles/>
+        <script><![CDATA[(function() {
+  var gr = $sp.getRecord();
+  if (gr == null) return;
+
+  data.canRead = $sp.canReadRecord(gr);
+  data.canWrite = gr.canWrite() && !gr.isNewRecord() && gr.getValue('state') != 6;
+  if (input && !gr.isNewRecord()) {
+    gr.setValue('email_recipients', input.value, input.displayValue);
+    gr.update();
+  }
+
+  data.value = gr.getValue('email_recipients');
+  data.displayValue = gr.getDisplayValue('email_recipients');
+})();]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-01-05 18:50:06</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>19da84a71b02449048a242e58d4bcbd9</sys_id>
+        <sys_mod_count>81</sys_mod_count>
+        <sys_name>Ratelock Ticket Watchlist</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sp_widget_19da84a71b02449048a242e58d4bcbd9</sys_update_name>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-05-01 10:10:30</sys_updated_on>
+        <template><![CDATA[<div ng-if="data.canRead" class="panel panel-primary b">
+  <div class="panel-heading">
+    <div class="panel-title pull-left" role="heading" aria-level="2">
+      ${Recipients List}
+    </div>
+    <div class="clearfix"></div>
+  </div>
+  <div class="panel-body">
+    <div class="text-center text-italic text-muted">
+      <ratelock-record-picker
+        field="email_recipients"
+        sn-disabled="!data.canWrite" 
+        table="'sys_user'"
+        display-field="'name'" 
+        search-fields="'email'" 
+        value-field="'sys_id'" 
+        default-query="'active=true'" 
+        multiple="true"
+        placeholder="Select a User..."
+      ></ratelock-record-picker>
+    </div>
+  </div>
+</div>
+]]></template>
+    </sp_widget>
+</record_update>

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update sys_domain="global" table="sysevent_email_action">
+    <sysevent_email_action action="INSERT_OR_UPDATE">
+        <action_insert>false</action_insert>
+        <action_update>true</action_update>
+        <active>true</active>
+        <advanced_condition/>
+        <affected_field_on_event/>
+        <category display_value="Ratelock" name="Ratelock">0468a27edb3dc050f2551329689619f2</category>
+        <collection>x_momo_ratelock_ticket</collection>
+        <condition table="x_momo_ratelock_ticket">follow_up_attemptsCHANGESTO7^EQ<item endquery="false" field="follow_up_attempts" goto="false" newquery="false" operator="CHANGESTO" or="false" value="7"/>
+            <item endquery="true" field="" goto="false" newquery="false" operator="=" or="false" value=""/>
+        </condition>
+        <content_type>text/html</content_type>
+        <default_interval/>
+        <description/>
+        <digest_from/>
+        <digest_html/>
+        <digest_reply_to/>
+        <digest_separator_html><![CDATA[<p><br /></p>
+<hr />
+<p><br /></p>]]></digest_separator_html>
+        <digest_separator_text><![CDATA[\n--------------------------------------------------------------------------------\n]]></digest_separator_text>
+        <digest_subject/>
+        <digest_template/>
+        <digest_text/>
+        <digestable>false</digestable>
+        <event_name>antivirus.infected</event_name>
+        <event_parm_1>false</event_parm_1>
+        <event_parm_2>false</event_parm_2>
+        <exclude_delegates>true</exclude_delegates>
+        <force_delivery>false</force_delivery>
+        <from>Ratelock &lt;ratelock@movement.com&gt;</from>
+        <generation_type>engine</generation_type>
+        <importance>high</importance>
+        <include_attachments>false</include_attachments>
+        <item>event.parm1</item>
+        <item_table/>
+        <mandatory>false</mandatory>
+        <message/>
+        <message_html><![CDATA[<p><span style="font-size: 14pt;">Hello ${caller_id.name},</span></p>
+<p><span style="font-size: 14pt;">We have resolved your inquiry with loan ${loan_number} due to a lack of response. </span></p>
+<p><span style="font-size: 14pt;">Our goal is to provide the highest level of customer service, and if you believe this was done by mistake, please respond to this email within 4 days. We will re-open your ticket, and help to the best of our ability.</span></p>
+<p><span style="font-size: 14pt;">Regards,</span></p>
+<p><span style="font-size: 14pt;">Ratelock Team</span></p>
+<p><a title="ratelock@movement.com" href="mailto:ratelock@movement.com"><span style="font-size: 12pt;">ratelock@movement.com</span></a></p>
+<p><br /></p>]]></message_html>
+        <message_list/>
+        <message_text/>
+        <name>Inactivity Resolved Ratelock</name>
+        <omit_watermark>false</omit_watermark>
+        <order>100</order>
+        <push_message_only>false</push_message_only>
+        <recipient_fields>caller_id,email_recipients</recipient_fields>
+        <recipient_groups/>
+        <recipient_users/>
+        <reply_to>Ratelock &lt;ratelock@movement.com&gt;</reply_to>
+        <send_self>false</send_self>
+        <sms_alternate/>
+        <style/>
+        <subject>RESOLVED: ${short_description}</subject>
+        <subscribable>false</subscribable>
+        <sys_class_name>sysevent_email_action</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-01-02 11:22:08</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_domain>global</sys_domain>
+        <sys_domain_path>/</sys_domain_path>
+        <sys_id>c457c71edb0a0490f25513296896198a</sys_id>
+        <sys_mod_count>14</sys_mod_count>
+        <sys_name>Inactivity Resolved Ratelock</sys_name>
+        <sys_overrides/>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sysevent_email_action_c457c71edb0a0490f25513296896198a</sys_update_name>
+        <sys_updated_by>Adrian.Wilson</sys_updated_by>
+        <sys_updated_on>2022-04-28 20:04:07</sys_updated_on>
+        <sys_version>2</sys_version>
+        <template display_value="Ratelock Default Template">4f0b6afedb3dc050f2551329689619b9</template>
+        <type>email</type>
+        <weight>0</weight>
+    </sysevent_email_action>
+    <sys_translated_text action="delete_multiple" query="documentkey=c457c71edb0a0490f25513296896198a"/>
+</record_update>

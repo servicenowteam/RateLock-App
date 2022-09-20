@@ -1,0 +1,597 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_widget">
+    <sp_widget action="INSERT_OR_UPDATE">
+        <category>custom</category>
+        <client_script><![CDATA[function ratelockDocuments($scope, $element, $upload, nowServer, $window, spUtil, spModal) {
+  /* widget controller */
+  var c = this;
+
+  c.searcher = undefined;
+  c.modelOptions = {
+    getterSetter: true,
+    debounce: {
+      'default': 400
+    }
+  };
+	
+	c.documentDeletedRecords = [];
+	
+	spUtil.recordWatch($scope, $scope.data.table, "active=true", function(response) {
+		if (response.data.operation === "delete") {
+			$scope.server.refresh().then(function(results) {
+				c.documents = results.data.documents;
+			});
+		}
+		
+		if (response.data.operation === 'update' && !c.isUploading) {
+			if (response.data.changes.includes('active')) {
+				$scope.server.refresh().then(function(results) {
+					c.documents = results.data.documents;
+				});
+			}
+		}
+	});
+	
+	var processing = {};
+	
+  c.$onInit = function () {
+    c.documents = c.data.documents || [];
+    c.progress = 0;
+  };
+	
+	$element.find('div.drag-drop-area')[0].addEventListener('dragenter', function(evt) {
+		evt.preventDefault();
+		c.isDragging = true;
+	});
+	
+	$element.find('div.drag-drop-area')[0].addEventListener('dragleave', function(evt) {
+		evt.preventDefault();
+		c.isDragging = false;
+	});
+	
+	$element.find('div.drag-drop-area')[0].addEventListener('drop', function(evt) {
+		evt.preventDefault();
+		c.isDragging = false;
+	});
+	
+	
+	c.updateDeletedDocuments = function(id) {
+		if (!c.documentDeletedRecords.includes(id)) {
+			c.documentDeletedRecords.push(id);
+		} else {
+			c.documentDeletedRecords = c.documentDeletedRecords.filter(function(item) {
+				return item !== id;
+			});
+		}
+	};
+
+
+  $scope.$on('attachment.upload.progress', function (evt, percent) {
+    c.progress = percent;
+  });
+
+  $scope.$on('attachment.upload.stop', function (evt, record) {
+    c.isUploading = false;
+		if (processing[record.id]) {
+			delete processing[record.id];
+		}
+		if (Object.keys(processing).length === 0) {
+			c.isUploading = false;
+		}
+  });
+
+  $scope.$on('attachment.upload.success', function (evt, results) {
+    $scope.data.attachment = results.data.sys_id;
+    $scope.data.document = results.id;
+    $scope.data.file_name = results.data.file_name;
+    $scope.server.update().then(function (data) {
+			if (processing[results.id]) {
+				delete processing[results.id];
+			}
+      c.documents = data.documents || [];
+      $scope.data.attachment = undefined;
+      $scope.data.document = undefined;
+      $scope.data.file_name = undefined;
+			if (Object.keys(processing).length === 0) {
+				c.isUploading = false;
+			}
+    });
+  });
+
+  c.deleteDocument = function (id, docName) {
+		spModal.confirm("Are you sure you want to delete " + docName + '? This action cannot be undone.').then(function(confirmed) {
+			if (confirmed) {
+				$scope.data.deleteDocumentId = id;
+
+				$scope.server.update().then(function (data) {
+					c.documents = c.documents.filter(function(item) {
+						return item.id !== id;
+					});
+					$scope.data.deleteDocumentId = undefined;
+				});
+			}
+		});
+  };
+
+  c.onChange = function () {
+    if (!c.searcher) {
+      c.documents = c.data.documents || [];
+    } else if (c.searcher.length < 3) {
+      c.documents = c.data.documents || [];
+    } else {
+      c.documents = c.data.documents.filter(function (doc) {
+        var regex = new RegExp(c.searcher, 'gmi');
+        return regex.test(doc.name);
+      });
+    }
+  };
+	
+	c.openDocumentViewer = function($event, doc) {
+		$event.preventDefault();
+		$event.stopPropagation();
+		
+		spModal.open({
+			title: doc.name,
+			widget: c.data.documentViewerWidgetId,
+			widgetInput: {
+				id: doc.id,
+				attachment: doc.attachment
+			},
+			backdrop: false,
+      keyboard: false,
+			size: 'lg',
+			buttons: []
+		});
+	};
+
+
+  c.openSelector = function ($event) {
+    $event.stopPropagation();
+    $event.preventDefault();
+
+    var elem = $element.find('input[type="file"]')[0];
+    elem.click();
+  };
+
+  c.onFilesDrop = function ($files) {
+    if (!$files.length) {
+      c.isUploading = false;
+      return;
+    }
+    c.isUploading = true;
+    processFiles($files);
+  };
+	
+	c.calculateHeight = function() {
+		return $element[0].offsetHeight + 'px';
+	};
+
+  function processFiles($files) {
+    for (var i = 0; i < $files.length; i++) {
+      processFile($files[i], i, $files.length);
+    }
+  }
+
+  function processFile(file, fileIndex, totalFiles) {
+    $scope.data.create = true;
+    $scope.$broadcast('attachment.upload.start');
+    $scope.server.update().then(function (data) {
+      $scope.data.create = false;
+      if (data.file_id) {
+				if (!processing[data.file_id]) {
+					processing[data.file_id] = "processing";
+				}
+        var fields = {
+          attachments_modified: "true",
+          sysparm_table: data.table,
+          sysparm_sys_id: data.file_id,
+          sysparm_nostack: 'yes',
+          sysparm_encryption_context: '',
+          sysparm_ck: $window.g_ck
+        };
+        var url = nowServer.getURL('ngk_attachments', {
+          sys_id: data.file_id,
+          table: c.data.table,
+          action: 'add'
+        });
+        return uploadFile(url, fields, file, fileIndex, totalFiles);
+      }
+      $scope.$broadcast('attachment.upload.stop', { id: data.file_id });
+      spUtil.addErrorMessage('Something went wrong uploading this document.');
+      return;
+    });
+  }
+
+  function uploadFile(url, fields, file, fileIndex, totalFiles) {
+    $upload.upload({
+      url: url,
+      fields: fields,
+      fileFormDataName: 'attachFile',
+      file: file
+    }).progress(function (evt) {
+      var percent = parseInt((100.0 * (((fileIndex + 1) / totalFiles) * (evt.loaded / evt.total))), 10);
+      $scope.$broadcast('attachment.upload.progress', percent);
+    }).then(function (response) {
+      if (response.data.error) {
+        spUtil.addErrorMessage(response.data.error);
+        $scope.$broadcast('attachment.upload.stop', { id: fields.sysparm_sys_id });
+        return;
+      }
+      $scope.$broadcast('attachment.upload.success', {
+        data: response.data,
+        id: fields.sysparm_sys_id
+      });
+    });
+  }
+}]]></client_script>
+        <controller_as>c</controller_as>
+        <css>$drop-area-color: rgba(0, 0, 0, 0.6);
+
+
+::-webkit-scrollbar {
+  width: 0.2em;
+}
+ 
+::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 0.5px rgba(0, 0, 0, 0.1);
+}
+ 
+::-webkit-scrollbar-thumb {
+  background-color: $brand-primary;
+  border-radius: 0.1em;
+  outline: 0.5px solid #eee;
+}
+
+.form-control {
+  &amp;:focus {
+  	border-color: $brand-primary;
+    outline: none;
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(249, 83, 83, 0.6);
+  }
+}
+
+.document-select-box {
+	margin-right: 5px;
+}
+
+.document-padder {
+	padding: 15px;
+}
+
+.document-bumper {
+	padding: 0px 15px;
+}
+
+.list-group-flush {
+  overflow-y: auto;
+  overflow-x: hidden;
+  max-height: 215px;
+  margin-bottom: 0px;
+  &amp; .list-group-item {
+    padding: 10px 5px;
+  	border-radius: 0px;
+  }
+}
+
+.no-documents {
+  
+  text-align: center;
+  padding: 15px;
+  
+  &amp;.drop-bordered {
+    display: flex;
+  	width: 100%;
+  	vertical-align: middle;
+  }
+  &amp;.drop-bordered:not(.dragging) {
+  	border: 1px dashed $drop-area-color;
+    padding: 25px;
+    transition: border 0.3s ease-out;
+    &amp;:hover {
+      border-color: $brand-primary;
+      transition: all 0.3s ease-in;
+      
+      &amp; .documents-drop-area-link {
+      	color: rgba(249, 83, 83, 0.8);
+        transition: color 0.3s ease-in;
+      }
+    }
+  }
+  
+  &amp;.dragging {
+  	border: 1px solid $brand-primary;
+    padding: 25px;
+    transition: all 0.3s ease-out;
+    
+    &amp; .documents-drop-area-link {
+      color: #fff;
+      transition: color 0.3s ease-in;
+    }
+  }
+}
+
+
+
+.documents-drop-area-link {
+  color: $drop-area-color;
+  transition: color 0.3s ease-out;
+}
+
+.btn-outline {
+	color: #000;
+  background-color: #fff;
+  border-color: #fff;
+  transition: color 0.3s ease-out;
+  
+  &amp;:hover {
+  	color: $brand-primary;
+    transition: color 0.3s ease-in;
+  }
+  
+  &amp;:hover,
+  &amp;:focus {
+  	border-color: #fff;
+    outline: none;
+    box-shadow: none;
+    background-color: #fff;
+  }
+}
+
+.list-group-item,
+.no-documents,
+.document-search-bar,
+.document-select-box {
+	&amp;.ng-enter {
+    animation: 0.3s fade-in;
+  }
+  
+  &amp;.ng-leave {
+		animation: 0.3s fade-out;
+  }
+}
+
+.doc-link {
+  display: inline-flex;
+  width: 70%;
+  word-break: break-word;
+}
+
+.document-btns {
+	display: inline-flex;
+  width: 30%;
+  vertical-align: middle;
+  justify-content: flex-end;
+}
+
+.document-search-bar {
+	padding: 0px 15px;
+}
+
+.drag-overlay {
+  background: rgba(255, 255, 255, 0.6);
+  position: absolute;
+  top: 64px;
+  left: 0;
+  width: 100%;
+  z-index: 1001;
+  padding: 0px 20px;
+  &amp;.ng-enter {
+ 		animation: 0.3s fade-in;
+  }
+  &amp;.ng-leave {
+  	animation: 0.3s fade-out;    
+  }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fade-out {
+	from { opacity: 1; }
+  to   { opacity: 0; }
+}</css>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description/>
+        <docs/>
+        <field_list/>
+        <has_preview>false</has_preview>
+        <id>ratelock_documents</id>
+        <internal>false</internal>
+        <link><![CDATA[function link(scope, element, attrs, controller) {  }]]></link>
+        <name>Ratelock Documents</name>
+        <option_schema/>
+        <public>false</public>
+        <roles>x_momo_ratelock.ratelock_tech</roles>
+        <script><![CDATA[(function () {
+  /* populate the 'data' object */
+  /* e.g., data.table = $sp.getValue('table'); */
+  data.table = options.table || 'x_momo_ratelock_document';
+  data.canCreate = gs.hasRole('x_momo_ratelock.document_admin');
+  data.canDelete = gs.hasRole('x_momo_ratelock.document_admin');
+	
+	data.documentViewerEnabled = gs.getProperty('x_momo_ratelock.enable_document_viewer') == "true";
+	
+	if (data.documentViewerEnabled) {
+		data.documentViewerWidgetId = options.documentViewer || "ratelock_document_viewer";
+	}
+	
+  data.documents = getDocuments(data.table);
+
+  var shouldCreateDocument = (input ? input.create : undefined);
+  var shouldUpdateDocument = (input ? input.attachment : undefined);
+  var shouldDeleteDocument = (input ? input.deleteDocumentId : undefined);
+  if (shouldCreateDocument && data.canCreate) {
+    data.file_id = createNewDocument(data.table);
+  }
+
+  if (shouldUpdateDocument && data.canCreate) {
+    updateDocumentRecord(data.table, input.document, input.attachment, input.file_name);
+    data.documents = getDocuments(data.table);
+  }
+
+  if (shouldDeleteDocument && data.canDelete) {
+    deleteDocumentRecord(data.table, input.deleteDocumentId);
+    data.documents = getDocuments(data.table);
+  }
+
+  function updateDocumentRecord(table, documentId, attachmentId, attachmentFileName) {
+    var gr = new GlideRecordSecure(table);
+    gr.get(documentId);
+    if (gr.isValidRecord()) {
+      gr.file = attachmentId;
+      gr.active = true;
+      gr.name = attachmentFileName;
+      gr.update();
+    }
+  }
+
+  function deleteDocumentRecord(table, documentId) {
+    var gr = new GlideRecordSecure(table);
+    gr.get(documentId);
+    if (gr.isValidRecord()) {
+      if (gr.canDelete()) {
+        gr.deleteRecord();
+      }
+    }
+  }
+
+  function createNewDocument(table) {
+    var gr = new GlideRecordSecure(table);
+    gr.initialize();
+    gr.active = false;
+    gr.insert();
+    return gr.getUniqueValue();
+  }
+
+  function getDocuments(table) {
+    var documents = [];
+    var gr = new GlideRecordSecure(table);
+    gr.addQuery('active', true);
+    gr.orderBy('name');
+    gr.query();
+
+    while (gr.next()) {
+      var record = {
+        id: gr.getUniqueValue(),
+        canRead: gr.canRead(),
+        canCreate: gr.canCreate(),
+        canDelete: gr.canDelete(),
+        name: gr.getDisplayValue('name'),
+				attachment: gr.getValue('file'),
+				downloadOnly: getAttachment(gr.getValue('file')),
+        url: '/sys_attachment.do?sys_id=' + gr.getValue('file')
+      };
+      documents.push(record);
+    }
+    return documents;
+  }
+	
+	function getAttachment(sysId) {
+		var gr = new GlideRecord('sys_attachment');
+		gr.get(sysId);
+		if (gr.isValidRecord()) {
+			return getShortType(gr.getValue('content_type')) === 'download';
+		}
+		return true;
+	}
+	
+	function getShortType(contentType) {
+		var type = 'download';
+		switch (contentType) {
+			case 'application/pdf':
+				type = 'pdf';
+				break;
+			case 'application/msword':
+				type = 'word';
+				break;
+			case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+				type = 'word';
+				break;
+			case 'image/jpeg':
+        type = 'image';
+        break;
+      case 'image/jpg':
+        type = 'image';
+        break;
+      case 'image/png':
+        type = 'image';
+        break;
+      default:
+        break;
+		}
+		return type;
+	}
+})();]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-06-19 11:25:05</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>05ec1d34dba55410f25513296896194f</sys_id>
+        <sys_mod_count>239</sys_mod_count>
+        <sys_name>Ratelock Documents</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sp_widget_05ec1d34dba55410f25513296896194f</sys_update_name>
+        <sys_updated_by>douglas.schamberg@movement.com</sys_updated_by>
+        <sys_updated_on>2020-08-07 11:30:33</sys_updated_on>
+        <template><![CDATA[<div class="row" ng-if="c.data.documents.length > 0">
+  <div class="col-md-12 padder-l-none">
+    <button class="btn btn-default btn-outline pull-right" ng-if="c.data.canCreate" ng-click="c.openSelector($event)">
+      <span class="glyphicon glyphicon-paperclip"></span>
+    </button>
+    <button class="btn btn-default btn-outline pull-right" ng-click="c.isSearchActive = !c.isSearchActive">
+      <i class="fa fa-search" aria-hidden="true"></i>
+    </button>
+  </div>
+</div>
+<div class="row document-search-bar m-b-sm padder-r padder-l" ng-show="c.data.documents.length !== 0 && c.isSearchActive">
+  <div class="col-md-12">
+    <form name="search-documents">
+      <input type="text" ng-model="c.searcher" ng-model-options="c.modelOptions" ng-change="c.onChange()"
+        class="form-control" placeholder="Search documents" />
+    </form>
+  </div>
+</div>
+<div class="row" ng-class="{'document-padder': c.documents.length === 0, 'document-bumper': c.documents.length > 0}">
+  <div class="col-md-12 drag-drop-area" ng-class="{'padder-l-none': c.documents.length > 0, 'padder-r-none': c.documents.length > 0}"
+    ng-multiple="true" ng-file-drop="c.onFilesDrop($files)">
+    <ul class="list-group list-group-flush" ng-if="c.documents.length > 0">
+      <li class="list-group-item" ng-view ng-repeat="doc in c.documents track by doc.id" ng-if="doc.canRead">
+        <span class="document-link padder-r-sm">
+          <a ng-href="{{ ::doc.url }}" 
+             ng-if="!c.data.documentViewerEnabled || doc.downloadOnly" 
+             class="list-link doc-link"
+             ng-style="{'width': (doc.canCreate ? '70%' : '100%')}">{{ ::doc.name }}</a>
+          <a ng-click="c.openDocumentViewer($event, doc)" 
+             ng-if="c.data.documentViewerEnabled && !doc.downloadOnly" 
+             class="list-link doc-link" href
+             ng-style="{'width': (doc.canCreate ? '70%' : '100%')}">{{ ::doc.name }}</a>
+        </span>
+        <span class="document-btns pull-right" ng-if="doc.canDelete">
+        	<button class="btn btn-primary btn-xs hidden-xs" ng-click="c.deleteDocument(doc.id, doc.name)">
+            <i class="fa fa-close" aria-hidden="true"></i>
+          </button>
+        </span> 
+      </li>
+    </ul>
+    <div class="no-documents" ng-show="c.data.documents.length !== 0 && c.documents.length === 0">
+      <span>${No documents found}</span>
+    </div>
+    <div class="no-documents" ng-show="c.data.documents.length === 0" ng-class="{'drop-bordered': c.data.canCreate, 'dragging': c.isDragging}">
+      <span ng-if="!c.data.canCreate">${No documents found}</span>
+      <span ng-if="c.data.canCreate" class="documents-drop-area">
+        <a class="documents-drop-area-link" ng-show="!c.isUploading" ng-click="c.openSelector($event)" href>Drag and
+          drop, or click here to upload documents</a>
+        <input type="file" class="files-input" accept=".doc,.docx,.pdf,.xls,.csv,.xslx" style="display: none;" multiple="true"
+          ng-file-select="c.onFilesDrop($files)" ng-disabled="c.isUploading" />
+      </span>
+    </div>
+  </div>
+</div>]]></template>
+    </sp_widget>
+</record_update>

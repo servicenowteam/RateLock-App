@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_widget">
+    <sp_widget action="DELETE">
+        <category>custom</category>
+        <client_script><![CDATA[function() {  /* widget controller */  var c = this;}]]></client_script>
+        <controller_as>c</controller_as>
+        <css/>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description/>
+        <docs/>
+        <field_list/>
+        <has_preview>false</has_preview>
+        <id>ratelock_details_form</id>
+        <internal>false</internal>
+        <link><![CDATA[function link(scope, element, attrs, controller) {  }]]></link>
+        <name>Ratelock Details Form</name>
+        <option_schema/>
+        <public>false</public>
+        <roles/>
+        <script><![CDATA[(function() {
+  /* populate the 'data' object */
+  /* e.g., data.table = $sp.getValue('table'); */
+	var table = $sp.getParameter('table');
+	var sys_id = $sp.getParameter('sys_id');
+	data.fields = [];
+	
+	if (input) {}
+	
+	
+})();]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2019-12-19 14:32:17</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>43cceffddbb1cc10f25513296896190f</sys_id>
+        <sys_mod_count>8</sys_mod_count>
+        <sys_name>Ratelock Details Form</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sp_widget_43cceffddbb1cc10f25513296896190f</sys_update_name>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2019-12-19 15:03:01</sys_updated_on>
+        <template><![CDATA[<widget id="widget-form" options="{'hideRelatedLists': true, 'disableUIActions': true, 'view': 'spview', 'omitHeaderOptions': true}" />]]></template>
+    </sp_widget>
+    <sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Ratelock">605affb71badc01048a242e58d4bcb76</application>
+        <file_path/>
+        <instance_id>94e8281edbb7470060a6f0e5bf9619f6</instance_id>
+        <instance_name>movementdev</instance_name>
+        <name>sp_widget_43cceffddbb1cc10f25513296896190f</name>
+        <payload>&lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;record_update table="sp_widget"&gt;&lt;sp_widget action="INSERT_OR_UPDATE"&gt;&lt;category&gt;custom&lt;/category&gt;&lt;client_script&gt;&lt;![CDATA[function() {  /* widget controller */  var c = this;}]]&gt;&lt;/client_script&gt;&lt;controller_as&gt;c&lt;/controller_as&gt;&lt;css/&gt;&lt;data_table&gt;sp_instance&lt;/data_table&gt;&lt;demo_data/&gt;&lt;description/&gt;&lt;docs/&gt;&lt;field_list/&gt;&lt;has_preview&gt;false&lt;/has_preview&gt;&lt;id&gt;ratelock_details_form&lt;/id&gt;&lt;internal&gt;false&lt;/internal&gt;&lt;link&gt;&lt;![CDATA[function link(scope, element, attrs, controller) {  }]]&gt;&lt;/link&gt;&lt;name&gt;Ratelock Details Form&lt;/name&gt;&lt;option_schema/&gt;&lt;public&gt;false&lt;/public&gt;&lt;roles/&gt;&lt;script&gt;&lt;![CDATA[(function() {
+  /* populate the 'data' object */
+  /* e.g., data.table = $sp.getValue('table'); */
+	var table = $sp.getParameter('table');
+	var sys_id = $sp.getParameter('sys_id');
+	data.fields = [];
+	
+	if (input) {}
+	
+	
+})();]]&gt;&lt;/script&gt;&lt;servicenow&gt;false&lt;/servicenow&gt;&lt;sys_class_name&gt;sp_widget&lt;/sys_class_name&gt;&lt;sys_created_by&gt;douglas.schamberg&lt;/sys_created_by&gt;&lt;sys_created_on&gt;2019-12-19 14:32:17&lt;/sys_created_on&gt;&lt;sys_customer_update&gt;false&lt;/sys_customer_update&gt;&lt;sys_id&gt;43cceffddbb1cc10f25513296896190f&lt;/sys_id&gt;&lt;sys_mod_count&gt;8&lt;/sys_mod_count&gt;&lt;sys_name&gt;Ratelock Details Form&lt;/sys_name&gt;&lt;sys_package display_value="Ratelock" source="x_momo_ratelock"&gt;605affb71badc01048a242e58d4bcb76&lt;/sys_package&gt;&lt;sys_policy/&gt;&lt;sys_replace_on_upgrade&gt;false&lt;/sys_replace_on_upgrade&gt;&lt;sys_scope display_value="Ratelock"&gt;605affb71badc01048a242e58d4bcb76&lt;/sys_scope&gt;&lt;sys_update_name&gt;sp_widget_43cceffddbb1cc10f25513296896190f&lt;/sys_update_name&gt;&lt;sys_updated_by&gt;douglas.schamberg&lt;/sys_updated_by&gt;&lt;sys_updated_on&gt;2019-12-19 15:03:01&lt;/sys_updated_on&gt;&lt;template&gt;&lt;![CDATA[&lt;widget id="widget-form" options="{'hideRelatedLists': true, 'disableUIActions': true, 'view': 'spview', 'omitHeaderOptions': true}" /&gt;]]&gt;&lt;/template&gt;&lt;/sp_widget&gt;&lt;/record_update&gt;</payload>
+        <payload_hash>-1711126861</payload_hash>
+        <record_name>Ratelock Details Form</record_name>
+        <reverted_from/>
+        <source>a45affb71badc01048a242e58d4bcb78</source>
+        <source_table>sys_update_set</source_table>
+        <state>previous</state>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2019-12-19 15:03:01</sys_created_on>
+        <sys_id>55d337b9dbf1cc10f2551329689619e7</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>16f1eaefbb00000001</sys_recorded_at>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2019-12-19 15:03:01</sys_updated_on>
+        <type>Widget</type>
+        <update_guid>1dd337b9f4f1cc102d4d62d5e4c4cbe6</update_guid>
+        <update_guid_history>1dd337b9f4f1cc102d4d62d5e4c4cbe6:-1711126861,4ca333b99df1cc10fff5ce694c9295bc:-2023651797,8e53737919f1cc103e7c4dfcbd95cdf9:-1848297906,2b22bb754bf1cc1092fbff7cf4e96272:745209387,01dfeb35faf1cc10687901377c85c0ac:-621361834,a4cfaf35bef1cc1053fce9aaeab6e0dd:-101236854,946fa33559f1cc10e861a46f8b1f39d6:-1086030145,7bfd233197f1cc100abda22aa7f8bd07:1165173013,47cceffdfab1cc10a0e3ec5b91d02e10:-129814213</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete display_value="">caf33bb9dbf1cc10f255132968961951</sys_audit_delete>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2019-12-19 15:03:38</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_db_object display_value="" name="sp_widget">sp_widget</sys_db_object>
+        <sys_id>9a15cf0397d1455d96d6bf7b1aca8da9</sys_id>
+        <sys_metadata>43cceffddbb1cc10f25513296896190f</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>Ratelock Details Form</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_parent/>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_scope_delete display_value="">57712118eaee4a49ae47b2048a14ac31</sys_scope_delete>
+        <sys_update_name>sp_widget_43cceffddbb1cc10f25513296896190f</sys_update_name>
+        <sys_update_version display_value="sp_widget_43cceffddbb1cc10f25513296896190f">55d337b9dbf1cc10f2551329689619e7</sys_update_version>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2019-12-19 15:03:38</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>

@@ -1,0 +1,378 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_angular_provider">
+    <sp_angular_provider action="DELETE">
+        <name>ratelockSession</name>
+        <script><![CDATA[function ratelockSession(amb, $rootScope, $window, $interval) {
+  var channels = {};
+
+  var DEFAULT_STORAGE_KEY = "ratelock:sessions";
+
+  var exitTimer = $interval(exitTimerFunc, 4000);
+
+  function exitTimerFunc() {
+    var storage = $window.localStorage.getItem(DEFAULT_STORAGE_KEY);
+    if (!storage) {
+      $interval.cancel(exitTimer);
+      return;
+    }
+
+    storage = JSON.parse(storage);
+    var sessions = {};
+    var keys = Object.keys(storage);
+    var date = new Date();
+    var expired = date.getTime();
+    for (var i in keys) {
+      var key = keys[i];
+      if (storage[key].status !== 'exiting') {
+        sessions[key] = storage[key];
+      }
+    }
+    $window.localStorage.setItem(DEFAULT_STORAGE_KEY, JSON.stringify(sessions));
+  }
+
+  $window.addEventListener("unload", function () {
+    var keys = Object.keys(channels);
+    $interval.cancel(exitTimer);
+    exitTimerFunc();
+    for (var i in keys) {
+      removeChannel(keys[i]);
+    }
+  });
+
+  function setLocalStorage(key, message) {
+    var storage = $window.localStorage.getItem(DEFAULT_STORAGE_KEY);
+    var payload = {};
+    var shouldUseJSONParse = true;
+    if (!storage) {
+      $window.localStorage.setItem(DEFAULT_STORAGE_KEY, JSON.stringify({}));
+      storage = {};
+      shouldUseJSONParse = false;
+    }
+    if (storage) {
+      storage = shouldUseJSONParse ? JSON.parse(storage) : storage;
+      var keys = Object.keys(storage);
+      if (keys.includes(key)) {
+        delete storage[key];
+      }
+      if (!message.hasOwnProperty('presences')) {
+        message.presences = [];
+      }
+
+      var date = new Date();
+      date.setMinutes(date.getMinutes() + 5);
+      message.expiration = date.getTime();
+      payload[key] = message;
+      storage = angular.extend(storage, payload);
+      $window.localStorage.setItem(DEFAULT_STORAGE_KEY, JSON.stringify(storage));
+    }
+  }
+
+  function getLocalStorage(key) {
+    var storage = $window.localStorage.getItem(DEFAULT_STORAGE_KEY);
+    if (storage) {
+      storage = JSON.parse(storage);
+      return storage[key] || (key ? {} : storage);
+    }
+    return {};
+  }
+
+  function setSessions(key, sys_id, message) {
+    var payload = {};
+
+    payload[key] = message;
+    var channel = getChannel(sys_id);
+    if (channel.sessions.hasOwnProperty(key)) {
+      delete channel.sessions[key];
+    }
+
+    channel.sessions = angular.extend(channel.sessions, payload);
+    setChannel(sys_id, channel);
+
+  }
+
+  function getChannel(sys_id) {
+    return channels[sys_id];
+  }
+
+  function setChannel(sys_id, channel) {
+    if (!getChannel(sys_id)) {
+      channels[sys_id] = channel;
+    }
+  }
+
+  function removeChannel(sys_id) {
+    var channel = getChannel(sys_id);
+    if (channel) {
+      channel.channel.unsubscribe();
+      delete channels[sys_id];
+    }
+  }
+
+
+  function connect(table, sys_id) {
+    var url = '/sn/rp/' + table + '/' + sys_id;
+    var channel = amb.getChannel(url);
+    amb.connect();
+    setChannel(sys_id, {
+      channel: channel,
+      sessions: getLocalStorage() || {},
+      presences: []
+    });
+    return getChannel(sys_id);
+  }
+
+  return {
+    publish: function (table, sys_id, message, is_ping) {
+      var channel = getChannel(sys_id);
+      if (!channel)
+        channel = connect(table, sys_id);
+
+      if (channel.sessions.hasOwnProperty(message.session_id)) {
+        delete channel.sessions[message.session_id];
+      }
+
+      channel.sessions[message.session_id] = message;
+      var payload = channel.sessions[message.session_id];
+      payload = angular.extend(payload, {
+        presences: channel.presences
+      });
+      setLocalStorage(message.session_id, payload);
+      return channel.channel.publish(payload);
+    },
+    subscribe: function (table, sys_id, cb) {
+      var channel = getChannel(sys_id);
+      if (!channel) {
+        channel = connect(table, sys_id);
+      }
+      $rootScope.$emit("ratelock.sessions", channel.sessions);
+      channel.channel.subscribe(function (message) {
+        message.data.presences = message.data.presences || [];
+        if (message.data.session_id) {
+          if ($window.NOW.session_id != message.data.session_id) {
+            setSessions(message.data.session_id, sys_id, message.data);
+            setLocalStorage(message.data.session_id, message.data);
+            $rootScope.$broadcast("ratelock.sessions", channel.sessions);
+          }
+        }
+      });
+    }
+  }
+}]]></script>
+        <sys_class_name>sp_angular_provider</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-03-10 19:35:21</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>0e84cf90db6b0890f255132968961936</sys_id>
+        <sys_mod_count>1</sys_mod_count>
+        <sys_name>ratelockSession</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sp_angular_provider_0e84cf90db6b0890f255132968961936</sys_update_name>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-04-25 17:45:08</sys_updated_on>
+        <type>factory</type>
+    </sp_angular_provider>
+    <sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Ratelock">605affb71badc01048a242e58d4bcb76</application>
+        <file_path/>
+        <instance_id>94e8281edbb7470060a6f0e5bf9619f6</instance_id>
+        <instance_name>movementdev</instance_name>
+        <name>sp_angular_provider_0e84cf90db6b0890f255132968961936</name>
+        <payload>&lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;record_update table="sp_angular_provider"&gt;&lt;sp_angular_provider action="INSERT_OR_UPDATE"&gt;&lt;name&gt;ratelockSession&lt;/name&gt;&lt;script&gt;&lt;![CDATA[function ratelockSession(amb, $rootScope, $window, $interval) {
+  var channels = {};
+
+  var DEFAULT_STORAGE_KEY = "ratelock:sessions";
+
+  var exitTimer = $interval(exitTimerFunc, 4000);
+
+  function exitTimerFunc() {
+    var storage = $window.localStorage.getItem(DEFAULT_STORAGE_KEY);
+    if (!storage) {
+      $interval.cancel(exitTimer);
+      return;
+    }
+
+    storage = JSON.parse(storage);
+    var sessions = {};
+    var keys = Object.keys(storage);
+    var date = new Date();
+    var expired = date.getTime();
+    for (var i in keys) {
+      var key = keys[i];
+      if (storage[key].status !== 'exiting') {
+        sessions[key] = storage[key];
+      }
+    }
+    $window.localStorage.setItem(DEFAULT_STORAGE_KEY, JSON.stringify(sessions));
+  }
+
+  $window.addEventListener("unload", function () {
+    var keys = Object.keys(channels);
+    $interval.cancel(exitTimer);
+    exitTimerFunc();
+    for (var i in keys) {
+      removeChannel(keys[i]);
+    }
+  });
+
+  function setLocalStorage(key, message) {
+    var storage = $window.localStorage.getItem(DEFAULT_STORAGE_KEY);
+    var payload = {};
+    var shouldUseJSONParse = true;
+    if (!storage) {
+      $window.localStorage.setItem(DEFAULT_STORAGE_KEY, JSON.stringify({}));
+      storage = {};
+      shouldUseJSONParse = false;
+    }
+    if (storage) {
+      storage = shouldUseJSONParse ? JSON.parse(storage) : storage;
+      var keys = Object.keys(storage);
+      if (keys.includes(key)) {
+        delete storage[key];
+      }
+      if (!message.hasOwnProperty('presences')) {
+        message.presences = [];
+      }
+
+      var date = new Date();
+      date.setMinutes(date.getMinutes() + 5);
+      message.expiration = date.getTime();
+      payload[key] = message;
+      storage = angular.extend(storage, payload);
+      $window.localStorage.setItem(DEFAULT_STORAGE_KEY, JSON.stringify(storage));
+    }
+  }
+
+  function getLocalStorage(key) {
+    var storage = $window.localStorage.getItem(DEFAULT_STORAGE_KEY);
+    if (storage) {
+      storage = JSON.parse(storage);
+      return storage[key] || (key ? {} : storage);
+    }
+    return {};
+  }
+
+  function setSessions(key, sys_id, message) {
+    var payload = {};
+
+    payload[key] = message;
+    var channel = getChannel(sys_id);
+    if (channel.sessions.hasOwnProperty(key)) {
+      delete channel.sessions[key];
+    }
+
+    channel.sessions = angular.extend(channel.sessions, payload);
+    setChannel(sys_id, channel);
+
+  }
+
+  function getChannel(sys_id) {
+    return channels[sys_id];
+  }
+
+  function setChannel(sys_id, channel) {
+    if (!getChannel(sys_id)) {
+      channels[sys_id] = channel;
+    }
+  }
+
+  function removeChannel(sys_id) {
+    var channel = getChannel(sys_id);
+    if (channel) {
+      channel.channel.unsubscribe();
+      delete channels[sys_id];
+    }
+  }
+
+
+  function connect(table, sys_id) {
+    var url = '/sn/rp/' + table + '/' + sys_id;
+    var channel = amb.getChannel(url);
+    amb.connect();
+    setChannel(sys_id, {
+      channel: channel,
+      sessions: getLocalStorage() || {},
+      presences: []
+    });
+    return getChannel(sys_id);
+  }
+
+  return {
+    publish: function (table, sys_id, message, is_ping) {
+      var channel = getChannel(sys_id);
+      if (!channel)
+        channel = connect(table, sys_id);
+
+      if (channel.sessions.hasOwnProperty(message.session_id)) {
+        delete channel.sessions[message.session_id];
+      }
+
+      channel.sessions[message.session_id] = message;
+      var payload = channel.sessions[message.session_id];
+      payload = angular.extend(payload, {
+        presences: channel.presences
+      });
+      setLocalStorage(message.session_id, payload);
+      return channel.channel.publish(payload);
+    },
+    subscribe: function (table, sys_id, cb) {
+      var channel = getChannel(sys_id);
+      if (!channel) {
+        channel = connect(table, sys_id);
+      }
+      $rootScope.$emit("ratelock.sessions", channel.sessions);
+      channel.channel.subscribe(function (message) {
+        message.data.presences = message.data.presences || [];
+        if (message.data.session_id) {
+          if ($window.NOW.session_id != message.data.session_id) {
+            setSessions(message.data.session_id, sys_id, message.data);
+            setLocalStorage(message.data.session_id, message.data);
+            $rootScope.$broadcast("ratelock.sessions", channel.sessions);
+          }
+        }
+      });
+    }
+  }
+}]]&gt;&lt;/script&gt;&lt;sys_class_name&gt;sp_angular_provider&lt;/sys_class_name&gt;&lt;sys_created_by&gt;douglas.schamberg&lt;/sys_created_by&gt;&lt;sys_created_on&gt;2020-03-10 19:35:21&lt;/sys_created_on&gt;&lt;sys_customer_update&gt;false&lt;/sys_customer_update&gt;&lt;sys_id&gt;0e84cf90db6b0890f255132968961936&lt;/sys_id&gt;&lt;sys_mod_count&gt;1&lt;/sys_mod_count&gt;&lt;sys_name&gt;ratelockSession&lt;/sys_name&gt;&lt;sys_package display_value="Ratelock" source="x_momo_ratelock"&gt;605affb71badc01048a242e58d4bcb76&lt;/sys_package&gt;&lt;sys_policy/&gt;&lt;sys_replace_on_upgrade&gt;false&lt;/sys_replace_on_upgrade&gt;&lt;sys_scope display_value="Ratelock"&gt;605affb71badc01048a242e58d4bcb76&lt;/sys_scope&gt;&lt;sys_update_name&gt;sp_angular_provider_0e84cf90db6b0890f255132968961936&lt;/sys_update_name&gt;&lt;sys_updated_by&gt;douglas.schamberg&lt;/sys_updated_by&gt;&lt;sys_updated_on&gt;2020-04-25 17:45:08&lt;/sys_updated_on&gt;&lt;type&gt;factory&lt;/type&gt;&lt;/sp_angular_provider&gt;&lt;/record_update&gt;</payload>
+        <payload_hash>1533931322</payload_hash>
+        <record_name>ratelockSession</record_name>
+        <reverted_from display_value="">7a8155ca1b6c901048a242e58d4bcb3c</reverted_from>
+        <source>741a4e651b4cdc1048a242e58d4bcb9f</source>
+        <source_table>sys_update_set</source_table>
+        <state>previous</state>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-05-17 17:35:22</sys_created_on>
+        <sys_id>9b25b0d61bfc945048a242e58d4bcb0f</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>17223b45bd20000001</sys_recorded_at>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-05-17 17:35:22</sys_updated_on>
+        <type>Widget Angular Provider</type>
+        <update_guid>9725b0d671fc94503b252d3dce074d0d</update_guid>
+        <update_guid_history>9725b0d671fc94503b252d3dce074d0d:1533931322,c6bc83f3f6ec5810d85f3c128f284404:97380991,a3cbcff7e4ac581019f9b37eea73ca7e:-1669397291,328155ca376c90103c1c5dd49e6fe63a:1533931322,dfbc2839056850105f7317aecc2c0e54:-1762925775,f0fb68f555685010ee2999f781746dc8:-1411833955,ebdb24f59c68501026f8388d9d879071:-1137409494,e70b24b512685010ee2b55d13e6d6d68:2097809497,5c3aac35b46850108d2f7a1a5238c730:-328218854,41d8a0f1da68501098aeaca892ffaf4f:-1989808135,43786c7164685010a719681da0da49e4:-1823457045,6638ac713168501029748f7a92126652:-673988881,3637ac3173685010d1255d4c625bacc1:1051352974,36d6ecbdb6285010c9f980246d25b019:-74239916,3cb660315268501041a377ce93c3e3a0:-329484371,8f96ecfd5528501048c99ac2fa54611b:-625732749,8975ac7d50285010a6ff566b750968a8:-164074697,dd25a03d542850103e0f1cd8c2884e18:-1405178776,9822e4790528501001b258d4aeff2de7:-908441235,9a91a8396728501095137b3182b8db74:1576528343,0f41a03589285010358d12a1fa9db5f9:126553495,2fd0e8f1702850106bc712979279a20d:-528440239,8b6024b5292850100940291dcd8a9879:-1131741967,3abfd0756828501049f5795324034af6:500360834,422f583524285010bee25d05bdc456ba:-1035659458,cd1e98f13a285010f0cac33bdd081419:938433399,67fd18f1382850103788d9fd51f45396:-1743425080,f14d58b148285010335afd4fbea84616:2041566113,2bdc147131285010ca9fbcfd91d1da47:1774739431,978a1c3d10e45010c6b8a095dbfb084f:-2087989028,cc7adcbd9ce45010ef566fb39984e71f:721857058,f84ad87d55e450103db36aea600ae09d:1409366889,1b3a54bd45e450101a45a51098958eb5:-198788440,4529d079fee450104c6cec9df5cb6eab:1409366889,7f9898f904e450101771ad076d53c9a0:810567180,e7e794b94be450105365423b785b89a8:-1689172391,b8a714f9fce45010d7d3b023692bde65:1391620692,9b8790f9e9e4501073e871e1afc6924c:-2121079102,340794b9aae450102dd49b7b075e568b:1031986016,e416d439abe45010b4a8c8767bc6b956:-1866096029,801598f59ae45010e647dd017efbae57:1978078185,f5c35c31c4e45010c06568bc84536c15:1495584545,c1b350b522e450106ea6bcf352517375:-411059255,bf9e8cbda7a45010d417a93609420fbc:-1211068040,9d0e8cbd83a45010e174537e5b35fbb1:333048171,d24a443950a45010418c51b4cb56ccef:-2041170267,e73a403543a450101eb45813bb791fde:-1698074477,d029c039f1a45010b7f6e541e5828b9a:-1988632260,2cc8887511a4501091912dfc9d890eaf:-1586464501,8c07843537a4501094f246c3a077f293:1376441806,8874eb4783d45450bfdac2cca379c887:1533931322,8684cf90396b089053f7305f163b6038:472313365</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete display_value="">8b331dbc1b8d909048a242e58d4bcbe4</sys_audit_delete>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-05-25 14:11:31</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_db_object display_value="" name="sp_angular_provider">sp_angular_provider</sys_db_object>
+        <sys_id>2498a1d5adae44448a85ad6a00836890</sys_id>
+        <sys_metadata>0e84cf90db6b0890f255132968961936</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>ratelockSession</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_parent/>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_scope_delete display_value="">57712118eaee4a49ae47b2048a14ac31</sys_scope_delete>
+        <sys_update_name>sp_angular_provider_0e84cf90db6b0890f255132968961936</sys_update_name>
+        <sys_update_version display_value="sp_angular_provider_0e84cf90db6b0890f255132968961936">9b25b0d61bfc945048a242e58d4bcb0f</sys_update_version>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-05-25 14:11:31</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>

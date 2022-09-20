@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update sys_domain="global" table="sys_script">
+    <sys_script action="INSERT_OR_UPDATE">
+        <abort_action>false</abort_action>
+        <access>package_private</access>
+        <action_delete>false</action_delete>
+        <action_insert>false</action_insert>
+        <action_query>false</action_query>
+        <action_update>true</action_update>
+        <active>true</active>
+        <add_message>false</add_message>
+        <advanced>true</advanced>
+        <change_fields>false</change_fields>
+        <client_callable>false</client_callable>
+        <collection>x_momo_ratelock_ticket</collection>
+        <condition/>
+        <description/>
+        <execute_function>false</execute_function>
+        <filter_condition table="x_momo_ratelock_ticket">commentsVALCHANGES^state=1^ORstate=2^ORstate=3^ORstate=5^EQ<item endquery="false" field="comments" goto="false" newquery="false" operator="VALCHANGES" or="false" value=""/>
+            <item display_value="Active" endquery="false" field="state" goto="false" newquery="false" operator="=" or="false" value="1"/>
+            <item display_value="Pending" endquery="false" field="state" goto="false" newquery="false" operator="=" or="true" value="2"/>
+            <item display_value="Awaiting User Info" endquery="false" field="state" goto="false" newquery="false" operator="=" or="true" value="3"/>
+            <item display_value="Resolved" endquery="false" field="state" goto="false" newquery="false" operator="=" or="true" value="5"/>
+            <item endquery="true" field="" goto="false" newquery="false" operator="=" or="false" value=""/>
+        </filter_condition>
+        <is_rest>false</is_rest>
+        <message/>
+        <name>Ticket Event Triggers</name>
+        <order>999</order>
+        <priority>100</priority>
+        <rest_method/>
+        <rest_method_text/>
+        <rest_service/>
+        <rest_service_text/>
+        <rest_variables/>
+        <role_conditions/>
+        <script><![CDATA[(function executeRule(current, previous /*null when async*/ ) {
+  if (current.operation() == 'update') {
+    var meta = {
+      user: gs.getUser()
+    };
+    var notificationEvent;
+    var first_param = '';
+    if (current.comments.changes()) {
+      if (!gs.hasRole('x_momo_ratelock.ratelock_tech') && current.getValue('state') == 5) {
+        current.setValue("state", "1");
+        current.setValue("resolved", "");
+        current.setValue("active", true);
+        current.update();
+      }
+      if (gs.hasRole('x_momo_ratelock.ratelock_tech') && current.getValue("state") != 2) {
+        current.setValue("state", "2");
+        current.update();
+      } else if (!gs.hasRole("x_momo_ratelock.ratelock_tech") && current.getValue("state") != 1) {
+        current.setValue("state", "1");
+        current.setValue("follow_up_attempts", "0");
+        current.update();
+      }
+      meta.type = !gs.hasRole('x_momo_ratelock.ratelock_tech') ? 'technician' : 'caller';
+      var display_name = meta.user.getDisplayName() == 'Guest' ? 'Someone' : meta.user.getDisplayName();
+      meta.header_text = display_name + ' has commented on your ratelock request.';
+      notificationEvent = 'x_momo_ratelock.commented';
+      if (meta.type === 'caller') {
+        if (!current.caller_id.nil()) {
+          first_param += current.getValue('caller_id');
+        }
+        if (!current.email_recipients.nil()) {
+          if (!current.caller_id.nil()) {
+            first_param += ',';
+          }
+          first_param += current.getValue('email_recipients');
+        }
+
+      } else if (meta.type === 'technician' && !current.assigned_to.nil()) {
+        first_param += current.getValue('assigned_to');
+      } else if (meta.type === 'technician' && current.assigned_to.nil()) {
+        notificationEvent = undefined;
+      }
+    }
+
+    if (notificationEvent) {
+      gs.eventQueue(notificationEvent, current, first_param, JSON.stringify(meta));
+    }
+    return;
+  }
+})(current, previous);]]></script>
+        <sys_class_name>sys_script</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-01-05 13:35:37</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_domain>global</sys_domain>
+        <sys_domain_path>/</sys_domain_path>
+        <sys_id>01324b931bca049048a242e58d4bcb4d</sys_id>
+        <sys_mod_count>70</sys_mod_count>
+        <sys_name>Ticket Event Triggers</sys_name>
+        <sys_overrides/>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sys_script_01324b931bca049048a242e58d4bcb4d</sys_update_name>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-06-17 11:26:51</sys_updated_on>
+        <template/>
+        <when>after</when>
+    </sys_script>
+    <sys_translated_text action="delete_multiple" query="documentkey=01324b931bca049048a242e58d4bcb4d"/>
+</record_update>

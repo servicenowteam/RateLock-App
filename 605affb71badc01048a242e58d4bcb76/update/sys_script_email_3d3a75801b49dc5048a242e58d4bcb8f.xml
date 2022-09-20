@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_script_email">
+    <sys_script_email action="INSERT_OR_UPDATE">
+        <name>ratelock_comments</name>
+        <new_lines_to_html>false</new_lines_to_html>
+        <script><![CDATA[(function runMailScript(current, template, email, email_action, event) {
+  gs.include('RatelockDateUtils');
+  var comments = getLastJournalRecords(current.getTableName(), current.getUniqueValue());
+
+  var separator = '<table width="100%" cellpadding="0" cellspacing="0" border="0" id="ratelock-separator">' +
+    '<tr>' +
+    '<td height="1" style="border-top:1px solid #E1E1E1; font-size:1px; height:1px; line-height:1px">&nbsp;</td>' +
+    '</tr>' +
+    '</table>';
+  template.print('<div id="current-comment">');
+  for (var i = 0; i < comments.length; i++) {
+    var content = comments[i].html.replace(/\[code\]/gmi, '').replace(/\[\/code\]/gmi, '');
+    var hasRole = comments[i].isRatelockTechnician;
+    if (i !== 0) {
+      if (hasRole) {
+        template.print('<p><b>From:</b> Ratelock &lt;ratelock@movement.com&gt; <br><b>Sent:</b> ' + comments[i].createdAt + '</p>');
+      } else {
+        template.print('<p><b>From:</b> ' + comments[i].createdBy + ' <br><b>Sent:</b> ' + comments[i].createdAt + '</p>');
+      }
+    }
+    template.print(content);
+
+    // Sometimes techicians create a ticket via email
+    // which would look weird if we added a signature on top
+    // of another email signature.
+    var regex = new RegExp(comments[i].createdBy, 'gi');
+
+    // If the comment came from a technician and 
+    // they do not already have a signature.
+    if (hasRole && !regex.test(content)) {
+      var signature = getRLSignature(comments[i].createdBy, comments[i].createdByEmail);
+      template.print(signature);
+    }
+
+    if (comments.length > 1) {
+      template.print(separator);
+    }
+  }
+  template.print('</div>');
+
+  function getLastJournalRecords(table, sysId) {
+    var rec = [];
+    var gr = new GlideRecord('sys_journal_field');
+    gr.addQuery('element', 'comments');
+    gr.addQuery('element_id', sysId);
+    gr.addQuery('name', table);
+    gr.orderByDesc('sys_created_on');
+    gr.setLimit(5);
+    gr.query();
+    while (gr.next()) {
+      var user = getUser(gr.getValue('sys_created_by'));
+      rec.push({
+        html: gr.value.getHTMLValue(),
+        createdAt: RatelockDateUtils.formatDateTime(gr.sys_created_on, false, true),
+        createdBy: user.name,
+        createdByEmail: user.email,
+        isRatelockTechnician: hasRatelockRole(user.id)
+      });
+    }
+    return rec;
+  }
+
+  function hasRatelockRole(userId) {
+    var ga = new GlideAggregate('sys_user_has_role');
+    ga.addQuery('user', userId);
+    ga.addQuery('role', "c16a73771badc01048a242e58d4bcb42");
+    ga.addAggregate('COUNT');
+    ga.query();
+    while (ga.next()) {
+      return parseInt(ga.getAggregate('COUNT')) > 0;
+    }
+  }
+
+  function getUser(username) {
+    var gr = new GlideRecord('sys_user');
+    gr.addQuery('active', true);
+    gr.addQuery('user_name', username);
+    gr.query();
+
+    while (gr.next()) {
+      return {
+        name: gr.getDisplayValue('name'),
+        email: gr.email.nil() ? "ratelock@movement.com" : gr.getDisplayValue('email'),
+        id: gr.getUniqueValue()
+      };
+    }
+  }
+
+  function getRLSignature(signatureDisplayName, signatureDisplayEmail) {
+    return "<p>Regards,</p>" +
+      "<p><b><span style='font-size:10.5pt;font-family:\"Arial\",sans-serif;color:black'>" +
+      signatureDisplayName +
+      "&nbsp;" +
+      "<span style='font-size:10.5pt;font-family:\"Arial\",sans-serif;color:#DA1A28'>|</span>" +
+      "<span style='font-size:10.5pt;font-family:\"Arial\",sans-serif;color:#444444'>&nbsp;" +
+      "<a href=\"mailto:" +
+      signatureDisplayEmail +
+      "\" style='font-size:9.5pt;font-family:\"Arial\",sans-serif;color:#444444'>" +
+      signatureDisplayEmail +
+      "</a>" +
+      "</span></b></p>" +
+      "<span style='font-size:10.5pt;font-family:\"Arial\",sans-serif;color:#444444'>" +
+      "<a href=\"https://movement.com/\"><span style='color:#0563C1'>movement.com</span></a></span>" +
+      "</span></p>" +
+      "<p style=\"margin-top:5px;margin-bottom:5px;\"><span style='font-size:10.5pt;font-family:\"Arial\",sans-serif;color:black'>" +
+      "<img border=0 width=194 height=99 style='width:2.025in;height:1.0333in' src=\"1cc70a8c1b49dc5048a242e58d4bcba4.iix\">" +
+      "</span></p>" +
+      "<p><span style='font-size:10.5pt;font-family:\"Arial\",sans-serif;color:black'><br></span>" +
+      "<span style='font-size:9.0pt;font-family:\"Arial\",sans-serif;color:#AAAAAA'>&#8220;Movement Mortgage&#8221;&nbsp;is a" +
+      "registered trademark of Movement Mortgage, LLC, a Delaware limited&nbsp;liability company. Please be aware that" +
+      "e-mail is NOT a secured&nbsp;communication vehicle and that others may in certain circumstances&nbsp;be able to" +
+      "view its contents. As a result, while we are happy to provide&nbsp;this information by e-mail,&nbsp;we do NOT" +
+      "conduct actual business&nbsp;transactions by e-mail. Please contact the sender directly if you&nbsp;have any" +
+      "concerns about this message. All loans subject to&nbsp;credit approval&nbsp;and property appraisal. Equal" +
+      "Housing Lender. This communication is&nbsp;intended to be a confidential and proprietary" +
+      "business&nbsp;communication</span></p><p>&nbsp;</p>";
+  }
+
+})(current, template, email, email_action, event);]]></script>
+        <sys_class_name>sys_script_email</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-05-23 09:29:22</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>3d3a75801b49dc5048a242e58d4bcb8f</sys_id>
+        <sys_mod_count>33</sys_mod_count>
+        <sys_name>ratelock_comments</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sys_script_email_3d3a75801b49dc5048a242e58d4bcb8f</sys_update_name>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-06-13 14:38:32</sys_updated_on>
+    </sys_script_email>
+</record_update>

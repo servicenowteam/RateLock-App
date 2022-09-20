@@ -1,0 +1,471 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_widget">
+    <sp_widget action="DELETE">
+        <category>custom</category>
+        <client_script><![CDATA[function ($scope, $rootScope, $window, spUtil, $interval, ratelockSession) {
+  var c = this;
+  var date = new Date();
+  date.setMinutes(date.getMinutes() + 5);
+  $scope.lastActive = date.getTime();
+
+  var checker = $interval(function () {
+    var n = new Date();
+    var expired = n.getTime();
+
+    if ($scope.lastActive < expired) {
+      ratelockSession.publish($scope.data.table, $scope.data.sys_id, {
+        session_id: $window.NOW.session_id,
+        sys_id: $scope.data.sys_id,
+        user_avatar: $window.NOW.user_avatar,
+        user_id: $window.NOW.user_id,
+        user_initials: $window.NOW.user_initials,
+        user_display_name: $window.NOW.user_display_name,
+        user_name: $window.NOW.user_name,
+        status: "exiting"
+      });
+      $interval.cancel(checker);
+    }
+  }, 5000);
+  $scope.sessionCount = function () {
+    var num = 0;
+
+    if (!$scope.sessions) {
+      $scope.showSession = false;
+      return;
+    }
+
+
+    var keys = Object.keys($scope.sessions);
+    var journalFields = $scope.data.journalFields;
+    if (keys.length <= 0) {
+      $scope.showSession = false;
+      return;
+    }
+    for (var i = 0; i < keys.length; i++) {
+      var session = $scope.sessions[keys[i]];
+      var canUserReadJournalField = false;
+      var status = session.status;
+
+      if (status == "")
+        continue;
+
+      for (var j = 0; j < journalFields.length; j++) {
+        if (journalFields[j].field_name === session.field_type) {
+          canUserReadJournalField = journalFields[j].can_read;
+          break;
+        }
+      }
+
+      if (status === "typing" && canUserReadJournalField)
+        session.statusDisplay = $scope.data.msgs.typing || status;
+      else
+        session.statusDisplay = $scope.data.msgs.viewing || "viewing";
+      if ($scope.data.sys_id === session.sys_id)
+        num++;
+      else
+        return;
+    }
+    return num;
+  }
+
+  spUtil.recordWatch($scope, $scope.data.table, "sys_id=" + $scope.data.sys_id, function (response) {
+    var data = response.data;
+    if (data.record.sys_updated_by.value == $window.NOW.user_name) {
+      var d = new Date();
+      d.setMinutes(d.getMinutes() + 5);
+      $scope.lastActive = d.getTime();
+      ratelockSession.publish($scope.data.table, $scope.data.sys_id, {
+        session_id: $window.NOW.session_id,
+        sys_id: $scope.data.sys_id,
+        user_id: $window.NOW.user_id,
+        user_avatar: $window.NOW.user_avatar === "" ? null : $window.NOW.user_avatar,
+        user_initial: $window.NOW.user_initials,
+        user_display_name: $window.NOW.user_display_name,
+        user_name: $window.NOW.user_name,
+        status: "viewing"
+      });
+    }
+  });
+
+
+
+  $rootScope.$on('ratelock.sessions', function (e, payload) {
+    var keys = Object.keys(payload);
+
+    var sessions = {};
+    for (var i in keys) {
+      var key = keys[i];
+      if (key !== $window.NOW.session_id && payload[key].status !== 'exiting' && payload[key].status) {
+        sessions[key] = payload[key];
+      }
+    }
+    var sessionsKeys = Object.keys(sessions);
+    if (sessionsKeys.length === 0) {
+      sessions = undefined;
+    }
+
+    $scope.sessions = sessions;
+
+  });
+  c.$onInit = function (e) {
+    ratelockSession.subscribe($scope.data.table, $scope.data.sys_id);
+    ratelockSession.publish($scope.data.table, $scope.data.sys_id, {
+      session_id: $window.NOW.session_id,
+      sys_id: $scope.data.sys_id,
+      user_id: $window.NOW.user_id,
+      user_avatar: $window.NOW.user_avatar === "" ? null : $window.NOW.user_avatar,
+      user_initial: $window.NOW.user_initials,
+      user_display_name: $window.NOW.user_display_name,
+      user_name: $window.NOW.user_name,
+      status: "viewing"
+    });
+  };
+  c.$onDestroy = function (e) {
+    $interval.cancel(checker);
+    ratelockSession.publish($scope.data.table, $scope.data.sys_id, {
+      session_id: $window.NOW.session_id,
+      sys_id: $scope.data.sys_id,
+      user_avatar: $window.NOW.user_avatar,
+      user_id: $window.NOW.user_id,
+      user_initials: $window.NOW.user_initials,
+      user_display_name: $window.NOW.user_display_name,
+      user_name: $window.NOW.user_name,
+      status: "exiting"
+    });
+  };
+  $window.addEventListener('beforeunload', c.$onDestroy);
+}]]></client_script>
+        <controller_as>c</controller_as>
+        <css>.no-border {&#13;
+  border-width: 0 !important;&#13;
+}&#13;
+&#13;
+.panel-body {&#13;
+  padding-bottom: 0;&#13;
+}&#13;
+&#13;
+.avatar-container {&#13;
+  cursor: default;&#13;
+}</css>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description/>
+        <docs/>
+        <field_list/>
+        <has_preview>false</has_preview>
+        <id/>
+        <internal>false</internal>
+        <link><![CDATA[function link(scope, element, attrs, controller) {  }]]></link>
+        <name>Ratelock Ticket Sessions</name>
+        <option_schema/>
+        <public>false</public>
+        <roles/>
+        <script><![CDATA[(function () {
+  data.allowSessions = false;
+  data.msgs = {};
+  data.msgs.typing = gs.getMessage("typing");
+  data.msgs.viewing = gs.getMessage("viewing");
+  data.table = $sp.getParameter('table');
+  data.sys_id = $sp.getParameter('sys_id');
+  var rec = $sp.getRecord();
+  data.journalFields = [];
+  var elements = rec.getElements();
+
+  if (typeof elements.size != "undefined") {
+    var elementArr = [];
+    for (var i = 0; i < elements.size(); i++)
+      elementArr.push(elements.get(i));
+    elements = elementArr;
+  }
+
+  // now check canRead on the Journal fields
+  for (var j = 0; elements.length > j; j++) {
+    var element = elements[j];
+    // check the internal type because ED.isJournal() isn't available to scopes
+    var fieldType = element.getED().getInternalType();
+    if (fieldType != "journal" && fieldType != "journal_input")
+      continue;
+
+    var fieldName = element.getName();
+    var canRead = element.canRead();
+    data.journalFields.push({
+      field_name: fieldName,
+      can_read: canRead
+    });
+  }
+
+
+  if (rec)
+    data.allowSessions = rec.canRead();
+})();]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-03-10 19:35:17</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>45848f90db6b0890f255132968961939</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>Ratelock Ticket Sessions</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sp_widget_45848f90db6b0890f255132968961939</sys_update_name>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-03-10 19:35:17</sys_updated_on>
+        <template><![CDATA[<sp-panel ng-if="sessions && sessionCount()" class="panel panel-primary">
+  <div>
+    <ul class="list-group no-bg no-borders pull-in">
+      <li ng-if="s.status !== 'exiting'" class="list-group-item no-border" ng-repeat="s in sessions">
+        <span class="pull-left thumb-sm avatar m-r">
+          <sn-avatar primary="s.user_id" show-presence="true" enable-context-menu="false"></sn-avatar>
+        </span>
+        <div class="clear">
+          <div><span>{{s.user_display_name}}</span></div>
+          <small class="text-muted">{{s.status}}</small>
+        </div>
+      </li>
+    </ul>
+  </div>
+</sp-panel>]]></template>
+    </sp_widget>
+    <sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Ratelock">605affb71badc01048a242e58d4bcb76</application>
+        <file_path/>
+        <instance_id>94e8281edbb7470060a6f0e5bf9619f6</instance_id>
+        <instance_name>movementdev</instance_name>
+        <name>sp_widget_45848f90db6b0890f255132968961939</name>
+        <payload>&lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;record_update table="sp_widget"&gt;&lt;sp_widget action="INSERT_OR_UPDATE"&gt;&lt;category&gt;custom&lt;/category&gt;&lt;client_script&gt;&lt;![CDATA[function ($scope, $rootScope, $window, spUtil, $interval, ratelockSession) {
+  var c = this;
+  var date = new Date();
+  date.setMinutes(date.getMinutes() + 5);
+  $scope.lastActive = date.getTime();
+
+  var checker = $interval(function () {
+    var n = new Date();
+    var expired = n.getTime();
+
+    if ($scope.lastActive &lt; expired) {
+      ratelockSession.publish($scope.data.table, $scope.data.sys_id, {
+        session_id: $window.NOW.session_id,
+        sys_id: $scope.data.sys_id,
+        user_avatar: $window.NOW.user_avatar,
+        user_id: $window.NOW.user_id,
+        user_initials: $window.NOW.user_initials,
+        user_display_name: $window.NOW.user_display_name,
+        user_name: $window.NOW.user_name,
+        status: "exiting"
+      });
+      $interval.cancel(checker);
+    }
+  }, 5000);
+  $scope.sessionCount = function () {
+    var num = 0;
+
+    if (!$scope.sessions) {
+      $scope.showSession = false;
+      return;
+    }
+
+
+    var keys = Object.keys($scope.sessions);
+    var journalFields = $scope.data.journalFields;
+    if (keys.length &lt;= 0) {
+      $scope.showSession = false;
+      return;
+    }
+    for (var i = 0; i &lt; keys.length; i++) {
+      var session = $scope.sessions[keys[i]];
+      var canUserReadJournalField = false;
+      var status = session.status;
+
+      if (status == "")
+        continue;
+
+      for (var j = 0; j &lt; journalFields.length; j++) {
+        if (journalFields[j].field_name === session.field_type) {
+          canUserReadJournalField = journalFields[j].can_read;
+          break;
+        }
+      }
+
+      if (status === "typing" &amp;&amp; canUserReadJournalField)
+        session.statusDisplay = $scope.data.msgs.typing || status;
+      else
+        session.statusDisplay = $scope.data.msgs.viewing || "viewing";
+      if ($scope.data.sys_id === session.sys_id)
+        num++;
+      else
+        return;
+    }
+    return num;
+  }
+
+  spUtil.recordWatch($scope, $scope.data.table, "sys_id=" + $scope.data.sys_id, function (response) {
+    var data = response.data;
+    if (data.record.sys_updated_by.value == $window.NOW.user_name) {
+      var d = new Date();
+      d.setMinutes(d.getMinutes() + 5);
+      $scope.lastActive = d.getTime();
+      ratelockSession.publish($scope.data.table, $scope.data.sys_id, {
+        session_id: $window.NOW.session_id,
+        sys_id: $scope.data.sys_id,
+        user_id: $window.NOW.user_id,
+        user_avatar: $window.NOW.user_avatar === "" ? null : $window.NOW.user_avatar,
+        user_initial: $window.NOW.user_initials,
+        user_display_name: $window.NOW.user_display_name,
+        user_name: $window.NOW.user_name,
+        status: "viewing"
+      });
+    }
+  });
+
+
+
+  $rootScope.$on('ratelock.sessions', function (e, payload) {
+    var keys = Object.keys(payload);
+
+    var sessions = {};
+    for (var i in keys) {
+      var key = keys[i];
+      if (key !== $window.NOW.session_id &amp;&amp; payload[key].status !== 'exiting' &amp;&amp; payload[key].status) {
+        sessions[key] = payload[key];
+      }
+    }
+    var sessionsKeys = Object.keys(sessions);
+    if (sessionsKeys.length === 0) {
+      sessions = undefined;
+    }
+
+    $scope.sessions = sessions;
+
+  });
+  c.$onInit = function (e) {
+    ratelockSession.subscribe($scope.data.table, $scope.data.sys_id);
+    ratelockSession.publish($scope.data.table, $scope.data.sys_id, {
+      session_id: $window.NOW.session_id,
+      sys_id: $scope.data.sys_id,
+      user_id: $window.NOW.user_id,
+      user_avatar: $window.NOW.user_avatar === "" ? null : $window.NOW.user_avatar,
+      user_initial: $window.NOW.user_initials,
+      user_display_name: $window.NOW.user_display_name,
+      user_name: $window.NOW.user_name,
+      status: "viewing"
+    });
+  };
+  c.$onDestroy = function (e) {
+    $interval.cancel(checker);
+    ratelockSession.publish($scope.data.table, $scope.data.sys_id, {
+      session_id: $window.NOW.session_id,
+      sys_id: $scope.data.sys_id,
+      user_avatar: $window.NOW.user_avatar,
+      user_id: $window.NOW.user_id,
+      user_initials: $window.NOW.user_initials,
+      user_display_name: $window.NOW.user_display_name,
+      user_name: $window.NOW.user_name,
+      status: "exiting"
+    });
+  };
+  $window.addEventListener('beforeunload', c.$onDestroy);
+}]]&gt;&lt;/client_script&gt;&lt;controller_as&gt;c&lt;/controller_as&gt;&lt;css&gt;.no-border {&amp;#13;
+  border-width: 0 !important;&amp;#13;
+}&amp;#13;
+&amp;#13;
+.panel-body {&amp;#13;
+  padding-bottom: 0;&amp;#13;
+}&amp;#13;
+&amp;#13;
+.avatar-container {&amp;#13;
+  cursor: default;&amp;#13;
+}&lt;/css&gt;&lt;data_table&gt;sp_instance&lt;/data_table&gt;&lt;demo_data/&gt;&lt;description/&gt;&lt;docs/&gt;&lt;field_list/&gt;&lt;has_preview&gt;false&lt;/has_preview&gt;&lt;id/&gt;&lt;internal&gt;false&lt;/internal&gt;&lt;link&gt;&lt;![CDATA[function link(scope, element, attrs, controller) {  }]]&gt;&lt;/link&gt;&lt;name&gt;Ratelock Ticket Sessions&lt;/name&gt;&lt;option_schema/&gt;&lt;public&gt;false&lt;/public&gt;&lt;roles/&gt;&lt;script&gt;&lt;![CDATA[(function () {
+  data.allowSessions = false;
+  data.msgs = {};
+  data.msgs.typing = gs.getMessage("typing");
+  data.msgs.viewing = gs.getMessage("viewing");
+  data.table = $sp.getParameter('table');
+  data.sys_id = $sp.getParameter('sys_id');
+  var rec = $sp.getRecord();
+  data.journalFields = [];
+  var elements = rec.getElements();
+
+  if (typeof elements.size != "undefined") {
+    var elementArr = [];
+    for (var i = 0; i &lt; elements.size(); i++)
+      elementArr.push(elements.get(i));
+    elements = elementArr;
+  }
+
+  // now check canRead on the Journal fields
+  for (var j = 0; elements.length &gt; j; j++) {
+    var element = elements[j];
+    // check the internal type because ED.isJournal() isn't available to scopes
+    var fieldType = element.getED().getInternalType();
+    if (fieldType != "journal" &amp;&amp; fieldType != "journal_input")
+      continue;
+
+    var fieldName = element.getName();
+    var canRead = element.canRead();
+    data.journalFields.push({
+      field_name: fieldName,
+      can_read: canRead
+    });
+  }
+
+
+  if (rec)
+    data.allowSessions = rec.canRead();
+})();]]&gt;&lt;/script&gt;&lt;servicenow&gt;false&lt;/servicenow&gt;&lt;sys_class_name&gt;sp_widget&lt;/sys_class_name&gt;&lt;sys_created_by&gt;douglas.schamberg&lt;/sys_created_by&gt;&lt;sys_created_on&gt;2020-03-10 19:35:17&lt;/sys_created_on&gt;&lt;sys_customer_update&gt;false&lt;/sys_customer_update&gt;&lt;sys_id&gt;45848f90db6b0890f255132968961939&lt;/sys_id&gt;&lt;sys_mod_count&gt;0&lt;/sys_mod_count&gt;&lt;sys_name&gt;Ratelock Ticket Sessions&lt;/sys_name&gt;&lt;sys_package display_value="Ratelock" source="x_momo_ratelock"&gt;605affb71badc01048a242e58d4bcb76&lt;/sys_package&gt;&lt;sys_policy/&gt;&lt;sys_replace_on_upgrade&gt;false&lt;/sys_replace_on_upgrade&gt;&lt;sys_scope display_value="Ratelock"&gt;605affb71badc01048a242e58d4bcb76&lt;/sys_scope&gt;&lt;sys_update_name&gt;sp_widget_45848f90db6b0890f255132968961939&lt;/sys_update_name&gt;&lt;sys_updated_by&gt;douglas.schamberg&lt;/sys_updated_by&gt;&lt;sys_updated_on&gt;2020-03-10 19:35:17&lt;/sys_updated_on&gt;&lt;template&gt;&lt;![CDATA[&lt;sp-panel ng-if="sessions &amp;&amp; sessionCount()" class="panel panel-primary"&gt;
+  &lt;div&gt;
+    &lt;ul class="list-group no-bg no-borders pull-in"&gt;
+      &lt;li ng-if="s.status !== 'exiting'" class="list-group-item no-border" ng-repeat="s in sessions"&gt;
+        &lt;span class="pull-left thumb-sm avatar m-r"&gt;
+          &lt;sn-avatar primary="s.user_id" show-presence="true" enable-context-menu="false"&gt;&lt;/sn-avatar&gt;
+        &lt;/span&gt;
+        &lt;div class="clear"&gt;
+          &lt;div&gt;&lt;span&gt;{{s.user_display_name}}&lt;/span&gt;&lt;/div&gt;
+          &lt;small class="text-muted"&gt;{{s.status}}&lt;/small&gt;
+        &lt;/div&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/div&gt;
+&lt;/sp-panel&gt;]]&gt;&lt;/template&gt;&lt;/sp_widget&gt;&lt;/record_update&gt;</payload>
+        <payload_hash>-1284765648</payload_hash>
+        <record_name>Ratelock Ticket Sessions</record_name>
+        <reverted_from/>
+        <source>74fc5f651b5a401048a242e58d4bcbbc</source>
+        <source_table>sys_update_set</source_table>
+        <state>previous</state>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-03-10 19:35:17</sys_created_on>
+        <sys_id>81848f90db6b0890f25513296896193b</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>170c5f1b8870000001</sys_recorded_at>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-03-10 19:35:17</sys_updated_on>
+        <type>Widget</type>
+        <update_guid>89848f90ee6b0890f2f77d49d97c103a</update_guid>
+        <update_guid_history>89848f90ee6b0890f2f77d49d97c103a:-1284765648</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete display_value="">c9e44fd0db6b0890f2551329689619f5</sys_audit_delete>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-03-10 19:36:55</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_db_object display_value="" name="sp_widget">sp_widget</sys_db_object>
+        <sys_id>96e8c6706b6f4e668a0dbf2b4a866d04</sys_id>
+        <sys_metadata>45848f90db6b0890f255132968961939</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>Ratelock Ticket Sessions</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_parent/>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_scope_delete display_value="">57712118eaee4a49ae47b2048a14ac31</sys_scope_delete>
+        <sys_update_name>sp_widget_45848f90db6b0890f255132968961939</sys_update_name>
+        <sys_update_version display_value="sp_widget_45848f90db6b0890f255132968961939">81848f90db6b0890f25513296896193b</sys_update_version>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-03-10 19:36:55</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>

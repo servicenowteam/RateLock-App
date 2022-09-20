@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_script_email">
+    <sys_script_email action="INSERT_OR_UPDATE">
+        <name>ratelock_header</name>
+        <new_lines_to_html>false</new_lines_to_html>
+        <script><![CDATA[(function runMailScript(current, template, email, email_action, event) {
+  template.print('<style type="text/css">.tdwrap{color:#ccc;line-height:1;font-size:10pt;}sup{color:#fff;}</style><!-- [if mso]><style>sup{mso-hide: all;}<span id="CmCaReT"></span></style><![endif]-->');
+  template.print('<p><span style="font-size: 14pt;">Hello');
+  var meta = event.parm2;
+  try {
+    meta = JSON.parse(meta);
+  } catch (e) {}
+  if (meta.type == 'technician' && !gs.nil(current.getValue('assigned_to'))) {
+    template.print(' ' + current.getDisplayValue('assigned_to') + ',</span></p>');
+  } else if (meta.type == 'caller' && !gs.nil(current.getValue('caller_id'))) {
+    template.print(' ' + current.getDisplayValue('caller_id') + ',</span></p>');
+  } else {
+    template.print(',</span></p>');
+  }
+  template.print('<p><span style="font-size:14pt;">' + meta.header_text + '</span></p>');
+})(current, template, email, email_action, event);]]></script>
+        <sys_class_name>sys_script_email</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-01-05 13:22:30</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>68dffe531bca049048a242e58d4bcb61</sys_id>
+        <sys_mod_count>27</sys_mod_count>
+        <sys_name>ratelock_header</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sys_script_email_68dffe531bca049048a242e58d4bcb61</sys_update_name>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-01-18 12:03:05</sys_updated_on>
+    </sys_script_email>
+</record_update>

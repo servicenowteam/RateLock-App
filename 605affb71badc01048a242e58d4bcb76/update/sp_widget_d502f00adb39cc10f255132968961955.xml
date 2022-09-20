@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_widget">
+    <sp_widget action="INSERT_OR_UPDATE">
+        <category>custom</category>
+        <client_script><![CDATA[function ($scope, $rootScope, $window, spUtil, $interval, mmSessions, $timeout) {
+  var c = this;
+
+  var xsScreenSize = isXSScreenSize();
+  angular.element($window).on('resize', function () {
+    if (xsScreenSize !== isXSScreenSize()) {
+      $scope.isMobile = true;
+    } else {
+      $scope.isMobile = false;
+    }
+  });
+
+  function isXSScreenSize() {
+    return $window.matchMedia('(max-width: 767px)').matches;
+  }
+
+
+
+  c.$onInit = function (e) {
+    mmSessions.setChannel($scope.data.table, $scope.data.sys_id, true);
+  };
+  var recordWatcherTimer;
+  var EVENT_NAMES = {
+    connected: 'sessions.' + $scope.data.sys_id + '.connected.ticket',
+    ping: 'sessions.' + $scope.data.sys_id + '.ping',
+    pong: 'sessions.' + $scope.data.sys_id + '.pong',
+    message: 'sessions.' + $scope.data.sys_id + '.message'
+  };
+
+  $rootScope.$on(EVENT_NAMES.connected, function (evt) {
+    mmSessions.subscribe($scope.data.sys_id);
+    mmSessions.ping($scope.data.sys_id);
+    mmSessions.viewing($scope.data.sys_id);
+  });
+
+  $rootScope.$on(EVENT_NAMES.ping, function (evt, session) {
+    mmSessions.pong($scope.data.sys_id);
+  });
+
+  $rootScope.$on(EVENT_NAMES.pong, function (evt, payload) {
+    if (!angular.isDefined($scope.sessions)) {
+      $scope.sessions = {};
+    }
+    $scope.sessions[payload.sessionId] = payload;
+    if (payload.status === 'exiting' && $scope.sessions[payload.sessionId]) {
+      $timeout.cancel(recordWatcherTimer);
+      recordWatcherTimer = $timeout(function () {
+        delete $scope.sessions[payload.sessionId];
+      });
+    }
+  });
+
+  $rootScope.$on(EVENT_NAMES.message, function (evt, payload) {
+    if (!angular.isDefined($scope.sessions)) {
+      $scope.sessions = {};
+    }
+    $scope.sessions[payload.sessionId] = payload;
+    if (payload.status === 'exiting' && $scope.sessions[payload.sessionId]) {
+      $timeout.cancel(recordWatcherTimer);
+      recordWatcherTimer = $timeout(function () {
+        delete $scope.sessions[payload.sessionId];
+      });
+    }
+  });
+
+  c.hasSessions = function () {
+    if (!angular.isDefined($scope.sessions)) return false;
+    if (Object.keys($scope.sessions).length === 0) return false;
+    return true;
+  }
+
+  c.$onDestroy = function () {
+    if (angular.isDefined(recordWatcherTimer)) {
+      $timeout.cancel(recordWatcherTimer);
+    }
+    mmSessions.exiting($scope.data.sys_id);
+  };
+  c.exitSession = function () {
+    if (angular.isDefined(recordWatcherTimer)) {
+      $timeout.cancel(recordWatcherTimer);
+    }
+
+    mmSessions.exiting($scope.data.sys_id);
+  };
+
+}]]></client_script>
+        <controller_as>c</controller_as>
+        <css>.no-border {
+  border-width: 0 !important;
+}
+
+.panel-body {
+  padding-bottom: 0;
+}
+
+.panel-primary {
+  border-color: transparent;
+
+  &amp;.ng-enter {
+    animation: 0.3s fade-in;
+  }
+
+  &amp;.ng-leave {
+    animation: 0.3s fade-out;
+  }
+}
+
+.list-group-item {
+  &amp;.ng-enter {
+    animation: 0.3s fade-in;
+  }
+
+  &amp;.ng-leave {
+    animation: 0.3s fade-out;
+  }
+}
+
+.avatar-container {
+  cursor: default;
+}
+
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fade-out {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}</css>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description/>
+        <docs/>
+        <field_list/>
+        <has_preview>false</has_preview>
+        <id>ratelock_ticket_sessions</id>
+        <internal>false</internal>
+        <link><![CDATA[function link(scope, element, attrs, controller) {
+  window.addEventListener('beforeunload', function (e) {
+    e.preventDefault();
+    controller.exitSession();
+  });
+}]]></link>
+        <name>Ratelock Ticket Sessions</name>
+        <option_schema/>
+        <public>false</public>
+        <roles/>
+        <script><![CDATA[(function () {
+  data.allowSessions = false;
+  data.msgs = {};
+  data.msgs.typing = gs.getMessage("typing");
+  data.msgs.viewing = gs.getMessage("viewing");
+  data.table = $sp.getParameter('table');
+  data.sys_id = $sp.getParameter('sys_id');
+  var rec = $sp.getRecord();
+  data.journalFields = [];
+  var elements = rec.getElements();
+
+  if (typeof elements.size != "undefined") {
+    var elementArr = [];
+    for (var i = 0; i < elements.size(); i++)
+      elementArr.push(elements.get(i));
+    elements = elementArr;
+  }
+
+  // now check canRead on the Journal fields
+  for (var j = 0; elements.length > j; j++) {
+    var element = elements[j];
+    // check the internal type because ED.isJournal() isn't available to scopes
+    var fieldType = element.getED().getInternalType();
+    if (fieldType != "journal" && fieldType != "journal_input")
+      continue;
+
+    var fieldName = element.getName();
+    var canRead = element.canRead();
+    data.journalFields.push({
+      field_name: fieldName,
+      can_read: canRead
+    });
+  }
+
+
+  if (rec)
+    data.allowSessions = rec.canRead();
+})();]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2019-12-19 19:34:44</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>d502f00adb39cc10f255132968961955</sys_id>
+        <sys_mod_count>259</sys_mod_count>
+        <sys_name>Ratelock Ticket Sessions</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sp_widget_d502f00adb39cc10f255132968961955</sys_update_name>
+        <sys_updated_by>douglas.schamberg@movement.com</sys_updated_by>
+        <sys_updated_on>2020-08-29 17:06:45</sys_updated_on>
+        <template><![CDATA[<div ng-if="c.hasSessions()" ng-view class="panel panel-primary">
+  <div class="panel-body">
+    <ul class="list-group no-bg no-borders pull-in">
+      <li class="list-group-item no-border" ng-view ng-repeat="s in sessions">
+        <span class="pull-left thumb-sm avatar m-r">
+          <sn-avatar primary="s.userId" show-presence="false" enable-context-menu="false"></sn-avatar>
+        </span>
+        <div class="clear">
+          <div><span>{{s.userDisplayName}}</span></div>
+          <small class="text-muted">{{s.status}}</small>
+        </div>
+      </li>
+    </ul>
+  </div>
+</div>]]></template>
+    </sp_widget>
+</record_update>

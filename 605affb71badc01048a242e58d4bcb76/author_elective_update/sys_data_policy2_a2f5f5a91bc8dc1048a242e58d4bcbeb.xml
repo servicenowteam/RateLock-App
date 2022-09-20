@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update sys_domain="global" table="sys_data_policy2">
+    <sys_data_policy2 action="DELETE">
+        <active>false</active>
+        <apply_import_set>true</apply_import_set>
+        <apply_soap>true</apply_soap>
+        <conditions table="x_momo_ratelock_ticket">state=6^active=false^EQ<item display_value="Closed" endquery="false" field="state" goto="false" newquery="false" operator="=" or="false" value="6"/>
+            <item endquery="false" field="active" goto="false" newquery="false" operator="=" or="false" value="false"/>
+            <item endquery="true" field="" goto="false" newquery="false" operator="=" or="false" value=""/>
+        </conditions>
+        <description/>
+        <enforce_ui>true</enforce_ui>
+        <inherit>false</inherit>
+        <model_id/>
+        <model_table>x_momo_ratelock_ticket</model_table>
+        <reverse_if_false>true</reverse_if_false>
+        <short_description>Read Only Fields on Closed</short_description>
+        <sys_class_name>sys_data_policy2</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-04-08 07:35:57</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_domain>global</sys_domain>
+        <sys_domain_path>/</sys_domain_path>
+        <sys_id>a2f5f5a91bc8dc1048a242e58d4bcbeb</sys_id>
+        <sys_mod_count>4</sys_mod_count>
+        <sys_name>Read Only Fields on Closed</sys_name>
+        <sys_overrides/>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sys_data_policy2_a2f5f5a91bc8dc1048a242e58d4bcbeb</sys_update_name>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-04-08 07:41:45</sys_updated_on>
+    </sys_data_policy2>
+    <sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Ratelock">605affb71badc01048a242e58d4bcb76</application>
+        <file_path/>
+        <instance_id>94e8281edbb7470060a6f0e5bf9619f6</instance_id>
+        <instance_name>movementdev</instance_name>
+        <name>sys_data_policy2_a2f5f5a91bc8dc1048a242e58d4bcbeb</name>
+        <payload><![CDATA[<?xml version="1.0" encoding="UTF-8"?><record_update sys_domain="global" table="sys_data_policy2"><sys_data_policy2 action="INSERT_OR_UPDATE"><active>false</active><apply_import_set>true</apply_import_set><apply_soap>true</apply_soap><conditions table="x_momo_ratelock_ticket">state=6^active=false^EQ<item display_value="Closed" endquery="false" field="state" goto="false" newquery="false" operator="=" or="false" value="6"/><item endquery="false" field="active" goto="false" newquery="false" operator="=" or="false" value="false"/><item endquery="true" field="" goto="false" newquery="false" operator="=" or="false" value=""/></conditions><description/><enforce_ui>true</enforce_ui><inherit>false</inherit><model_id/><model_table>x_momo_ratelock_ticket</model_table><reverse_if_false>true</reverse_if_false><short_description>Read Only Fields on Closed</short_description><sys_class_name>sys_data_policy2</sys_class_name><sys_created_by>douglas.schamberg</sys_created_by><sys_created_on>2020-04-08 07:35:57</sys_created_on><sys_customer_update>false</sys_customer_update><sys_domain>global</sys_domain><sys_domain_path>/</sys_domain_path><sys_id>a2f5f5a91bc8dc1048a242e58d4bcbeb</sys_id><sys_mod_count>4</sys_mod_count><sys_name>Read Only Fields on Closed</sys_name><sys_overrides/><sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package><sys_policy/><sys_replace_on_upgrade>false</sys_replace_on_upgrade><sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope><sys_update_name>sys_data_policy2_a2f5f5a91bc8dc1048a242e58d4bcbeb</sys_update_name><sys_updated_by>douglas.schamberg</sys_updated_by><sys_updated_on>2020-04-08 07:41:45</sys_updated_on></sys_data_policy2></record_update>]]></payload>
+        <payload_hash>1156996259</payload_hash>
+        <record_name>Read Only Fields on Closed</record_name>
+        <reverted_from/>
+        <source>74fc5f651b5a401048a242e58d4bcbbc</source>
+        <source_table>sys_update_set</source_table>
+        <state>previous</state>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-04-08 07:41:45</sys_created_on>
+        <sys_id>a347792d1bc8dc1048a242e58d4bcb07</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>17158bcdfe30000001</sys_recorded_at>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-04-08 07:41:45</sys_updated_on>
+        <type>Data Policy</type>
+        <update_guid>2b47792dc0c8dc10de284dc53afa2506</update_guid>
+        <update_guid_history>2b47792dc0c8dc10de284dc53afa2506:1156996259,ae47752de5c8dc104e9c4a0c8cfca087:926868386,2337f12d1ec8dc1030f66e77d7f71dac:1606515005,a627752db6c8dc10d394fb968bd7df51:926868386,b2f5f5a9d7c8dc100e5a022cc3c12bee:632500132</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete/>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-04-08 07:42:21</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_db_object display_value="" name="sys_data_policy2">sys_data_policy2</sys_db_object>
+        <sys_id>2951ca4d62ba4e188d56180f2ae16f64</sys_id>
+        <sys_metadata>a2f5f5a91bc8dc1048a242e58d4bcbeb</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>Read Only Fields on Closed</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_parent display_value="">a94cdf251b5a401048a242e58d4bcbe4</sys_parent>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_scope_delete display_value="">57712118eaee4a49ae47b2048a14ac31</sys_scope_delete>
+        <sys_update_name>sys_data_policy2_a2f5f5a91bc8dc1048a242e58d4bcbeb</sys_update_name>
+        <sys_update_version display_value="sys_data_policy2_a2f5f5a91bc8dc1048a242e58d4bcbeb">a347792d1bc8dc1048a242e58d4bcb07</sys_update_version>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-04-08 07:42:21</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>

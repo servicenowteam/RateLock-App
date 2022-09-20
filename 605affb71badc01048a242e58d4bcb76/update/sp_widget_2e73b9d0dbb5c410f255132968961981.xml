@@ -1,0 +1,371 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_widget">
+    <sp_widget action="INSERT_OR_UPDATE">
+        <category>custom</category>
+        <client_script><![CDATA[function ($scope, $window) {
+  /* widget controller */
+  var c = this;
+  // Setup Dropdown List events
+  $scope.searcher = undefined;
+  $scope.ignore_watcher = false;
+
+  $scope.modelOptions = {
+    debounce: {
+      'default': 500,
+      blur: 0
+    },
+    getterSetter: true
+  };
+	
+	c.navigate = function($event, url) {
+		$event.preventDefault();
+		$event.stopPropagation();
+		$window.location.href = url;
+	};
+
+  $scope.$watch('searcher', function (val) {
+    if (!val) {
+      $scope.show_dropdown = false;
+    } else if (val.length > 2 && !$scope.ignore_watcher) {
+      $scope.data.query = val;
+      $scope.data.limit = 5;
+      $scope.data.orderBy = "priority";
+      $scope.server.update().then(function (results) {
+        $scope.matches = results.matches;
+        $scope.show_dropdown = true;
+      });
+    }
+  });
+
+  $scope.onKeydown = function ($event) {
+    if ($event.keyCode == 8) {
+      $event.stopPropagation();
+      $scope.show_dropdown = false;
+      $scope.matches = [];
+      return;
+    }
+  };
+
+  $scope.toggled = function (open) {
+    $scope.show_dropdown = open;
+  }
+	
+	c.submit = function() {
+		$scope.ignore_watcher = true;
+		var url = '?id=ratelock_search_results&table=x_momo_ratelock_ticket';
+		if ($scope.searcher) {
+			url += '&q=' + $scope.searcher;
+		}
+		$window.location.href = url;
+	};
+
+  $scope.truncate = function (text) {
+    if (!text) return;
+    var lines = text.split('\n');
+    var truncated = '';
+    if (lines.length > 3) {
+      lines = lines.slice(0, 3);
+      truncated += lines.map(function (line) {
+        return '<span>' + line + '</span>';
+      }).join('<br /><br />') + '<span>&nbsp;...</span>';
+    } else {
+      truncated += lines.join('<br /><br />');
+    }
+
+    return truncated;
+  }
+
+}]]></client_script>
+        <controller_as>c</controller_as>
+        <css>::-webkit-scrollbar {
+  width: 0.2em;
+}
+ 
+::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 0.5px rgba(0, 0, 0, 0.1);
+}
+ 
+::-webkit-scrollbar-thumb {
+  background-color: $brand-primary;
+  border-radius: 0.1em;
+  outline: 0.5px solid #eee;
+}
+
+ul.dropdown-menu {
+	min-width: 100%;
+  margin: 0px;
+  padding: 0px;
+  overflow-y: auto;
+  max-height: 80vh;
+}
+
+ul.dropdown-menu div.ta-item {
+	line-height: 20px;
+}
+
+ul.dropdown-menu i.ta-icon, i.ta-img {
+	width: 20px;
+  height: 20px;
+  background-size: contain;
+  display: inline-block;
+  background-repeat: no-repeat;
+  background-position: center center;
+  text-align: center;
+  line-height: 20px;
+  vertical-align: bottom;
+  margin-right: 8px;
+}
+
+.primary-display {
+	font-size: 17px;
+}
+
+@media screen and (max-width: 767px) {
+  .primary-display {
+  	font-size: 14px;
+  }
+}
+
+.list-link {
+  &amp;:not(.list-link-inactive) {
+  	color: black;
+  }
+  &amp;.list-link-inactive {
+  	color: rgba(0, 0, 0, 0.4);
+  }
+}
+
+.list-link:hover,
+.list-link:active,
+.list-link:focus {
+  color: $brand-primary;
+}
+
+.inactive {
+	color: rgba(0, 0, 0, 0.4);
+}
+
+.list-group-item {
+	margin-right: 0px;
+  margin-left: 0px;
+}
+
+.list-group-item:not(:first-child) {
+	border-top: 1px solid #ccc;
+  border-bottom: 1px transparent;
+  border-left: 1px transparent;
+  border-right: 1px transparent;
+}
+
+.list-group-item:hover {
+	background: #FCFCFC;
+}
+
+.list-group-item:first-child {
+	border: transparent;
+}
+
+.display-block {
+	display: block;
+  width: 100%;
+  
+}
+
+input[name="q"] {
+	color: black;
+  
+}
+input[name="q"]:focus {
+	border: 1px solid $brand-primary;
+  box-shadow: 0px 0px 5px $brand-primary;
+  outline: none;
+}
+
+.input-group-btn {
+  &amp; button:focus {
+  	border: 1px solid #ddd;
+  	box-shadow: none;
+  	outline: none;
+  }
+}
+
+.btn-search {
+	background: #fff;
+  color: black;
+  border: 1px solid #ccc;
+  outline: none;
+  -webkit-transition: all .1s ease-out;
+  -moz-transition: all .1s ease-out;
+  -ms-transition: all .1s ease-out;
+  transition: all .1s ease-out;
+}
+
+
+.btn-search:active {
+  background: $brand-primary;
+  color: #fff;
+	outline: none;
+  border: 1px solid $brand-primary;
+ 	box-shadow: 0px 0px 5px $brand-primary;
+  -webkit-transition: all .1s ease-out;
+  -moz-transition: all .1s ease-out;
+  -ms-transition: all .1s ease-out;
+  transition: all .1s ease-out;
+}
+
+.btn-search:focus {
+	outline: none;
+  border: 1px solid $brand-primary;
+ 	box-shadow: 0px 0px 5px $brand-primary;
+}</css>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description/>
+        <docs/>
+        <field_list/>
+        <has_preview>false</has_preview>
+        <id>ratelock-search</id>
+        <internal>false</internal>
+        <link><![CDATA[function link(scope, element, attrs, controller) {  }]]></link>
+        <name>Ratelock Search</name>
+        <option_schema/>
+        <public>false</public>
+        <roles/>
+        <script><![CDATA[(function () {
+
+  data.table = options.table || $sp.getParameter('table');
+  data.page_id = options.page_id || $sp.getParameter('id');
+  if (input) {
+    data.page_id = input.page_id || options.page_id || data.page_id || $sp.getParameter('id');
+    var querySchema = input.queries || options.queries || data.queries || [];
+    data.matches = getSearchResults(input.query, input.limit, querySchema, input.orderBy) || [];
+  }
+
+  function createEncodedQueryUrl(query, query_schema) {
+    var queries = query_schema || [];
+    var url = [];
+    for (var i in queries) {
+      var q = queries[i];
+      url.push((q.isOr ? 'OR' : '') + q.column + q.operator + (q.defaultValue ? q.defaultValue : query));
+    }
+
+    return url.join('^').replace(/^OR/, '');
+  }
+
+  function getSearchResults(query, limit, query_schema, orderBy) {
+    var matches = [];
+    var encoded_query_url = createEncodedQueryUrl(query, query_schema);
+    var gr = new GlideRecord(data.table);
+    gr.setLimit(limit || 5);
+    gr.orderBy('priority');
+    gr.orderByDesc('sys_created_on');
+		gr.orderBy('active');
+    gr.addEncodedQuery(encoded_query_url);
+    gr.query();
+    while (gr.next()) {
+      matches.push({
+        sys_id: gr.getValue('sys_id'),
+				isActive: gr.getValue('active'),
+        number: gr.getValue('number'),
+        loan_number: gr.getValue('loan_number'),
+        description: gr.getValue('description'),
+        priority: gr.getDisplayValue('priority'),
+        caller: gr.getDisplayValue('caller_id'),
+        assigned_to: gr.getDisplayValue('assigned_to'),
+        state: gr.getDisplayValue('state'),
+        short_description: gr.getValue('short_description'),
+        url: '?id=' + data.page_id + '&table=' + data.table + '&sys_id=' + gr.getValue('sys_id')
+      });
+    }
+    return matches;
+  }
+})();]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2019-12-14 13:51:21</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>2e73b9d0dbb5c410f255132968961981</sys_id>
+        <sys_mod_count>545</sys_mod_count>
+        <sys_name>Ratelock Search</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sp_widget_2e73b9d0dbb5c410f255132968961981</sys_update_name>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-05-22 13:28:34</sys_updated_on>
+        <template><![CDATA[<form class="search-form" id="search-form" ng-submit="c.submit()">
+  <div class="input-group m-b-none">
+    <input name="q"
+       class="form-control"
+       type="text"
+       ng-model="searcher"
+       ng-keydown="onKeydown($event)"
+       ng-model-options="modelOptions"
+       autocomplete="off"
+       role="textbox"
+       placeholder="Search" />
+    <div class="input-group-btn">
+      <button type="submit" class="btn btn-default">
+      	<i class="fa fa-search" aria-hidden="true"></i>
+      </button>
+    </div>
+  </div>
+  <div class="row m-t-sm" ng-if="page.id === 'ratelock_home' && !show_dropdown">
+    <div class="col-md-12">
+      <span class="pull-right">
+				<a href="?id=ratelock_search_results">
+          <small class="text-primary"><u>Detailed Search</u></small>
+        </a>      
+      </span>
+    </div>
+  </div>
+</form>
+<div class="dropdown" ng-show="data.matches" uib-dropdown on-toggle="toggled(open)" is-open="show_dropdown" keyboard-nav="true">
+  <ul class="dropdown-menu list-group list-group-flush" 
+      style="margin-bottom:0px;"
+      uib-dropdown-menu 
+      role="menu"
+      id="ratelock-search-list"
+      aria-haspopup="true" aria-expanded="false">
+    <li class="list-group-item dropdown-item row"
+        ng-if="data.matches.length > 0"
+        ng-repeat="match in data.matches track by $index"
+        id="{{match.sys_id}}"
+        ng-click="c.navigate($event, match.url)"
+        data-index="{{match.sys_id}}"
+        role="menuitem">  
+      <div class="col-xs-12">
+        <div class="row padder-l-none main-column">
+          <div class="primary-display">
+            <a href class="list-link row m-r-none m-l-none" ng-class="{'list-link-inactive': match.isActive == false}">
+              <span class="pull-left padder-l-none padder-r-none" 
+                    ng-class="{'col-md-8': match.loan_number, 'col-md-12': !match.loan_number}">
+                {{match.short_description}}
+              </span>
+              <small class="padder-l-none padder-r-none col-md-4 pull-right text-muted hidden-xs"
+                     ng-class="{'inactive': match.isActive == false}"
+                      style="text-align:right;"
+                      ng-if="match.loan_number">
+                Loan: {{match.loan_number}}
+              </small>
+            </a>
+          </div>
+          <small ng-class="{'inactive': match.isActive == false, 'text-muted': match.isActive != false}">
+            <div class="secondary-display">
+              <span ng-bind-html="::truncate(match.description)"></span>
+            </div>
+          </small>
+        </div>
+      </div>
+    </li>
+    <li class="list-group-item dropdown-item no-border"
+        ng-if="data.matches.length === 0">
+    	<div class="ta-item">
+        <span>No Records Found</span>
+      </div>
+    </li>
+  </ul>
+</div>]]></template>
+    </sp_widget>
+</record_update>

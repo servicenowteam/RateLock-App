@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_widget">
+    <sp_widget action="DELETE">
+        <category>other</category>
+        <client_script><![CDATA[function($scope, $rootScope) {
+	$rootScope.$on('sp.sessions', function(name, sessions) {
+		$scope.sessions = sessions;
+	});
+	console.log($scope.sessions)
+	$scope.sessionCount = function() {
+		var num = 0;
+		console.log($scope.data.rec)
+		var keys = Object.keys($scope.sessions);
+		var journalFields = $scope.data.journalFields;
+		
+		for (var i = 0; i < keys.length; i++) {
+			var session = $scope.sessions[keys[i]];
+			var canUserReadJournalField = false;
+			var status = session.status;
+			
+			if (status == "")
+				continue;
+			
+			for (var j = 0; j < journalFields.length; j++) {
+				if (journalFields[j].field_name === session.field_type) {
+					canUserReadJournalField = journalFields[j].can_read;
+					break;
+				}
+			}
+
+			if (status === "typing" && canUserReadJournalField) 
+				session.statusDisplay = $scope.data.msgs.typing || status;
+			else 
+				session.statusDisplay = $scope.data.msgs.viewing || "viewing";
+		
+			num++;
+		}
+		return num;
+	}
+
+}]]></client_script>
+        <controller_as/>
+        <css>.no-border {
+  border-width: 0 !important;
+}
+
+.panel-body {
+  padding-bottom: 0;
+}
+
+.avatar-container {
+  cursor: default;
+}</css>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description/>
+        <docs/>
+        <field_list/>
+        <has_preview>true</has_preview>
+        <id>ratelock-sessions</id>
+        <internal>false</internal>
+        <link><![CDATA[function link(scope, element, attrs, controller) {  }]]></link>
+        <name>Ratelock Sessions</name>
+        <option_schema/>
+        <public>true</public>
+        <roles/>
+        <script><![CDATA[(function() {
+	data.allowSessions = false;
+	data.msgs = {};
+	data.msgs.typing = gs.getMessage("typing");
+	data.msgs.viewing = gs.getMessage("viewing");
+	if (options){
+		var rec = $sp.getRecord('x_momo_ratelock_ticket', options.record_sys_id);
+		data.msgs.rec = rec.getValue('sys_id');
+		var journalFields = [];
+		var elements = rec.getElements();
+
+		// global and scoped GlideRecord.getElements return two different things,
+		// so if we got an ArrayList, convert to Array before doing the work
+		if (typeof elements.size != "undefined") {
+			var elementArr = [];
+			for (var i = 0; i < elements.size(); i++)
+				elementArr.push(elements.get(i));
+			elements = elementArr;
+		}
+
+		// now check canRead on the Journal fields
+		for (var j = 0; elements.length > j; j++) {
+			var element = elements[j];
+			// check the internal type because ED.isJournal() isn't available to scopes
+			var fieldType = element.getED().getInternalType();
+			if (fieldType != "journal" && fieldType != "journal_input")
+				continue;
+
+			var fieldName = element.getName();
+			var canRead = element.canRead();
+			journalFields.push({field_name: fieldName, can_read: canRead});
+		}
+
+		data.journalFields = journalFields;
+
+		if (rec)
+			data.allowSessions = rec.canRead();
+	}
+	
+})();]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2019-12-13 16:50:49</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>b1f255c81b35041048a242e58d4bcb01</sys_id>
+        <sys_mod_count>40</sys_mod_count>
+        <sys_name>Ratelock Sessions</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sp_widget_b1f255c81b35041048a242e58d4bcb01</sys_update_name>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2019-12-14 13:30:16</sys_updated_on>
+        <template><![CDATA[<div class="col-xs-1" ng-if="sessions && sessionCount()">
+  <span class="pull-left thumb-sm avatar m-r" ng-repeat="s in sessions">
+    <sn-avatar primary="s.user_id" show-presence="true" enable-context-menu="false"></sn-avatar>
+  </span>
+</div>
+
+]]></template>
+    </sp_widget>
+    <sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Ratelock">605affb71badc01048a242e58d4bcb76</application>
+        <file_path/>
+        <instance_id>94e8281edbb7470060a6f0e5bf9619f6</instance_id>
+        <instance_name>movementdev</instance_name>
+        <name>sp_widget_b1f255c81b35041048a242e58d4bcb01</name>
+        <payload>&lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;record_update table="sp_widget"&gt;&lt;sp_widget action="INSERT_OR_UPDATE"&gt;&lt;category&gt;other&lt;/category&gt;&lt;client_script&gt;&lt;![CDATA[function($scope, $rootScope) {
+	$rootScope.$on('sp.sessions', function(name, sessions) {
+		$scope.sessions = sessions;
+	});
+	console.log($scope.sessions)
+	$scope.sessionCount = function() {
+		var num = 0;
+		console.log($scope.data.rec)
+		var keys = Object.keys($scope.sessions);
+		var journalFields = $scope.data.journalFields;
+		
+		for (var i = 0; i &lt; keys.length; i++) {
+			var session = $scope.sessions[keys[i]];
+			var canUserReadJournalField = false;
+			var status = session.status;
+			
+			if (status == "")
+				continue;
+			
+			for (var j = 0; j &lt; journalFields.length; j++) {
+				if (journalFields[j].field_name === session.field_type) {
+					canUserReadJournalField = journalFields[j].can_read;
+					break;
+				}
+			}
+
+			if (status === "typing" &amp;&amp; canUserReadJournalField) 
+				session.statusDisplay = $scope.data.msgs.typing || status;
+			else 
+				session.statusDisplay = $scope.data.msgs.viewing || "viewing";
+		
+			num++;
+		}
+		return num;
+	}
+
+}]]&gt;&lt;/client_script&gt;&lt;controller_as/&gt;&lt;css&gt;.no-border {
+  border-width: 0 !important;
+}
+
+.panel-body {
+  padding-bottom: 0;
+}
+
+.avatar-container {
+  cursor: default;
+}&lt;/css&gt;&lt;data_table&gt;sp_instance&lt;/data_table&gt;&lt;demo_data/&gt;&lt;description/&gt;&lt;docs/&gt;&lt;field_list/&gt;&lt;has_preview&gt;true&lt;/has_preview&gt;&lt;id&gt;ratelock-sessions&lt;/id&gt;&lt;internal&gt;false&lt;/internal&gt;&lt;link&gt;&lt;![CDATA[function link(scope, element, attrs, controller) {  }]]&gt;&lt;/link&gt;&lt;name&gt;Ratelock Sessions&lt;/name&gt;&lt;option_schema/&gt;&lt;public&gt;true&lt;/public&gt;&lt;roles/&gt;&lt;script&gt;&lt;![CDATA[(function() {
+	data.allowSessions = false;
+	data.msgs = {};
+	data.msgs.typing = gs.getMessage("typing");
+	data.msgs.viewing = gs.getMessage("viewing");
+	if (options){
+		var rec = $sp.getRecord('x_momo_ratelock_ticket', options.record_sys_id);
+		data.msgs.rec = rec.getValue('sys_id');
+		var journalFields = [];
+		var elements = rec.getElements();
+
+		// global and scoped GlideRecord.getElements return two different things,
+		// so if we got an ArrayList, convert to Array before doing the work
+		if (typeof elements.size != "undefined") {
+			var elementArr = [];
+			for (var i = 0; i &lt; elements.size(); i++)
+				elementArr.push(elements.get(i));
+			elements = elementArr;
+		}
+
+		// now check canRead on the Journal fields
+		for (var j = 0; elements.length &gt; j; j++) {
+			var element = elements[j];
+			// check the internal type because ED.isJournal() isn't available to scopes
+			var fieldType = element.getED().getInternalType();
+			if (fieldType != "journal" &amp;&amp; fieldType != "journal_input")
+				continue;
+
+			var fieldName = element.getName();
+			var canRead = element.canRead();
+			journalFields.push({field_name: fieldName, can_read: canRead});
+		}
+
+		data.journalFields = journalFields;
+
+		if (rec)
+			data.allowSessions = rec.canRead();
+	}
+	
+})();]]&gt;&lt;/script&gt;&lt;servicenow&gt;false&lt;/servicenow&gt;&lt;sys_class_name&gt;sp_widget&lt;/sys_class_name&gt;&lt;sys_created_by&gt;douglas.schamberg&lt;/sys_created_by&gt;&lt;sys_created_on&gt;2019-12-13 16:50:49&lt;/sys_created_on&gt;&lt;sys_customer_update&gt;false&lt;/sys_customer_update&gt;&lt;sys_id&gt;b1f255c81b35041048a242e58d4bcb01&lt;/sys_id&gt;&lt;sys_mod_count&gt;40&lt;/sys_mod_count&gt;&lt;sys_name&gt;Ratelock Sessions&lt;/sys_name&gt;&lt;sys_package display_value="Ratelock" source="x_momo_ratelock"&gt;605affb71badc01048a242e58d4bcb76&lt;/sys_package&gt;&lt;sys_policy/&gt;&lt;sys_replace_on_upgrade&gt;false&lt;/sys_replace_on_upgrade&gt;&lt;sys_scope display_value="Ratelock"&gt;605affb71badc01048a242e58d4bcb76&lt;/sys_scope&gt;&lt;sys_update_name&gt;sp_widget_b1f255c81b35041048a242e58d4bcb01&lt;/sys_update_name&gt;&lt;sys_updated_by&gt;douglas.schamberg&lt;/sys_updated_by&gt;&lt;sys_updated_on&gt;2019-12-14 13:30:16&lt;/sys_updated_on&gt;&lt;template&gt;&lt;![CDATA[&lt;div class="col-xs-1" ng-if="sessions &amp;&amp; sessionCount()"&gt;
+  &lt;span class="pull-left thumb-sm avatar m-r" ng-repeat="s in sessions"&gt;
+    &lt;sn-avatar primary="s.user_id" show-presence="true" enable-context-menu="false"&gt;&lt;/sn-avatar&gt;
+  &lt;/span&gt;
+&lt;/div&gt;
+
+]]&gt;&lt;/template&gt;&lt;/sp_widget&gt;&lt;/record_update&gt;</payload>
+        <payload_hash>1408661327</payload_hash>
+        <record_name>Ratelock Sessions</record_name>
+        <reverted_from/>
+        <source>a45affb71badc01048a242e58d4bcb78</source>
+        <source_table>sys_update_set</source_table>
+        <state>previous</state>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2019-12-14 13:30:16</sys_created_on>
+        <sys_id>b9ae2d10dbb5c410f25513296896191c</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>16f049a436a0000001</sys_recorded_at>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2019-12-14 13:30:16</sys_updated_on>
+        <type>Widget</type>
+        <update_guid>71ae2d10d7b5c4104b14a1d2ad0c6d1c</update_guid>
+        <update_guid_history>71ae2d10d7b5c4104b14a1d2ad0c6d1c:1408661327,cda7a914bc75c410ff7b6f0caea5d9da:2042153345,acb2a99cd035c410437789ffdf2c15da:1850340074,79d021d82335c4107035f98a616a06a2:1479491206,4690a9d8f535c410de1d4da80fa000e1:444741157,c35065983235c4106931c2d755e8a3f0:1128701863,70fbdd540e35c410d2d65318210849d9:587354345,4a7b95546b35c410582e8e7b7cf00516:-1528145119,8efa99149935c410a429528699ac0b02:-712027999,22a615dc64f1c41043e2879cbd9f084c:-1528145119,cb56999cbcf1c410804717a09389948c:757085370,7216515c0af1c4100043b906eacd19ad:1769190867,a735515c9ff1c410502bba473b622a71:1509243331,48f4515cf4f1c410c3e2a01bfd5b8369:193514895,80e41dd836f1c4105a9821f84fc50eea:-979593787,f1c49d1c82f1c410bdf84f0853f13626:-1117605895,75145dd856f1c4104f0c8ab0da3e3877:-979593787,33e31dd86cf1c41084dc80d03900e8f5:960114583,20e3d958d2f1c410456cabbce52d2ae6:-1578974814,1a639d986cf1c410ceb5b4394acd6295:-1555132720,863399588af1c4101586a3926dd008ee:1083655494,67131d982df1c410e60c8f82359da4ad:1315813563,38b215985af1c41090a699cec65c8d79:-350076105,8832195864f1c410a24f64ec4009c53a:1315813563,be025558f6f1c410b89220c767a7bf5a:407551845,ffb1dd18a5f1c410fcb7eb0f4627d26f:-1792772226,4461d51803f1c4108e0f53413b6c2ec7:1236890300,62511918a9f1c410333c7b06f165b93f:624069482,94519dd42ef1c4103e4767fa9f3e9998:995014038,e3a05954d6f1c4105d48283f6ee03093:-1921565260,b4efc994ecf1c41045487679e67e2dab:-802099020,e08b01504af1c410f372a1944426ae50:-1241965226,329a49dc9cb1c4103a16796be25d4a89:-1356695198,7c5ac9dc7fb1c410c95b9bac6bcf4bc9:1200630590,f67d70d80e71c41027e6b69d2c250d4b:513567733,1e6d74d80f71c410d611a13b0010e94b:-635236174,7d1dbc98d371c410fc4f22db7219af7c:-397652686,e26bfc18ef71c41001e4bfb7e7908604:-1928185736,a8c830d07c71c410ecc123cb9fce575a:-2136191662,b713950caf3504102703ec2d0381d062:1776827018,71f29d0c17350410e7520f3de2b5a346:-550143606</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete display_value="">167f1786db750050f2551329689619b6</sys_audit_delete>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2019-12-20 08:12:33</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_db_object display_value="" name="sp_widget">sp_widget</sys_db_object>
+        <sys_id>1f6da8e802e745c49dcb9d9e45ed11c4</sys_id>
+        <sys_metadata>b1f255c81b35041048a242e58d4bcb01</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>Ratelock Sessions</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_parent/>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_scope_delete display_value="">57712118eaee4a49ae47b2048a14ac31</sys_scope_delete>
+        <sys_update_name>sp_widget_b1f255c81b35041048a242e58d4bcb01</sys_update_name>
+        <sys_update_version display_value="sp_widget_b1f255c81b35041048a242e58d4bcb01">b9ae2d10dbb5c410f25513296896191c</sys_update_version>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2019-12-20 08:12:33</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>

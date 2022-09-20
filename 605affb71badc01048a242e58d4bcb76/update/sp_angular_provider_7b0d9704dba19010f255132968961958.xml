@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_angular_provider">
+    <sp_angular_provider action="INSERT_OR_UPDATE">
+        <name>spViewport</name>
+        <script><![CDATA[function spViewport($window) {
+  return {
+    restrict: 'A',
+		scope: {
+			onViewportChange: '&'
+		},
+    link: function (scope, elem, attrs) {
+			
+			scope.onViewportChange(undefined, {
+				isVisible: isInViewport(elem[0])
+			});
+
+      window.addEventListener('scroll DOMContentLoaded resize', function (evt) {
+        scope.onViewportChange(evt, {
+          isVisible: isInViewport(elem[0])
+        });
+      });
+			
+      function isInViewport(element) {
+        var bounding = element.getBoundingClientRect();
+        var clientWidth = (window.innerWidth || document.documentElement.clientWidth);
+        return (
+          bounding.top >= 0 &&
+          bounding.left >= 0 &&
+          bounding.bottom <= clientWidth &&
+          bounding.right <= clientWidth
+        );
+      }
+    }
+  };
+}]]></script>
+        <sys_class_name>sp_angular_provider</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-06-17 12:49:43</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>7b0d9704dba19010f255132968961958</sys_id>
+        <sys_mod_count>8</sys_mod_count>
+        <sys_name>spViewport</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sp_angular_provider_7b0d9704dba19010f255132968961958</sys_update_name>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-06-17 12:56:52</sys_updated_on>
+        <type>directive</type>
+    </sp_angular_provider>
+</record_update>

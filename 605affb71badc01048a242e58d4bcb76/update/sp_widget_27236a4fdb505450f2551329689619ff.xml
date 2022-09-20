@@ -1,0 +1,551 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_widget">
+    <sp_widget action="INSERT_OR_UPDATE">
+        <category>custom</category>
+        <client_script><![CDATA[function($scope, $rootScope, $window, spUtil, $timeout) {
+  /* widget controller */
+  var c = this;
+	
+	$scope.relatedListOpen = false;
+	
+	c.$onInit = function() {
+		$scope.fields = c.data.fields;
+		$scope.required = c.data.required || [];
+		$scope.form = {};
+		$scope.errors = {};
+		$scope.editor = c.data.htmlEditorWidget;
+		var keys = Object.keys($scope.fields);
+		for (var i in keys) {
+			var key = keys[i];
+			if (!$scope.fields[key]) {
+				$scope.form[key] = undefined;
+			} else if (typeof $scope.fields[key] === 'object') {
+				$scope.form[key] = $scope.fields[key].value; 
+			} else {
+				$scope.form[key] = $scope.fields[key];
+			}
+		}
+	};
+	
+	$scope.modelOptions = {
+		'default': 500,
+		blur: 0
+	};
+	
+	$rootScope.$on('editor.typing', function(evt, content) {
+		if (content.id === $scope.data.sys_id) {
+			$scope.form.description = content.text;
+			$scope.form.comments = content.html;
+		}
+	});
+	
+	$rootScope.$on('editor.blurred', function(evt, value) {
+		if (!value || value === '') {
+			$scope.form.description = value;
+			$scope.form.comments = value;
+		}
+	});
+	
+	$rootScope.$on('template.text.added', function(evt, value) {
+		if (!$scope.isPosting) {
+			$scope.form.comments = value;
+		}
+	});
+	
+	c.$onDestroy = function() {
+		c.onUnload();	
+	}
+	
+	$window.addEventListener('beforeunload', function() {
+		c.onUnload();
+	});
+	
+	c.onLoanNumberBlur = function() {
+		if (!$scope.errors.loan_number) {
+			spUtil.get('ratelock_related_list', {
+				table: $scope.data.table,
+				sys_id: $scope.data.sys_id,
+				loan_number: $scope.form.loan_number
+			}).then(function(response) {
+				c.relatedRecordsWidget = response;
+			});
+		}
+	};
+	
+	c.toggleRelatedListOpen = function() {
+		if (c.relatedRecordsWidget) {
+			$scope.relatedListOpen = !$scope.relatedListOpen;
+		}
+	};
+	
+	$scope.$on('field.change', function(evt, args) {
+		
+		if (args.field) {
+			$scope.form[args.field.name] = args.field.value;
+		} else {
+			$scope.form[args.name] = args.value;
+			if ((args.name === 'loan_number' || args.name === 'request_type')) {
+				var type = $scope.form.request_type;
+				var regex, error;
+				if (type === '1' || type === '4') {
+					regex = /^[0-9]{7}$/gi;
+					error = 'Your loan number must have 7 digits.';
+				} else if (type === '2') {
+					regex = /^[0-9]{9}$/gi;
+					error = 'Your loan number must have 9 digits.';
+				} else if (typeof type === 'string') {
+					delete $scope.errors.loan_number;
+					return;
+				}
+				if (!regex.test($scope.form.loan_number)) {
+					$scope.errors.loan_number = error;
+				} else if ($scope.errors.loan_number) {
+					delete $scope.errors.loan_number;
+				}
+			}
+		}
+	});
+	
+	c.fieldIsInvalid = function(name) {
+		if ($scope.errors[name]) return true;
+		return false;
+	};
+	
+	c.onUnload = function() {
+		if (!c.data.redirect_uri && !$scope.isPosting) {
+			$scope.data.remove = true;
+			$scope.server.update();
+		}
+	};
+	
+	c.submit = function($event) {
+		$scope.isPosting = true;
+		$event.preventDefault();
+		$event.stopPropagation();
+		$scope.data.form = $scope.form;
+		
+		$scope.server.update().then(function(data) {
+			if (data.redirect_uri) {
+				spUtil.addInfoMessage('Successfully created ticket ' + $scope.form.loan_number);
+				$timeout(function(){
+					$window.location.href = data.redirect_uri;
+				}, 200);
+			}
+		});
+	};
+	
+	c.canSubmitForm = function() {
+		if (!$scope.form) return false;
+		if ($scope.isPosting) return false;
+		if (Object.keys($scope.errors).length > 0) return false;
+		var keys = Object.keys($scope.fields);
+		
+		for (var i in keys) {
+			if ($scope.required.includes(keys[i])) {
+				if (!$scope.form[keys[i]] || $scope.form[keys[i]] === '') {
+					return false;
+				}
+			}
+		}
+		
+		return true;
+	};
+	
+	c.onFieldChange = function(name, value) {
+		var field = {
+			name: name,
+			value: value,
+			displayValue: value
+		};
+		
+		$scope.$broadcast('field.change', field);
+	};
+}]]></client_script>
+        <controller_as>c</controller_as>
+        <css>::-webkit-scrollbar {
+  width: 0.5em;
+}
+ 
+::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.5);
+}
+ 
+::-webkit-scrollbar-thumb {
+  background-color: $brand-primary;
+  border-radius: 0.25em;
+  outline: 3px solid #eee;
+}
+
+.form-control,
+.select2-choice {
+  &amp;:focus {
+  	border-color: $brand-primary;
+    outline: 5px auto $brand-primary;
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(249,80,80, 0.6);
+  }
+}
+
+.select2-container-active,
+.select2-container-active .select2-choice,
+.select2-container-active .select2-choices {
+	border: 1px solid $brand-primary;
+}
+
+.divider {
+	width: 100%;
+  margin: 15px 0px;
+  padding: 0px -15px;
+  border-top: 2px solid #eee;
+}
+
+div.form-error {
+	color: $danger;
+  font-size: 1.2rem;
+  padding: 5px;
+  &amp; span {
+  	opacity: 1;
+  	transition: all 0.3s ease-in;
+  }
+  
+  &amp; span.hidden {
+  	opacity: 0;
+    transition: all 0.3s ease-out;
+  }
+}
+label {
+	&amp; span {
+    font-size: 1.7rem;
+    font-weight: 700;
+    &amp;:not(.required-field) {
+      color: inherit;
+      transition: color 0.3s ease-in;
+    }
+
+    &amp;.required-field {
+      color: $brand-primary;
+      transition: color 0.3s ease-out;
+    }
+  }
+}
+
+.accordion-link {
+  &amp;.hidden,
+  &amp;.related-list {
+  	opacity: 0;
+		transition: opacity 1s ease-out;   
+  }
+  
+  &amp;.related-list {
+  	opacity: 1;
+    transition: opacity 1s ease-in;
+  }
+}
+</css>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description/>
+        <docs/>
+        <field_list/>
+        <has_preview>false</has_preview>
+        <id>ratelock_ticket_creation_panel</id>
+        <internal>false</internal>
+        <link><![CDATA[function link(scope, element, attrs, controller) {  }]]></link>
+        <name>Ratelock Ticket Creation Panel</name>
+        <option_schema/>
+        <public>false</public>
+        <roles/>
+        <script><![CDATA[(function() {
+  /* populate the 'data' object */
+  /* e.g., data.table = $sp.getValue('table'); */
+	data.table = (input ? input.table : undefined) || options.table || $sp.getParameter('table');
+	data.sys_id = (input ? input.sys_id : undefined);
+	data.fields = {
+		loan_number: '',
+		short_description: '',
+		comments: '',
+		request_type: "1",
+		priority: "2",
+		email_recipients: {
+			value: null,
+			displayValue: "",
+			name: 'email_recipients'
+		},
+		assigned_to: {
+			value: gs.getUserID(),
+			displayValue: gs.getUserDisplayName(),
+			name: 'assigned_to'
+		},
+		caller_id: {
+			value: null,
+			displayValue: "",
+			name: 'caller_id'
+		}
+	};
+	
+	data.required = [
+		'caller_id',
+		'loan_number',
+		'assigned_to',
+		'short_description'
+	];
+	
+	data.errors = [];
+	
+	if (!data.sys_id) {
+		data.sys_id = createNewRecord(data.table);
+	}
+	
+	data.htmlEditorWidget = $sp.getWidget('ratelock_quill_editor', {
+		modules: {
+			toolbar: [
+				['bold', 'italic', 'underline'],
+				['blockquote'],
+				[{ 'list': 'ordered' }, { 'list': 'bullet' }],
+				['link', 'image']
+			],
+			imageDrop: true,
+			magicUrl: true,
+			imageResize: {
+				modules: [ 'DisplaySize', 'Resize' ]
+			}
+		},
+		disabled: false,
+		theme: 'snow',
+		placeholder: 'Email body...',
+		size: 'lg',
+		showToolbar: true,
+		sys_id: data.sys_id
+	});
+	
+	
+	if (input) {
+		if (input.form) {
+			data.redirect_uri = createRecord(data.table, data.sys_id, input.form);
+			if (!data.redirect_uri) {
+				data.errors.push('We could not create your ticket at this time.');
+			}
+		}
+		
+		if (input.remove) {
+			deleteRecord(input.table, input.sys_id);
+		}
+	}
+	
+	function deleteRecord(table, sysId) {
+		var gr = new GlideRecord(table);
+		if (gr.get(sysId) && gr.isValid()) {
+			gr.deleteRecord();
+		}
+	}
+	
+	function createNewRecord(table) {
+		var gr = new GlideRecord(table);
+		gr.newRecord();
+		gr.active = false;
+		gr.insert();
+		return gr.getUniqueValue();
+	}
+	
+	function createRecord(table, sysId, form) {
+		if (!isValid(table, form)) return false;
+		var gr = new GlideRecord(table);
+		
+		gr.get(sysId);
+		
+		if (!gr.isValid()) return;
+		
+		var fields = Object.keys(form);
+		
+		for (var i in fields) {
+			var field = fields[i];
+			var value = form[fields[i]];
+			gr[field] = value;
+		}
+		gr.creation_source = 'internal';
+		gr.active = true;
+		gr.update();
+		return '?id=ratelock_ticket_form&table=' + gr.getTableName() + '&sys_id=' + gr.getUniqueValue();
+	}
+	
+	function isValid(table, form) {
+		var keys = Object.keys(form);
+		
+		for (var i in keys) {
+			var key = keys[i];
+			var value = form[keys[i]];
+			
+			if (data.required.indexOf(key) >= 0) {
+				if (value === '' || !value) return false;
+			}
+		}
+		return true;
+	}
+	
+	function loanExists(table, loan) {
+		var ga = new GlideAggregate(table);
+		ga.addAggregate('COUNT');
+		ga.addQuery('state', '!=', '6');
+		ga.addQuery('loan_number', loan);
+		ga.query();
+		
+		while (ga.next()) {
+			var count = parseInt(ga.getAggregate('COUNT'));
+			if (count > 0) return true;
+			return false;
+		}
+	}
+})();]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>douglas.schamberg</sys_created_by>
+        <sys_created_on>2020-04-25 13:00:02</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>27236a4fdb505450f2551329689619ff</sys_id>
+        <sys_mod_count>182</sys_mod_count>
+        <sys_name>Ratelock Ticket Creation Panel</sys_name>
+        <sys_package display_value="Ratelock" source="x_momo_ratelock">605affb71badc01048a242e58d4bcb76</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Ratelock">605affb71badc01048a242e58d4bcb76</sys_scope>
+        <sys_update_name>sp_widget_27236a4fdb505450f2551329689619ff</sys_update_name>
+        <sys_updated_by>douglas.schamberg</sys_updated_by>
+        <sys_updated_on>2020-06-06 08:27:03</sys_updated_on>
+        <template><![CDATA[<div class="panel panel-default">
+  <div class="panel-heading">
+    <span class="panel-title">${Create a new Ticket}</span>           
+  </div>
+  <div class="panel-body">
+    <div class="row" ng-class="{'m-b': c.relatedRecordsWidget}" ng-if="false">
+      <div class="col-md-12">
+        <a href tabindex="0"
+           ng-class="{'hidden': !c.relatedRecordsWidget, 'related-list': c.relatedRecordsWidget}"
+           ng-click="c.toggleRelatedListOpen()"
+           uib-accordian-transclude="heading"
+           class="accordion-link">
+          <span class="accordion-clicker">Related Ticket's</span>
+           <span uib-accordion-header class="glyphicon accordion-clicker"
+              ng-class="{'glyphicon-chevron-right': !relatedListOpen, 'glyphicon-chevron-down': relatedListOpen}"></span>
+        </a>
+        <div class="panel-collapse collapse m-t" uib-collapse="!relatedListOpen">
+          <sp-widget widget="c.relatedRecordsWidget"></sp-widget>
+        </div>
+      </div>
+    </div>
+    <form name="ticket">
+      <div class="form-group">
+        <div class="row">
+          <div class="col-md-6">
+            <label for="loan_number"><span ng-class="{'required-field': (form.loan_number === '' || !form.loan_number || errors.loan_number)}">*</span> Loan Number</label>
+            <input class="form-control" id="loan_number"
+                   required="true"
+                   ng-change="c.onFieldChange('loan_number', fields.loan_number)"
+                   ng-model-options="modelOptions"
+                   placeholder="Loan number"
+                   ng-blur="c.onLoanNumberBlur()"
+                   ng-model="fields.loan_number" type="text"  />
+           	<div class="form-error">
+              <span ng-bind="errors.loan_number" ng-class="{'hidden': !c.fieldIsInvalid('loan_number')}"></span>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <label for="assigned_to"><span ng-class="{'required-field': !fields.assigned_to.value}">*</span> Assigned To</label>
+            <sn-record-picker
+               id="assigned_to"
+               field="fields.assigned_to"
+               table="'sys_user'"
+               display-field="'name'"
+               search-fields="'name'"
+               multiple="false"
+               value-field="'sys_id'"
+               placeholder="Select a technician..."
+               default-query="'active=true^roles=x_momo_ratelock.ratelock_tech'"
+               ></sn-record-picker>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="row">
+          <div class="col-md-6">
+            <label for="request_type">Request Type</label>
+            <select class="sc-basic-select" ng-change="c.onFieldChange('request_type', fields.request_type)" id="request_type" ng-model="fields.request_type">
+              <option value="1" selected>General</option>
+              <option value="2">TPO</option>
+              <option value="4">Bond</option>
+              <option value="3">Miscellaneous</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label for="priority">Priority</label>
+            <select class="sc-basic-select" ng-change="c.onFieldChange('priority', fields.priority)" id="priority" ng-model="fields.priority">
+              <option value="1">1 - Critical</option>
+              <option value="2" selected>2 - Normal</option>
+              <option value="3">3 - Low</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="row">
+          <div class="col-md-6">
+            <label for="loan_officer"><span ng-class="{'required-field': !fields.caller_id.value}">*</span> Loan Officer</label>
+            <sn-record-picker
+               id="loan_officer"
+               field="fields.caller_id"
+               table="'sys_user'"
+               display-field="'name'"
+               search-fields="'name'"
+               multiple="false"
+               value-field="'sys_id'"
+               placeholder="Select a loan officer..."
+               default-query="'active=true'"
+               ></sn-record-picker>
+          </div>
+          <div class="col-md-6">
+            <label for="watch_list">Email Recipients</label>
+            <sp-record-picker
+               id="email_recipients"
+               field="fields.email_recipients"
+               table="'sys_user'"
+               display-field="'name'"
+               search-fields="'name'"
+               multiple="true"
+               value-field="'email'"
+               placeholder="Email recipients..."
+               default-query="'active=true^emailISNOTEMPTY'"></sp-record-picker>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="short_description"><span ng-class="{'required-field': (form.short_description === '' || !form.short_description)}">*</span> Subject</label>
+        <input class="form-control" ng-model-options="modelOptions" ng-change="c.onFieldChange('short_description', fields.short_description)" placeholder="Email subject" required="true" id="short_description" 
+               ng-model="fields.short_description" type="text"  />
+      </div>
+      <div class="form-group">
+        <label for="comments">Send a message</label>
+        <sp-widget widget="editor" id="comments"></sp-widget>
+      </div>
+    </form>
+    <div class="row">
+      <div class="col-md-12">
+        <widget id="ratelock_templates_list" options="{'table': 'x_momo_ratelock_templates', 'canWrite': true, 'size': 'lg'}"></widget>
+      </div>
+    </div>
+    <div class="form-errors" ng-if="c.data.errors.length > 0">
+      <ul class="list-group list-group-flush" ng-repeat="error in errors">
+        <li class="list-group-item">{{ error }}</li>
+      </ul>
+    </div>
+  </div>
+  <div class="panel-footer">
+    <div class="row">
+      <div class="col-md-6"></div>
+      <div class="col-md-6">
+      	<button class="btn btn-primary pull-right" ng-click="c.submit($event)" ng-disabled="!c.canSubmitForm()">
+          <span ng-if="!isPosting">Create</span>
+          <i ng-if="isPosting" class="fa fa-circle-o-notch fa-spin" aria-hidden="true"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>]]></template>
+    </sp_widget>
+</record_update>
